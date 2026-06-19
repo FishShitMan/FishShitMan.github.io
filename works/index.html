@@ -487,6 +487,46 @@
             line-height: 1;
         }
 
+        /* ===== 回到顶部按钮 ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 48px;
+            height: 48px;
+            background: transparent;
+            border: 2px solid var(--gray-600);
+            color: var(--white);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            border-color: var(--white);
+            background: var(--white);
+            color: var(--black);
+            transform: translateY(-4px);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-2px);
+        }
+
         /* ===== Footer ===== */
         .footer {
             text-align: center;
@@ -713,7 +753,7 @@
         <div class="gallery-grid" id="galleryGrid">
 
             <!-- #01 游戏截图 - 几何 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》游戏截图_1.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -726,7 +766,7 @@
             </div>
 
             <!-- #02 概念设计 - 几何宣传图 -->
-            <div class="gallery-item reveal-up" data-category="art">
+            <div class="gallery-item reveal-up" data-category="art" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何宣传图" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -739,7 +779,7 @@
             </div>
 
             <!-- #03 游戏截图 - 几何 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》游戏截图_2.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -752,7 +792,7 @@
             </div>
 
             <!-- #04 概念设计 - 几何宣传图2 -->
-            <div class="gallery-item reveal-up" data-category="art">
+            <div class="gallery-item reveal-up" data-category="art" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/art/GEOMETRY/《几何》宣传图_2.png" alt="几何宣传图2" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -765,7 +805,7 @@
             </div>
 
             <!-- #05 游戏截图 - 几何 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》游戏截图_3.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -778,7 +818,7 @@
             </div>
 
             <!-- #06 游戏截图 - 几何 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》游戏截图_4.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -791,7 +831,7 @@
             </div>
 
             <!-- #07 测试关卡 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》测试关卡_1.png" alt="几何测试关卡" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -804,7 +844,7 @@
             </div>
 
             <!-- #08 游戏截图 - 几何 -->
-            <div class="gallery-item reveal-up" data-category="game">
+            <div class="gallery-item reveal-up" data-category="game" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》游戏截图_5.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -817,7 +857,7 @@
             </div>
 
             <!-- #09 几何 Logo -->
-            <div class="gallery-item reveal-up" data-category="art">
+            <div class="gallery-item reveal-up" data-category="art" data-url="">
                 <div class="item-image" style="padding:0; overflow:hidden;">
                     <img src="images/game/GEOMETRY/《几何》Logo.png" alt="几何Logo" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -859,7 +899,27 @@
         <p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p>
     </footer>
 
+    <!-- ===== 回到顶部按钮 ===== -->
+    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+
     <script>
+        // ===================================================================
+        // 0. 回到顶部按钮
+        // ===================================================================
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
         // ===================================================================
         // 1. 粒子背景系统
         // ===================================================================
@@ -1170,7 +1230,19 @@
         });
 
         // ===================================================================
-        // 8. 控制台彩蛋
+        // 8. 画廊项目双击跳转
+        // ===================================================================
+        document.querySelectorAll('.gallery-item[data-url]').forEach(item => {
+            item.addEventListener('dblclick', (e) => {
+                const url = item.dataset.url;
+                if (url) {
+                    window.open(url, '_blank', 'noopener');
+                }
+            });
+        });
+
+        // ===================================================================
+        // 9. 控制台彩蛋
         // ===================================================================
         console.log('%c DoubleX GameStudio — 作品展示画廊 ', 'font-size: 24px; font-weight: bold; background: #000; color: #fff; padding: 10px 20px;');
         console.log('%c 每一帧画面，每一段故事 ', 'font-size: 14px; color: #888;');

@@ -812,6 +812,46 @@
             background: var(--gray-200);
         }
 
+        /* ===== 回到顶部按钮 ===== */
+        .back-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 48px;
+            height: 48px;
+            background: transparent;
+            border: 2px solid var(--gray-600);
+            color: var(--white);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .back-to-top:hover {
+            border-color: var(--white);
+            background: var(--white);
+            color: var(--black);
+            transform: translateY(-4px);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-2px);
+        }
+
         /* ===== FOOTER ===== */
         .footer {
             text-align: center;
@@ -1169,7 +1209,7 @@
         <h2 class="section-title reveal">我们的作品</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">FEATURED PROJECTS</p>
         <div class="projects-grid">
-            <div class="project-card reveal-scale">
+            <div class="project-card reveal-scale" data-url="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493">
                 <div class="project-bg" style="padding:0; overflow:hidden;">
                     <img src="works/images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -1179,7 +1219,7 @@
                     <span class="tag">弹幕 · 几何</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.1s;">
+            <div class="project-card reveal-scale" style="transition-delay: 0.1s;" data-url="">
                 <div class="project-bg">
                     <span class="icon">🌌</span>
                 </div>
@@ -1189,7 +1229,7 @@
                     <span class="tag">科幻 · 开放世界</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.2s;">
+            <div class="project-card reveal-scale" style="transition-delay: 0.2s;" data-url="">
                 <div class="project-bg">
                     <span class="icon">🗡️</span>
                 </div>
@@ -1199,7 +1239,7 @@
                     <span class="tag">像素 · Rogue-like</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.3s;">
+            <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-url="">
                 <div class="project-bg">
                     <span class="icon">🧩</span>
                 </div>
@@ -1211,7 +1251,7 @@
             </div>
         </div>
         <div class="projects-more reveal" style="text-align: center; margin-top: 50px;">
-            <a href="works/index.html" class="btn btn-outline">更多作品 →</a>
+            <a href="works/index.html" class="btn btn-outline">更多作品 &#9654;</a>
         </div>
     </section>
 
@@ -1280,7 +1320,7 @@
                     <span class="icon">💬</span>
                     <span>Discord</span>
                 </a>
-                <a href="#" class="contact-link">
+                <a href="https://space.bilibili.com/3706973610576816" class="contact-link" target="_blank" rel="noopener">
                     <span class="icon">▶️</span>
                     <span>Bilibili</span>
                 </a>
@@ -1315,7 +1355,27 @@
         <p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p>
     </footer>
 
+    <!-- ===== 回到顶部按钮 ===== -->
+    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+
     <script>
+        // ===================================================================
+        // 0. 回到顶部按钮
+        // ===================================================================
+        const backToTop = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
         // ===================================================================
         // 1. 粒子背景系统
         // ===================================================================
@@ -1606,7 +1666,19 @@
         });
 
         // ===================================================================
-        // 8. 控制台彩蛋
+        // 8. 项目卡片双击跳转
+        // ===================================================================
+        document.querySelectorAll('.project-card[data-url]').forEach(card => {
+            card.addEventListener('dblclick', (e) => {
+                const url = card.dataset.url;
+                if (url) {
+                    window.open(url, '_blank', 'noopener');
+                }
+            });
+        });
+
+        // ===================================================================
+        // 9. 控制台彩蛋
         // ===================================================================
         console.log('%c DoubleX GameStudio ', 'font-size: 30px; font-weight: bold; background: #000; color: #fff; padding: 10px 20px;');
         console.log('%c 用代码编织梦想，用像素讲述故事 ', 'font-size: 14px; color: #888;');
