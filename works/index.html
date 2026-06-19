@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品展示 | DoubleX GameStudio</title>
+    <style>
+        /* ===== 全局重置 & 基础样式 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e0e0e0;
+            --gray-300: #b0b0b0;
+            --gray-400: #808080;
+            --gray-500: #505050;
+            --gray-600: #303030;
+            --gray-700: #1a1a1a;
+            --gray-800: #0d0d0d;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ===== 自定义光标 ===== */
+        .cursor-dot {
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            background: var(--white);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 1),
+                        0 0 40px rgba(255, 255, 255, 0.6),
+                        0 0 60px rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border: 2.5px solid var(--white);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5),
+                        inset 0 0 15px rgba(255, 255, 255, 0.08);
+            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .cursor-ring.active {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gray-100);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
+                        inset 0 0 25px rgba(255, 255, 255, 0.08);
+        }
+
+        .cursor-ripple {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid var(--white);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99997;
+            transform: translate(-50%, -50%);
+            animation: rippleOut 0.7s ease-out forwards;
+        }
+
+        @keyframes rippleOut {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+            }
+            100% {
+                width: 120px;
+                height: 120px;
+                opacity: 0;
+            }
+        }
+
+        /* ===== 粒子背景 Canvas ===== */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ===== 导航栏 ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+
+        .navbar.scrolled {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 15px 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .logo .highlight-x {
+            color: var(--gray-100);
+            font-size: 34px;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 35px;
+        }
+
+        .nav-links a {
+            color: var(--gray-300);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--white);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--white);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 6px;
+        }
+
+        .menu-toggle span {
+            width: 28px;
+            height: 2px;
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* ===== 页面 Header ===== */
+        .page-header {
+            position: relative;
+            z-index: 1;
+            min-height: 45vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 150px 50px 80px;
+        }
+
+        .page-header .header-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 1px solid var(--gray-500);
+            color: var(--gray-300);
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .page-header .header-title {
+            font-size: 72px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .page-header .header-title .stroke-text {
+            -webkit-text-stroke: 2px var(--white);
+            color: transparent;
+        }
+
+        .page-header .header-title .fill-text {
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-400) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header .header-subtitle {
+            font-size: 16px;
+            color: var(--gray-400);
+            letter-spacing: 5px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* ===== 分类筛选栏 ===== */
+        .filter-bar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 0 50px 40px;
+        }
+
+        .filter-btn {
+            padding: 10px 28px;
+            background: transparent;
+            border: 1px solid var(--gray-600);
+            color: var(--gray-400);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--gray-300);
+            color: var(--gray-200);
+        }
+
+        .filter-btn.active {
+            background: var(--white);
+            color: var(--black);
+            border-color: var(--white);
+        }
+
+        /* ===== 作品画廊网格 ===== */
+        .gallery-section {
+            position: relative;
+            z-index: 1;
+            padding: 0 50px 120px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-700);
+            aspect-ratio: 4 / 3;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--gray-400);
+            transform: translateY(-6px);
+        }
+
+        .gallery-item .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+            background: var(--gray-800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item .item-image .placeholder-icon {
+            font-size: 60px;
+            opacity: 0.4;
+        }
+
+        .gallery-item:hover .item-image {
+            transform: scale(1.05);
+        }
+
+        .gallery-item .item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .gallery-item:hover .item-overlay {
+            opacity: 1;
+        }
+
+        .item-overlay h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .item-overlay .item-category {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray-400);
+            margin-bottom: 10px;
+        }
+
+        .item-overlay .item-desc {
+            font-size: 13px;
+            color: var(--gray-300);
+            line-height: 1.5;
+        }
+
+        .item-overlay .view-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            border: 1px solid var(--white);
+            color: var(--white);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .item-overlay .view-btn:hover {
+            background: var(--white);
+            color: var(--black);
+        }
+
+        /* ===== 灯箱/Lightbox ===== */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .lightbox.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox .lightbox-content {
+            position: relative;
+            max-width: 85vw;
+            max-height: 85vh;
+        }
+
+        .lightbox .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            border: 1px solid var(--gray-600);
+            background: var(--gray-800);
+        }
+
+        .lightbox .lightbox-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .lightbox .lightbox-info h3 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .lightbox .lightbox-info p {
+            color: var(--gray-400);
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-top: 6px;
+        }
+
+        .lightbox .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border: 2px solid var(--gray-500);
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20001;
+        }
+
+        .lightbox .lightbox-close:hover {
+            border-color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .lightbox .lightbox-close .close-icon {
+            font-size: 28px;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            text-align: center;
+            padding: 50px;
+            border-top: 1px solid var(--gray-700);
+            background: var(--black);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer p {
+            color: var(--gray-500);
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .footer .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+
+        .footer .footer-links a:hover {
+            color: var(--white);
+        }
+
+        /* ===== 滚动动画 ===== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.6s ease;
+        }
+
+        .reveal-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== 关键帧动画 ===== */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 响应式设计 ===== */
+        @media (max-width: 1024px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .page-header .header-title {
+                font-size: 48px;
+                letter-spacing: 6px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 120px 25px 60px;
+            }
+
+            .gallery-section {
+                padding: 0 25px 80px;
+            }
+
+            .filter-bar {
+                padding: 0 25px 30px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 15px 25px;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.98);
+                flex-direction: column;
+                padding: 30px;
+                gap: 25px;
+                border-bottom: 1px solid var(--gray-700);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .page-header .header-title {
+                font-size: 34px;
+                letter-spacing: 4px;
+            }
+
+            .lightbox .lightbox-close {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
+
+            body {
+                cursor: auto;
+            }
+
+            .cursor-dot,
+            .cursor-ring,
+            .cursor-ripple {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header .header-title {
+                font-size: 26px;
+                letter-spacing: 2px;
+            }
+
+            .page-header .header-title .stroke-text {
+                -webkit-text-stroke: 1px var(--white);
+            }
+
+            .filter-btn {
+                padding: 8px 18px;
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 自定义光标 ===== -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- ===== 粒子背景 Canvas ===== -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar" id="navbar">
+        <a href="../index.html" class="logo">Double<span class="highlight-x">X</span></a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="../index.html">首页</a></li>
+            <li><a href="../index.html#about">关于</a></li>
+            <li><a href="index.html" class="active">作品展示</a></li>
+            <li><a href="../index.html#team">团队</a></li>
+            <li><a href="../index.html#contact">联系</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- ===== 页面头部 ===== -->
+    <header class="page-header">
+        <div class="header-badge">✦ 作品展示画廊</div>
+        <h1 class="header-title">
+            <span class="stroke-text">OUR</span>
+            <span class="fill-text"> WORKS</span>
+        </h1>
+        <p class="header-subtitle">✦ 每一帧画面 · 每一段故事 ✦</p>
+    </header>
+
+    <!-- ===== 分类筛选栏 ===== -->
+    <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">全部</button>
+        <button class="filter-btn" data-filter="game">游戏截图</button>
+        <button class="filter-btn" data-filter="art">概念设计</button>
+        <button class="filter-btn" data-filter="ui">UI / 界面</button>
+    </div>
+
+    <!-- ===== 作品画廊 ===== -->
+    <section class="gallery-section">
+        <div class="gallery-grid" id="galleryGrid">
+
+            <!-- #01 游戏截图 -->
+            <div class="gallery-item reveal-up" data-category="game">
+                <div class="item-image">
+                    <span class="placeholder-icon">🎮</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">游戏截图</span>
+                    <h3>暗影突袭 - 赛博都市</h3>
+                    <p class="item-desc">霓虹灯下的赛博朋克都市，快节奏战斗场景</p>
+                    <span class="view-btn" data-index="0">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #02 概念设计 -->
+            <div class="gallery-item reveal-up" data-category="art">
+                <div class="item-image">
+                    <span class="placeholder-icon">🌌</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">概念设计</span>
+                    <h3>星际迷途 - 太空站</h3>
+                    <p class="item-desc">浩瀚宇宙中的废弃空间站，充满未知与神秘</p>
+                    <span class="view-btn" data-index="1">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #03 游戏截图 -->
+            <div class="gallery-item reveal-up" data-category="game">
+                <div class="item-image">
+                    <span class="placeholder-icon">🗡️</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">游戏截图</span>
+                    <h3>失落王朝 - 地牢深处</h3>
+                    <p class="item-desc">像素风格的 rogue-like 地牢探险之旅</p>
+                    <span class="view-btn" data-index="2">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #04 概念设计 -->
+            <div class="gallery-item reveal-up" data-category="art">
+                <div class="item-image">
+                    <span class="placeholder-icon">🧩</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">概念设计</span>
+                    <h3>梦境编织者 - 潜意识</h3>
+                    <p class="item-desc">探索人类潜意识的超现实梦境世界</p>
+                    <span class="view-btn" data-index="3">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #05 UI/界面 -->
+            <div class="gallery-item reveal-up" data-category="ui">
+                <div class="item-image">
+                    <span class="placeholder-icon">🖥️</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">UI / 界面</span>
+                    <h3>暗影突袭 - HUD 设计</h3>
+                    <p class="item-desc">极简赛博朋克风格的游戏HUD界面设计</p>
+                    <span class="view-btn" data-index="4">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #06 游戏截图 -->
+            <div class="gallery-item reveal-up" data-category="game">
+                <div class="item-image">
+                    <span class="placeholder-icon">⚔️</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">游戏截图</span>
+                    <h3>暗影突袭 - BOSS战</h3>
+                    <p class="item-desc">与巨型机甲BOSS的史诗级战斗场景</p>
+                    <span class="view-btn" data-index="5">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #07 概念设计 -->
+            <div class="gallery-item reveal-up" data-category="art">
+                <div class="item-image">
+                    <span class="placeholder-icon">🏰</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">概念设计</span>
+                    <h3>失落王朝 - 古城遗迹</h3>
+                    <p class="item-desc">被遗忘的古代文明遗迹概念原画</p>
+                    <span class="view-btn" data-index="6">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #08 UI/界面 -->
+            <div class="gallery-item reveal-up" data-category="ui">
+                <div class="item-image">
+                    <span class="placeholder-icon">📱</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">UI / 界面</span>
+                    <h3>星际迷途 - 星图导航</h3>
+                    <p class="item-desc">开放世界太空探索的星图导航界面</p>
+                    <span class="view-btn" data-index="7">查看大图</span>
+                </div>
+            </div>
+
+            <!-- #09 游戏截图 -->
+            <div class="gallery-item reveal-up" data-category="game">
+                <div class="item-image">
+                    <span class="placeholder-icon">🌊</span>
+                </div>
+                <div class="item-overlay">
+                    <span class="item-category">游戏截图</span>
+                    <h3>梦境编织者 - 记忆之海</h3>
+                    <p class="item-desc">漂浮在记忆之海中的叙事解谜冒险</p>
+                    <span class="view-btn" data-index="8">查看大图</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== 灯箱弹窗 ===== -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose">
+            <span class="close-icon">✕</span>
+        </button>
+        <div class="lightbox-content">
+            <div class="item-image" id="lightboxImage" style="min-width: 400px; min-height: 300px; display: flex; align-items: center; justify-content: center; font-size: 80px;">
+            </div>
+            <div class="lightbox-info">
+                <h3 id="lightboxTitle"></h3>
+                <p id="lightboxDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../index.html">首页</a>
+            <a href="../index.html#about">关于</a>
+            <a href="index.html">作品展示</a>
+            <a href="../index.html#team">团队</a>
+            <a href="../index.html#contact">联系</a>
+        </div>
+        <p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p>
+    </footer>
+
+    <script>
+        // ===================================================================
+        // 1. 粒子背景系统
+        // ===================================================================
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.baseSize = this.size;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (mouse.x !== null) {
+                    const dx = this.x - mouse.x;
+                    const dy = this.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        const force = (mouse.radius - dist) / mouse.radius;
+                        const dirX = dx / dist;
+                        const dirY = dy / dist;
+                        this.x += dirX * force * 3;
+                        this.y += dirY * force * 3;
+                    }
+                }
+
+                if (this.x < 0 || this.x > canvas.width ||
+                    this.y < 0 || this.y > canvas.height) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            const count = Math.min(Math.floor((canvas.width * canvas.height) / 8000), 150);
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        initParticles();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = 120;
+
+                    if (dist < maxDist) {
+                        const opacity = (1 - dist / maxDist) * 0.2;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            drawConnections();
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        document.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        // ===================================================================
+        // 2. 自定义光标
+        // ===================================================================
+        const cursorDot = document.getElementById('cursorDot');
+        const cursorRing = document.getElementById('cursorRing');
+        let ringX = 0, ringY = 0;
+        let mouseX = 0, mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.35;
+            ringY += (mouseY - ringY) * 0.35;
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
+            requestAnimationFrame(animateCursor);
+        }
+
+        animateCursor();
+
+        document.querySelectorAll('a, button, .gallery-item, .filter-btn, .view-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorRing.classList.add('active');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorRing.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'cursor-ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        if ('ontouchstart' in window) {
+            cursorDot.style.display = 'none';
+            cursorRing.style.display = 'none';
+        }
+
+        // ===================================================================
+        // 3. 移动端菜单
+        // ===================================================================
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // ===================================================================
+        // 4. 导航栏滚动效果
+        // ===================================================================
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ===================================================================
+        // 5. 滚动动画 (Intersection Observer)
+        // ===================================================================
+        const revealElements = document.querySelectorAll('.reveal, .reveal-up');
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        revealElements.forEach(el => observer.observe(el));
+
+        // ===================================================================
+        // 6. 分类筛选功能
+        // ===================================================================
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.dataset.category === filter) {
+                        item.style.display = 'block';
+                        // 触发重排后添加动画
+                        setTimeout(() => {
+                            item.style.opacity = '1';
+                            item.style.transform = 'translateY(0)';
+                        }, 50);
+                    } else {
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            item.style.display = 'none';
+                        }, 400);
+                    }
+                });
+            });
+        });
+
+        // ===================================================================
+        // 7. 灯箱功能
+        // ===================================================================
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxTitle = document.getElementById('lightboxTitle');
+        const lightboxDesc = document.getElementById('lightboxDesc');
+        const lightboxClose = document.getElementById('lightboxClose');
+
+        const galleryData = [
+            { title: '暗影突袭 - 赛博都市', desc: '霓虹灯下的赛博朋克都市，快节奏战斗场景', icon: '🎮', category: '游戏截图' },
+            { title: '星际迷途 - 太空站', desc: '浩瀚宇宙中的废弃空间站，充满未知与神秘', icon: '🌌', category: '概念设计' },
+            { title: '失落王朝 - 地牢深处', desc: '像素风格的 rogue-like 地牢探险之旅', icon: '🗡️', category: '游戏截图' },
+            { title: '梦境编织者 - 潜意识', desc: '探索人类潜意识的超现实梦境世界', icon: '🧩', category: '概念设计' },
+            { title: '暗影突袭 - HUD 设计', desc: '极简赛博朋克风格的游戏HUD界面设计', icon: '🖥️', category: 'UI / 界面' },
+            { title: '暗影突袭 - BOSS战', desc: '与巨型机甲BOSS的史诗级战斗场景', icon: '⚔️', category: '游戏截图' },
+            { title: '失落王朝 - 古城遗迹', desc: '被遗忘的古代文明遗迹概念原画', icon: '🏰', category: '概念设计' },
+            { title: '星际迷途 - 星图导航', desc: '开放世界太空探索的星图导航界面', icon: '📱', category: 'UI / 界面' },
+            { title: '梦境编织者 - 记忆之海', desc: '漂浮在记忆之海中的叙事解谜冒险', icon: '🌊', category: '游戏截图' },
+        ];
+
+        function openLightbox(index) {
+            const data = galleryData[index];
+            lightboxImage.innerHTML = `<span style="font-size:120px; opacity:0.3;">${data.icon}</span>`;
+            lightboxTitle.textContent = data.title;
+            lightboxDesc.textContent = data.category + ' — ' + data.desc;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightboxFunc() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = parseInt(btn.dataset.index);
+                openLightbox(index);
+            });
+        });
+
+        document.querySelectorAll('.gallery-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                openLightbox(index);
+            });
+        });
+
+        lightboxClose.addEventListener('click', closeLightboxFunc);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightboxFunc();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightboxFunc();
+            }
+        });
+
+        // ===================================================================
+        // 8. 控制台彩蛋
+        // ===================================================================
+        console.log('%c DoubleX GameStudio — 作品展示画廊 ', 'font-size: 24px; font-weight: bold; background: #000; color: #fff; padding: 10px 20px;');
+        console.log('%c 每一帧画面，每一段故事 ', 'font-size: 14px; color: #888;');
+        console.log('%c 🎨 将你的图片放入 /works/images/ 文件夹即可替换占位符', 'font-size: 12px; color: #666;');
+    </script>
+
+</body>
+</html>
