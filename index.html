@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -543,8 +543,9 @@
         }
 
         .team-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
             gap: 40px;
             max-width: 1000px;
             margin: 0 auto;
@@ -560,6 +561,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 320px;
+            max-width: 100%;
         }
 
         .team-card::before {
