@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DoubleX GameStudio | 游戏开发工作室</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
         /* ===== 全局重置 & 基础样式 ===== */
         * {
             margin: 0;
@@ -302,7 +300,7 @@
             display: inline-block;
             margin-left: 5px;
             letter-spacing: 5px;
-            font-family: 'Black Ops One', 'Orbitron', sans-serif;
+            font-family: 'Gill Sans Ultra Bold', 'Gill Sans MT', 'Impact', 'Arial Black', 'Microsoft YaHei', sans-serif;
             background: linear-gradient(135deg, #ff0066, #00ccff, #ff6600, #6600ff);
             background-size: 400% 400%;
             -webkit-background-clip: text;
@@ -548,6 +546,71 @@
             text-transform: uppercase;
             margin-top: 12px;
             color: var(--gray-300);
+        }
+
+        /* 作品卡片右下角"游戏详情"跳转按钮 — 集成在 hover 浮层内 */
+        .project-overlay .nav-link {
+            position: absolute;
+            bottom: 30px;
+            right: 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border: 1px solid var(--gray-500);
+            color: var(--gray-300);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.35s ease;
+            z-index: 5;
+            white-space: nowrap;
+        }
+
+        .project-overlay .nav-link::after {
+            content: '';
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 8px solid var(--gray-300);
+            transition: border-left-color 0.35s ease;
+        }
+
+        .project-overlay .nav-link:hover {
+            border-color: var(--white);
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+        }
+
+        .project-overlay .nav-link:hover::after {
+            border-left-color: var(--white);
+        }
+
+        /* 禁用态 — 尚未开放详情页的游戏 */
+        .project-overlay .nav-link.disabled {
+            border-color: var(--gray-700);
+            color: var(--gray-500);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .project-overlay .nav-link.disabled::after {
+            border-left-color: var(--gray-500);
+        }
+
+        .project-overlay .nav-link.disabled:hover {
+            border-color: var(--gray-700);
+            color: var(--gray-500);
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .project-overlay .nav-link.disabled:hover::after {
+            border-left-color: var(--gray-500);
         }
 
         /* ===== TEAM 区域 ===== */
@@ -1209,7 +1272,7 @@
         <h2 class="section-title reveal">我们的作品</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">FEATURED PROJECTS</p>
         <div class="projects-grid">
-            <div class="project-card reveal-scale" data-url="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493">
+            <div class="project-card reveal-scale" data-url="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493" data-game="geometry">
                 <div class="project-bg" style="padding:0; overflow:hidden;">
                     <img src="works/images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何" style="width:100%; height:100%; object-fit:cover;">
                 </div>
@@ -1217,9 +1280,10 @@
                     <h3>几何</h3>
                     <p>极简几何美学 x 极致弹幕挑战</p>
                     <span class="tag">弹幕 · 几何</span>
+                    <a class="nav-link" href="works/game-detail.html?game=geometry">游戏详情</a>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.1s;" data-url="">
+            <div class="project-card reveal-scale" style="transition-delay: 0.1s;" data-url="" data-game="starlost">
                 <div class="project-bg">
                     <span class="icon">🌌</span>
                 </div>
@@ -1227,9 +1291,10 @@
                     <h3>星际迷途</h3>
                     <p>开放世界太空探索生存游戏</p>
                     <span class="tag">科幻 · 开放世界</span>
+                    <a class="nav-link disabled" href="javascript:;" data-game="starlost">即将推出</a>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.2s;" data-url="">
+            <div class="project-card reveal-scale" style="transition-delay: 0.2s;" data-url="" data-game="lost-dynasty">
                 <div class="project-bg">
                     <span class="icon">🗡️</span>
                 </div>
@@ -1237,9 +1302,10 @@
                     <h3>失落王朝</h3>
                     <p>像素风格 rogue-like 地牢探险</p>
                     <span class="tag">像素 · Rogue-like</span>
+                    <a class="nav-link disabled" href="javascript:;" data-game="lost-dynasty">即将推出</a>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-url="">
+            <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-url="" data-game="dreamweaver">
                 <div class="project-bg">
                     <span class="icon">🧩</span>
                 </div>
@@ -1247,6 +1313,7 @@
                     <h3>梦境编织者</h3>
                     <p>解谜叙事冒险游戏，探索潜意识世界</p>
                     <span class="tag">解谜 · 叙事</span>
+                    <a class="nav-link disabled" href="javascript:;" data-game="dreamweaver">即将推出</a>
                 </div>
             </div>
         </div>
