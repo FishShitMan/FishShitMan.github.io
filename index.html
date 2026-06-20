@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DoubleX GameStudio | 游戏开发工作室</title>
     <style>
         /* ===== 全局重置 & 基础样式 ===== */
@@ -157,7 +157,7 @@
         }
 
         .nav-links a {
-            color: var(--gray-300);
+            color: var(--white);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
@@ -1073,12 +1073,19 @@
             }
 
             .hero {
-                padding-left: 30px;
-                padding-right: 30px;
+                padding-left: 25px;
+                padding-right: 25px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .hero-badge {
+                margin-bottom: 12px;
             }
 
             .navbar {
                 padding: 15px 25px;
+                background: rgba(0, 0, 0, 0.75);
             }
 
             .nav-links {
@@ -1103,33 +1110,47 @@
             }
 
             .hero-title {
-                font-size: 40px;
-                letter-spacing: 6px;
+                font-size: 64px;
+                letter-spacing: 8px;
                 flex-wrap: wrap;
+                justify-content: center;
+                margin-bottom: 12px;
             }
 
             .hero-title .word-x {
-                font-size: 56px;
+                font-size: 86px;
+                margin-left: 3px;
             }
 
             .hero-title .word-studio {
-                font-size: 22px;
+                font-size: 30px;
                 margin-left: 6px;
                 padding-bottom: 5px;
             }
 
             .hero-tagline {
-                font-size: 14px;
+                font-size: 15px;
                 letter-spacing: 3px;
+                margin-bottom: 30px;
             }
 
             .hero-cta {
-                flex-direction: column;
-                align-items: flex-start;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .hero-cta .btn {
+                padding: 12px 28px;
+                font-size: 12px;
+                letter-spacing: 1px;
             }
 
             .scroll-indicator {
-                left: 30px;
+                left: 25px;
+                transform: none;
+                align-items: flex-start;
             }
 
             .section-title {
@@ -1145,12 +1166,31 @@
             }
 
             .contact-links {
-                flex-direction: column;
-                align-items: center;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .contact-link {
+                width: calc(50% - 6px);
+                padding: 18px 16px;
+                min-width: auto;
+                font-size: 11px;
+            }
+
+            .contact-link .icon {
+                font-size: 24px;
+            }
+
+            .contact-link span {
+                font-size: 11px;
             }
 
             body {
                 cursor: auto;
+                min-height: 100vh;
+                min-height: 100dvh;
             }
 
             .cursor-dot,
@@ -1158,31 +1198,73 @@
             .cursor-ripple {
                 display: none !important;
             }
+
+            #particle-canvas {
+                min-width: 100vw;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
         }
 
         @media (max-width: 480px) {
+            .hero {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .hero-badge {
+                font-size: 10px;
+                padding: 6px 14px;
+                margin-bottom: 10px;
+            }
+
             .hero-title {
-                font-size: 28px;
+                font-size: 44px;
                 letter-spacing: 4px;
+                justify-content: center;
+                margin-bottom: 8px;
             }
 
             .hero-title .word-x {
-                font-size: 40px;
-            }
-
-            .hero-title .word-studio {
-                font-size: 16px;
-                margin-left: 4px;
-                padding-bottom: 3px;
+                font-size: 60px;
+                margin-left: 2px;
             }
 
             .hero-title .word-double {
                 -webkit-text-stroke: 1px var(--white);
             }
 
-            .hero-badge {
-                font-size: 10px;
-                padding: 6px 14px;
+            .hero-title .word-studio {
+                font-size: 20px;
+                margin-left: 4px;
+                padding-bottom: 3px;
+            }
+
+            .hero-tagline {
+                font-size: 13px;
+                margin-bottom: 24px;
+            }
+
+            .hero-cta {
+                gap: 8px;
+            }
+
+            .hero-cta .btn {
+                padding: 10px 20px;
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+
+            .scroll-indicator {
+                left: 16px;
+                transform: none;
+            }
+
+            .contact-link {
+                width: calc(50% - 6px);
+                min-width: auto;
+                padding: 15px 10px;
+                flex: 0 0 auto;
             }
         }
     </style>
