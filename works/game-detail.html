@@ -909,7 +909,7 @@
 
         <!-- CTA -->
         <div class="cta-section reveal">
-            <p>准备好迎接几何弹幕的洗礼了吗？</p>
+            <p>来鱼塘养成你的水下世界！</p>
             <a href="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493" class="btn btn-primary" target="_blank" rel="noopener">观看宣传视频</a>
             <a href="index.html" class="btn btn-outline">浏览更多截图</a>
         </div>
@@ -1174,6 +1174,34 @@
                         'images/game/GEOMETRY/《几何》游戏截图_4.jpg'
                     ],
                     videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493'
+                },
+                fishfarm: {
+                    title: '养鱼大亨',
+                    subtitle: '放置养成 × 鱼类收集',
+                    badge: '✦ 养成 · 模拟',
+                    desc: '《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。',
+                    cover: 'images/game/FISHFARM/cover.png',
+                    meta: {
+                        '最新版本': 'v1.2-web',
+                        '游戏类型': '放置养成',
+                        '发布平台': 'Web',
+                        '最近更新': '2026-07-12',
+                        '核心玩法': '鱼类收集 · 事件养成',
+                        '语言支持': '中文'
+                    },
+                    features: [
+                        { icon: '🐟', title: '数十种鱼类收集', desc: '从孔雀鱼到远古存在，阶梯式收集解锁，每种鱼都有独立图标与独特价值。' },
+                        { icon: '🌊', title: '随机事件系统', desc: '赤潮袭击鱼塘带来生存危机，超级赤潮以毁灭性脉冲考验你的养鱼智慧。' },
+                        { icon: '⚡', title: '特殊鱼类机制', desc: '电鳗放电电死同塘鱼类，灯笼鱼捕食弱小邻居，动态生态互动真实有趣。' },
+                        { icon: '🦴', title: '远古鱼传说', desc: '解锁远古存在，见证独特对话与发光边框特效，探寻鱼塘深处的秘密。' }
+                    ],
+                    screenshots: [
+                        'images/game/FISHFARM/screenshot_1.png',
+                        'images/game/FISHFARM/screenshot_2.png',
+                        'images/game/FISHFARM/screenshot_3.png',
+                        'images/game/FISHFARM/screenshot_4.png'
+                    ],
+                    videoUrl: ''
                 }
             };
 
@@ -1212,10 +1240,18 @@
                 </div>
             `).join('');
 
-            // 更新视频链接
+            // 更新视频链接和CTA按钮
             const videoBtn = document.querySelector('.cta-section .btn-primary');
             if (data.videoUrl) {
                 videoBtn.href = data.videoUrl;
+                videoBtn.textContent = '观看宣传视频';
+                videoBtn.target = '_blank';
+                videoBtn.rel = 'noopener';
+            } else {
+                videoBtn.href = 'javascript:;';
+                videoBtn.textContent = '即将体验';
+                videoBtn.target = '';
+                videoBtn.rel = '';
             }
 
             // 重新注册滚动观察器
