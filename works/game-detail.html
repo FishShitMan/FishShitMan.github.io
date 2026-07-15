@@ -909,7 +909,7 @@
 
         <!-- CTA -->
         <div class="cta-section reveal">
-            <p>来鱼塘养成你的水下世界！</p>
+            <p id="ctaTagline">准备好迎接几何弹幕的洗礼了吗？</p>
             <a href="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493" class="btn btn-primary" target="_blank" rel="noopener">观看宣传视频</a>
             <a href="index.html" class="btn btn-outline">浏览更多截图</a>
         </div>
@@ -1175,7 +1175,8 @@
                         'images/game/GEOMETRY/《几何》游戏截图_3.jpg',
                         'images/game/GEOMETRY/《几何》游戏截图_4.jpg'
                     ],
-                    videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493'
+                    videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493',
+                    tagline: '准备好迎接几何弹幕的洗礼了吗？'
                 },
                 fishfarm: {
                     title: '养鱼大亨',
@@ -1205,7 +1206,8 @@
                         'images/game/FISHFARM/screenshot_3.png',
                         'images/game/FISHFARM/screenshot_4.png'
                     ],
-                    videoUrl: ''
+                    videoUrl: '',
+                    tagline: '来鱼塘养成你的水下世界！'
                 }
             };
 
@@ -1217,6 +1219,7 @@
             document.getElementById('gameDesc').textContent = data.desc;
             document.getElementById('gameDesc2').textContent = data.desc2;
             document.getElementById('gameDesc3').textContent = data.desc3;
+            document.getElementById('ctaTagline').textContent = data.tagline;
             document.getElementById('heroCover').src = data.cover;
 
             // 更新元数据
