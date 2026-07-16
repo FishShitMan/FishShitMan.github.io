@@ -1,2 +1,2 @@
 # FishShitMan.github.io
-DoubleX.Inc
+DoubleX.GameStudio
