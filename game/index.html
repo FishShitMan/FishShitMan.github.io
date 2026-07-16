@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐟 养鱼大亨 - Fish Farm Tycoon</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background: #0a1525;
+  min-height: 100vh;
+  color: #e0e8f0;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+}
+.game-wrapper {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  max-width: 1400px;
+  width: 100%;
+  height: 100vh;
+  min-height: 700px;
+  align-items: stretch;
+}
+.shop-tabs { display: flex; gap: 2px; margin-bottom: 8px; flex-shrink: 0; }
+.shop-tab {
+  flex: 1; padding: 6px 0; text-align: center; cursor: pointer;
+  font-size: 0.75em; font-weight: 600; border-radius: 8px; color: #5a80a0;
+  background: rgba(16,36,58,0.4); border: 1px solid rgba(70,150,210,0.08);
+  transition: all 0.2s; user-select: none;
+}
+.shop-tab.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(40,100,160,0.5), rgba(20,60,110,0.5));
+  border-color: rgba(80,160,220,0.3); box-shadow: 0 0 8px rgba(60,140,210,0.2);
+}
+.shop-tab:hover:not(.active) { color: #a0c8e8; border-color: rgba(70,150,210,0.2); }
+.shop-tab-content { display: none; }
+.shop-tab-content.active { display: block; }
+/* 列表项基础样式合并 */
+.shop-item, .upgrade-item, .quest-item, .fish-inv-item, .theme-item, .product-item {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(16,36,58,0.5); border-radius: 10px; margin-bottom: 5px;
+  border: 1px solid rgba(70,150,210,0.1); font-size: 0.78em; transition: all 0.15s;
+}
+.shop-item:hover, .upgrade-item:hover, .theme-item:hover, .product-item:hover {
+  border-color: rgba(70,150,210,0.3); background: rgba(20,42,66,0.6);
+}
+.product-item .product-icon, .shop-item .fish-icon, .fish-inv-item .fish-icon {
+  font-size: 1.5em; width: 32px; text-align: center; flex-shrink: 0;
+}
+.product-item .product-info, .shop-item .info, .upgrade-item .info,
+.quest-item .info, .fish-inv-item .info, .theme-item .info { flex: 1; min-width: 0; }
+.product-item .product-name, .shop-item .name, .upgrade-item .name, .theme-item .name {
+  font-weight: 600; font-size: 0.85em; color: #c8ddf0;
+}
+.product-item .product-desc, .shop-item .details, .upgrade-item .desc, .theme-item .desc {
+  font-size: 0.7em; color: #6a90b8; margin-top: 1px;
+}
+.product-item .product-price, .shop-item .price {
+  font-size: 0.8em; font-weight: 700; color: #ffc850; white-space: nowrap;
+}
+.product-item .btn, .shop-item .btn, .upgrade-item .btn, .theme-item .btn { flex-shrink: 0; }
+
+.side-panel { width: 300px; min-width: 280px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+.side-panel .panel {
+  background: linear-gradient(160deg, rgba(14,32,55,0.92), rgba(8,20,38,0.95));
+  border: 1px solid rgba(70,150,210,0.25); border-radius: 14px; padding: 12px;
+  backdrop-filter: blur(6px); overflow-y: auto; flex: 1; min-height: 0;
+}
+.side-panel .panel h3 {
+  font-size: 0.9em; color: #7ec8f8; margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid rgba(70,150,210,0.2); display: flex; align-items: center; gap: 6px;
+  position: sticky; top: 0; background: inherit; z-index: 2;
+}
+.center-area { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 400px; }
+.top-bar { display: flex; gap: 8px; flex-shrink: 0; }
+.stat-card {
+  flex: 1; min-width: 100px;
+  background: linear-gradient(145deg, rgba(14,38,60,0.9), rgba(10,25,42,0.95));
+  border: 1px solid rgba(80,160,220,0.25); border-radius: 12px; padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.stat-card .icon-circle {
+  width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 1.3em; flex-shrink: 0;
+}
+.stat-card .icon-circle.money { background: rgba(255,200,50,0.2); }
+.stat-card .icon-circle.fish { background: rgba(80,200,255,0.2); }
+.stat-card .icon-circle.species { background: rgba(255,120,200,0.2); }
+.stat-card .info .label { font-size: 0.68em; color: #7aa4c8; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .info .value { font-size: 1.25em; font-weight: 700; color: #fff; }
+.stat-card.money .value { color: #ffc850; }
+
+.pond-container {
+  flex: 1; position: relative; border-radius: 18px; overflow: hidden;
+  border: 3px solid rgba(100,180,220,0.3); cursor: default; min-height: 300px; transition: border-color 0.6s;
+}
+.pond-bg { position: absolute; inset: 0; z-index: 0; transition: all 0.6s ease; }
+.pond-caustics { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.35; }
+
+/* 主题合并 - 使用CSS变量可进一步精简，但保持当前显式主题以兼容 */
+.theme-default .pond-bg {
+  background: radial-gradient(ellipse at 30% 20%, rgba(80,180,220,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 50%, rgba(60,150,200,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 80%, rgba(30,100,160,0.3) 0%, transparent 50%),
+    linear-gradient(180deg, #1a6b9e 0%, #14628a 15%, #0e4d72 30%, #0b3d5c 50%, #0a3350 70%, #082840 100%);
+  background-size: 100% 100%, 120% 120%, 100% 100%, 100% 100%;
+  animation: bgShimmer 8s ease-in-out infinite alternate;
+}
+.theme-coral .pond-bg {
+  background: radial-gradient(ellipse at 25% 30%, rgba(255,160,140,0.3) 0%, transparent 55%),
+    radial-gradient(ellipse at 65% 60%, rgba(255,130,110,0.2) 0%, transparent 50%),
+    linear-gradient(180deg, #1e8ab5 0%, #167a9e 15%, #116b8a 30%, #0e5570 50%, #0c4560 70%, #0a3550 100%);
+  animation: bgShimmer 7s ease-in-out infinite alternate;
+}
+.theme-coral { border-color: rgba(255,140,120,0.4) !important; }
+.theme-deepsea .pond-bg {
+  background: radial-gradient(ellipse at 50% 15%, rgba(60,80,160,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(40,50,120,0.2) 0%, transparent 45%),
+    linear-gradient(180deg, #0a1f3a 0%, #081a30 15%, #061428 30%, #040e1c 50%, #020a14 70%, #01060c 100%);
+  animation: bgShimmer 10s ease-in-out infinite alternate;
+}
+.theme-deepsea { border-color: rgba(80,80,180,0.5) !important; }
+.theme-crystal .pond-bg {
+  background: radial-gradient(ellipse at 40% 25%, rgba(180,240,255,0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 65%, rgba(140,220,240,0.3) 0%, transparent 45%),
+    linear-gradient(180deg, #1ca3b8 0%, #1590a5 20%, #0e788e 40%, #0b6078 60%, #085068 80%, #064058 100%);
+  animation: bgShimmer 6s ease-in-out infinite alternate;
+}
+.theme-crystal { border-color: rgba(150,230,255,0.5) !important; }
+.theme-gold .pond-bg {
+  background: radial-gradient(ellipse at 35% 30%, rgba(255,210,80,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 55% 70%, rgba(255,180,40,0.2) 0%, transparent 45%),
+    linear-gradient(180deg, #5a4a20 0%, #4a3a18 20%, #3a2c10 40%, #2a1e0a 60%, #1a1006 80%, #0d0802 100%);
+  animation: bgShimmer 9s ease-in-out infinite alternate;
+}
+.theme-gold { border-color: rgba(255,200,80,0.5) !important; }
+.theme-redtide .pond-bg {
+  background: radial-gradient(ellipse at 40% 25%, rgba(255,80,60,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 55%, rgba(220,40,30,0.2) 0%, transparent 45%),
+    linear-gradient(180deg, #3a1010 0%, #2a0c0c 20%, #1f0808 40%, #150505 60%, #0d0303 80%, #060101 100%);
+  animation: bgShimmer 5s ease-in-out infinite alternate;
+}
+.theme-redtide { border-color: rgba(255,80,60,0.55) !important; }
+.theme-abyss .pond-bg {
+  background: radial-gradient(ellipse at 40% 20%, rgba(120,60,200,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 60% 50%, rgba(80,20,160,0.15) 0%, transparent 45%),
+    linear-gradient(180deg, #0a0620 0%, #080518 15%, #060410 30%, #04030a 50%, #020206 70%, #010104 100%);
+  animation: bgShimmer 12s ease-in-out infinite alternate;
+}
+.theme-abyss { border-color: rgba(140,60,220,0.5) !important; }
+@keyframes bgShimmer { 0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%; } 100% { background-position: 3% 2%, -2% -3%, 1% -1%, 0% 0%; } }
+@keyframes roeGlow { 0%,100% { box-shadow: 0 0 10px rgba(255,200,80,0.7), 0 0 20px rgba(255,180,60,0.4); } 50% { box-shadow: 0 0 18px rgba(255,240,140,0.9), 0 0 32px rgba(255,200,80,0.7); } }
+
+@keyframes redPulse { 0%,100% { background-color: rgba(200,30,30,0.15); border-color: rgba(255,60,60,0.6); } 50% { background-color: rgba(220,50,50,0.35); border-color: rgba(255,20,20,0.9); } }
+@keyframes redFlash { 0%,100% { border-color: rgba(255,60,60,0.55); } 50% { border-color: rgba(255,30,30,0.95); box-shadow: 0 0 30px rgba(255,0,0,0.5), inset 0 0 30px rgba(255,0,0,0.15); } }
+@keyframes goldPulse { 0%,100% { background-color: rgba(200,150,30,0.15); border-color: rgba(255,200,60,0.5); } 50% { background-color: rgba(220,170,40,0.35); border-color: rgba(255,220,80,0.9); } }
+@keyframes rainbowBreath { 0%{border-color:rgba(255,80,80,0.7);box-shadow:0 0 20px rgba(255,80,80,0.4),inset 0 0 20px rgba(255,80,80,0.08)} 14%{border-color:rgba(255,180,40,0.7);box-shadow:0 0 20px rgba(255,180,40,0.4),inset 0 0 20px rgba(255,180,40,0.08)} 28%{border-color:rgba(255,240,60,0.7);box-shadow:0 0 20px rgba(255,240,60,0.4),inset 0 0 20px rgba(255,240,60,0.08)} 42%{border-color:rgba(80,220,80,0.7);box-shadow:0 0 20px rgba(80,220,80,0.4),inset 0 0 20px rgba(80,220,80,0.08)} 57%{border-color:rgba(60,180,255,0.7);box-shadow:0 0 20px rgba(60,180,255,0.4),inset 0 0 20px rgba(60,180,255,0.08)} 71%{border-color:rgba(120,80,240,0.7);box-shadow:0 0 20px rgba(120,80,240,0.4),inset 0 0 20px rgba(120,80,240,0.08)} 85%{border-color:rgba(220,80,200,0.7);box-shadow:0 0 20px rgba(220,80,200,0.4),inset 0 0 20px rgba(220,80,200,0.08)} 100%{border-color:rgba(255,80,80,0.7);box-shadow:0 0 20px rgba(255,80,80,0.4),inset 0 0 20px rgba(255,80,80,0.08)} }
+@keyframes rainbowBg { 0%,100% { opacity: 0.25; } 50% { opacity: 0.40; } }
+@keyframes goldFlash { 0%,100% { border-color: rgba(255,200,60,0.55); } 50% { border-color: rgba(255,220,80,0.95); box-shadow: 0 0 30px rgba(255,200,60,0.5), inset 0 0 30px rgba(255,200,60,0.15); } }
+@keyframes superRedPulse { 0%,100% { background-color: rgba(180,10,10,0.25); border-color: rgba(255,20,20,0.7); } 50% { background-color: rgba(220,20,20,0.45); border-color: rgba(255,10,10,1.0); box-shadow: 0 0 30px rgba(255,0,0,0.6), inset 0 0 40px rgba(255,0,0,0.2); } }
+@keyframes superRedFlash { 0%,100% { border-color: rgba(255,20,20,0.6); box-shadow: 0 0 20px rgba(255,0,0,0.3), inset 0 0 20px rgba(255,0,0,0.08); } 25% { border-color: rgba(255,60,60,0.85); box-shadow: 0 0 35px rgba(255,0,0,0.6), inset 0 0 35px rgba(255,0,0,0.15); } 50% { border-color: rgba(255,10,10,0.95); box-shadow: 0 0 50px rgba(255,0,0,0.8), inset 0 0 50px rgba(255,0,0,0.25); } 75% { border-color: rgba(255,60,60,0.85); box-shadow: 0 0 35px rgba(255,0,0,0.6), inset 0 0 35px rgba(255,0,0,0.15); } 100% { border-color: rgba(255,20,20,0.6); box-shadow: 0 0 20px rgba(255,0,0,0.3), inset 0 0 20px rgba(255,0,0,0.08); } }
+@keyframes ancientRedGlow { 0%{border-color:rgba(255,20,20,0.6);box-shadow:0 0 0px rgba(255,0,0,0)} 30%{border-color:rgba(255,60,60,0.95);box-shadow:0 0 40px rgba(255,0,0,0.7),0 0 80px rgba(200,0,0,0.5)} 60%{border-color:rgba(255,100,100,1);box-shadow:0 0 60px rgba(255,50,50,0.9),0 0 120px rgba(200,20,20,0.7),0 0 180px rgba(150,0,0,0.4)} 100%{border-color:rgba(255,20,20,0.6);box-shadow:0 0 0px rgba(255,0,0,0),0 0 0px rgba(200,0,0,0)} }
+@keyframes plaguePulse { 0%,100% { background-color: rgba(30,180,30,0.15); border-color: rgba(80,220,80,0.5); } 50% { background-color: rgba(50,220,50,0.35); border-color: rgba(120,255,120,0.8); } }
+@keyframes plagueFlash { 0%,100% { border-color: rgba(80,220,80,0.55); } 50% { border-color: rgba(100,255,100,0.95); box-shadow: 0 0 25px rgba(0,200,0,0.4), inset 0 0 20px rgba(0,200,0,0.1); } }
+.pond-container.event-rainbow { animation: rainbowBreath 3s ease-in-out infinite !important; }
+.pond-container.event-rainbow .pond-bg { background: linear-gradient(180deg, rgba(255,100,100,0.35) 0%, rgba(255,160,60,0.3) 15%, rgba(255,240,80,0.25) 30%, rgba(80,220,100,0.3) 50%, rgba(60,180,255,0.35) 70%, rgba(140,80,240,0.3) 85%, rgba(220,100,220,0.35) 100%) !important; animation: rainbowBg 3s ease-in-out infinite !important; }
+.pond-container.event-red-tide { animation: redFlash 0.8s ease-in-out infinite !important; }
+.pond-container.event-red-tide .pond-bg { background: linear-gradient(180deg, rgba(180,30,30,0.5) 0%, rgba(120,15,15,0.4) 50%, rgba(60,5,5,0.3) 100%) !important; animation: redPulse 1.5s ease-in-out infinite !important; }
+.pond-container.event-gold-rush { animation: goldFlash 0.7s ease-in-out infinite !important; }
+.pond-container.event-gold-rush .pond-bg { background: linear-gradient(180deg, rgba(200,150,30,0.45) 0%, rgba(150,110,20,0.35) 50%, rgba(80,60,10,0.25) 100%) !important; animation: goldPulse 1.2s ease-in-out infinite !important; }
+.pond-container.event-plague { animation: plagueFlash 0.7s ease-in-out infinite !important; }
+.pond-container.event-plague .pond-bg { background: linear-gradient(180deg, rgba(20,120,20,0.4) 0%, rgba(10,80,10,0.3) 50%, rgba(5,40,5,0.25) 100%) !important; animation: plaguePulse 1s ease-in-out infinite !important; }
+.pond-container.event-super-red-tide { animation: superRedFlash 1.0s ease-in-out infinite !important; }
+.pond-container.event-super-red-tide .pond-bg { background: linear-gradient(180deg, rgba(180,10,10,0.6) 0%, rgba(120,5,5,0.5) 50%, rgba(60,2,2,0.4) 100%) !important; animation: superRedPulse 1.2s ease-in-out infinite !important; }
+.pond-container.ancient-red-selling { animation: ancientRedGlow 1.2s ease-in-out forwards !important; }
+
+.event-banner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 20; pointer-events: none; text-align: center; font-weight: 700; text-shadow: 0 0 10px rgba(0,0,0,0.6); }
+.event-banner .event-title { font-size: 1.6em; margin-bottom: 4px; }
+.event-banner .event-desc { font-size: 0.7em; margin-bottom: 6px; opacity: 0.8; }
+.event-banner .event-countdown { font-size: 3em; }
+.event-banner.red { color: #ff4444; }
+.event-banner.gold { color: #ffd700; }
+
+.bubble { position: absolute; border-radius: 50%; pointer-events: none; z-index: 2; animation: rise linear infinite; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 0 4px rgba(255,255,255,0.25), inset 0 0 3px rgba(255,255,255,0.2); }
+.bubble::after { content: ''; position: absolute; top: 15%; left: 18%; width: 35%; height: 35%; border-radius: 50%; background: rgba(255,255,255,0.7); }
+@keyframes rise { 0%{transform:translateY(0) translateX(0) scale(1);opacity:0.85} 25%{transform:translateY(-25vh) translateX(8px) scale(1.06);opacity:0.65} 50%{transform:translateY(-50vh) translateX(-5px) scale(0.92);opacity:0.45} 75%{transform:translateY(-75vh) translateX(12px) scale(0.82);opacity:0.2} 100%{transform:translateY(-105vh) translateX(3px) scale(0.65);opacity:0} }
+
+.weed { position: absolute; bottom: 0; transform-origin: bottom center; pointer-events: none; z-index: 3; animation: sway 4s ease-in-out infinite; text-shadow: 0 0 8px rgba(0,0,0,0.3); }
+.weed:nth-child(odd) { animation-duration: 3.5s; animation-delay: -1s; }
+.weed:nth-child(even) { animation-duration: 4.5s; animation-delay: -2s; }
+@keyframes sway { 0%,100%{transform:rotate(-4deg) scaleX(1)} 25%{transform:rotate(2deg) scaleX(0.95)} 50%{transform:rotate(5deg) scaleX(1.02)} 75%{transform:rotate(-2deg) scaleX(0.97)} }
+.rock { position: absolute; bottom: 8px; pointer-events: none; z-index: 1; opacity: 0.45; }
+.light-ray { position: absolute; top: 0; width: 20px; background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%); pointer-events: none; z-index: 1; animation: rayDrift 6s ease-in-out infinite; transform-origin: top center; border-radius: 10px; }
+@keyframes rayDrift { 0%,100%{opacity:0.3;transform:skewX(-3deg)} 50%{opacity:0.5;transform:skewX(4deg)} }
+
+.pond-fish { position: absolute; font-size: 2em; pointer-events: auto; cursor: pointer; transition: left 6s linear, top 5s ease-in-out, transform 0.3s ease; z-index: 5; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.35)); }
+.pond-fish.hovered { filter: drop-shadow(0 0 10px rgba(255,255,255,0.9)) drop-shadow(1px 2px 4px rgba(0,0,0,0.5)) !important; z-index: 16 !important; }
+
+.fish-speech { position: absolute; z-index: 20; pointer-events: none; background: rgba(255,255,255,0.92); color: #1a3350; padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.3); animation: speechPop 0.3s ease-out; }
+.fish-speech::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 6px solid rgba(255,255,255,0.92); }
+@keyframes speechPop { 0%{opacity:0;transform:translateY(6px) scale(0.8)} 100%{opacity:1;transform:translateY(0) scale(1)} }
+.fish-speech.fade-out { animation: speechFade 0.5s ease-in forwards; }
+@keyframes speechFade { to { opacity:0; transform: translateY(-8px); } }
+
+@keyframes moneyPulse { 0%{transform:scale(1);color:#ffc850} 30%{transform:scale(1.15);color:#ffe080} 100%{transform:scale(1);color:#ffc850} }
+@keyframes moneySubtract { 0%{transform:scale(1);color:#ffc850} 40%{transform:scale(1.1);color:#ff8888} 100%{transform:scale(1);color:#ffc850} }
+.stat-card.money .value.pulse { animation: moneyPulse 0.5s ease-out; }
+.stat-card.money .value.subtract { animation: moneySubtract 0.5s ease-out; }
+
+@keyframes confettiFall { 0%{transform:translateY(-10vh) rotate(0deg);opacity:1} 100%{transform:translateY(105vh) rotate(720deg);opacity:0} }
+.confetti-piece { position: fixed; top: -20px; z-index: 9999; pointer-events: none; font-size: 1.5em; animation: confettiFall 4s linear forwards; }
+
+@keyframes screenShake { 0%,100%{transform:translate(0,0)} 10%{transform:translate(-2px,-1px)} 20%{transform:translate(2px,1px)} 30%{transform:translate(-1px,2px)} 40%{transform:translate(1px,-2px)} 50%{transform:translate(-1px,-1px)} 60%{transform:translate(1px,1px)} 70%{transform:translate(1px,-1px)} 80%{transform:translate(-1px,1px)} 90%{transform:translate(0,0)} }
+.game-wrapper.shaking .center-area { animation: screenShake 0.3s ease-out; }
+
+@keyframes ancientShake { 0%{transform:translate(0,0)} 8%{transform:translate(-3px,-2px)} 16%{transform:translate(3px,1px)} 24%{transform:translate(-2px,3px)} 32%{transform:translate(2px,-3px)} 40%{transform:translate(-3px,0px)} 48%{transform:translate(3px,-1px)} 56%{transform:translate(-1px,2px)} 64%{transform:translate(1px,-2px)} 72%{transform:translate(-2px,-1px)} 80%{transform:translate(2px,1px)} 88%{transform:translate(0,0)} 100%{transform:translate(0,0)} }
+@keyframes ancientBorderGlow { 0%{border-color:rgba(140,60,220,0.5)} 30%{border-color:rgba(180,120,255,0.95);box-shadow:0 0 40px rgba(140,60,220,0.7),0 0 80px rgba(100,30,180,0.5)} 60%{border-color:rgba(220,180,255,1);box-shadow:0 0 60px rgba(160,100,255,0.9),0 0 120px rgba(140,80,240,0.7),0 0 180px rgba(100,40,200,0.4)} 100%{border-color:rgba(140,60,220,0.5);box-shadow:0 0 0px rgba(140,60,220,0),0 0 0px rgba(100,30,180,0)} }
+.pond-container.ancient-selling { animation: ancientBorderGlow 1.2s ease-in-out forwards; }
+.game-wrapper.ancient-shaking .center-area { animation: ancientShake 1.2s ease-in-out; }
+
+.pond-ripple { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); pointer-events: none; z-index: 6; animation: rippleExpand 0.8s ease-out forwards; }
+@keyframes rippleExpand { 0%{width:0;height:0;opacity:1} 100%{width:60px;height:60px;opacity:0;margin-left:-30px;margin-top:-30px} }
+.pond-empty-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.35); font-size: 1.1em; z-index: 10; pointer-events: none; text-align: center; }
+
+.side-panel.right-panel { width: 300px; min-width: 280px; }
+
+.btn { padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.78em; font-weight: 600; transition: all 0.2s; font-family: inherit; white-space: nowrap; }
+.btn:active { transform: scale(0.95); }
+.btn-primary { background: linear-gradient(135deg, #4da8da, #2b7cb8); color: #fff; box-shadow: 0 2px 6px rgba(50,150,220,0.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #5db8ea, #3b8cc8); }
+.btn-primary:disabled { background: #3a5570; color: #6a8aa0; cursor: not-allowed; box-shadow: none; }
+.btn-success { background: linear-gradient(135deg, #4caf80, #2d8a5c); color: #fff; box-shadow: 0 2px 6px rgba(60,180,100,0.3); }
+.btn-success:hover { background: linear-gradient(135deg, #5cbf90, #3d9a6c); }
+.btn-success:disabled { background: #3a5a48; color: #6a8a78; cursor: not-allowed; box-shadow: none; }
+.btn-warning { background: linear-gradient(135deg, #e8943a, #c07020); color: #fff; box-shadow: 0 2px 6px rgba(230,150,50,0.3); }
+.btn-xs { padding: 3px 8px; font-size: 0.7em; border-radius: 6px; }
+
+.fish-inv-item .name { font-weight: 600; color: #c8ddf0; font-size: 0.8em; }
+.fish-inv-item .growth-bar-wrap, .quest-item .progress-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+.fish-inv-item .growth-bar-wrap { margin-top: 3px; }
+.quest-item .progress-bar { margin-top: 4px; }
+.fish-inv-item .growth-bar { height: 100%; background: linear-gradient(90deg, #4da8da, #7ec8f8); border-radius: 2px; transition: width 0.5s; }
+.fish-inv-item .growth-bar.ready { background: linear-gradient(90deg, #4caf80, #7ee8a0); animation: pulse-bar 0.8s ease-in-out infinite; }
+@keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.fish-inv-item .growth-text { font-size: 0.65em; color: #5a80a0; margin-top: 1px; }
+
+.quest-item { border-color: rgba(255,180,50,0.2); }
+.quest-item .title { font-weight: 600; font-size: 0.8em; color: #ffc850; }
+.quest-item .desc { font-size: 0.7em; color: #a0c0e0; margin-top: 2px; }
+.quest-item .progress-fill { height: 100%; background: linear-gradient(90deg, #e8943a, #ffc850); border-radius: 2px; transition: width 0.4s; }
+.quest-item .reward { font-size: 0.7em; color: #7ec8f8; margin-top: 2px; font-weight: 600; }
+.quest-item.completed { border-color: rgba(80,220,120,0.4); background: rgba(22,50,38,0.5); }
+.quest-item.completed .title { color: #6ee898; }
+
+.upgrade-item .icon, .theme-item .icon { font-size: 1.3em; width: 28px; text-align: center; }
+.upgrade-item .level { font-size: 0.7em; color: #7ec8f8; font-weight: 600; }
+.theme-item .owned { color: #6ee898; font-size: 0.7em; font-weight: 600; }
+.theme-item .active-theme { color: #ffc850; font-size: 0.7em; font-weight: 600; }
+.empty-text { color: #4a6a8a; text-align: center; padding: 16px; font-size: 0.78em; }
+
+.notification-area { position: fixed; bottom: 16px; left: 16px; z-index: 200; display: flex; flex-direction: column-reverse; gap: 6px; pointer-events: none; }
+.notification { background: linear-gradient(135deg, rgba(14,34,58,0.96), rgba(8,22,40,0.96)); border: 1px solid rgba(255,200,50,0.4); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.8em; animation: slideIn 0.4s ease-out; pointer-events: auto; max-width: 300px; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+.notification.fade-out { animation: fadeOut 0.4s ease-in forwards; }
+@keyframes slideIn { from{transform:translateX(-80px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes fadeOut { from{opacity:1} to{opacity:0;transform:translateY(40px)} }
+@keyframes fishSellLift { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-120px) scale(0.3)} }
+.pond-fish.selling {
+  animation-name: fishSellLift !important;
+  animation-duration: 0.8s !important;
+  animation-timing-function: ease-out !important;
+  animation-fill-mode: forwards !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
+  transition: none !important;
+}
+@keyframes sellSwipeOut { 0%{opacity:1;transform:translateX(0)} 100%{opacity:0;transform:translateX(80px)} }
+.fish-inv-item.selling-swipe {
+  animation-name: sellSwipeOut !important;
+  animation-duration: 0.5s !important;
+  animation-timing-function: ease-in !important;
+  animation-fill-mode: forwards !important;
+  transition: none !important;
+}
+
+.version-tag { position: fixed; bottom: 16px; left: 16px; padding: 4px 10px; border-radius: 8px; background: linear-gradient(135deg, rgba(14,34,58,0.85), rgba(8,20,38,0.88)); border: 1px solid rgba(70,150,210,0.2); color: #4a6a8a; font-size: 0.68em; font-weight: 500; z-index: 140; letter-spacing: 0.5px; user-select: none; pointer-events: none; backdrop-filter: blur(4px); }
+.settings-btn { position: fixed; bottom: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, rgba(14,34,58,0.92), rgba(8,20,38,0.95)); border: 2px solid rgba(100,180,220,0.3); color: #aac8e0; font-size: 1.3em; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 150; transition: all 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+.settings-btn:hover { background: linear-gradient(135deg, rgba(20,44,70,0.95), rgba(12,28,48,0.97)); border-color: rgba(120,200,250,0.5); color: #fff; transform: rotate(60deg); }
+
+.main-menu-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, #0a1f3a 0%, #061428 40%, #040e1c 70%, #020a14 100%); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px; }
+.main-menu-overlay::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 30%, rgba(80,180,220,0.12) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(60,150,210,0.10) 0%, transparent 50%), radial-gradient(ellipse at 50% 70%, rgba(40,120,180,0.08) 0%, transparent 50%); pointer-events: none; z-index: 0; }
+.main-menu-title { font-size: 5.6em; font-weight: 900; color: #ffc850; text-shadow: 0 0 30px rgba(255,200,80,0.5), 0 4px 8px rgba(0,0,0,0.5); z-index: 1; margin-bottom: 20px; letter-spacing: 2px; animation: titleFloat 3s ease-in-out infinite; }
+@keyframes titleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.main-menu-subtitle { font-size: 1em; color: #7aa4c8; z-index: 1; margin-top: -24px; margin-bottom: 16px; letter-spacing: 1px; }
+.main-menu-btn { width: 240px; padding: 16px 0; border-radius: 14px; border: 2px solid rgba(100,180,220,0.35); cursor: pointer; font-size: 1.1em; font-weight: 700; font-family: inherit; transition: all 0.3s; z-index: 1; text-align: center; background: linear-gradient(135deg, rgba(20,44,70,0.8), rgba(10,28,48,0.9)); color: #c8ddf0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); margin-bottom: 6px; }
+.main-menu-btn:hover { background: linear-gradient(135deg, rgba(40,90,140,0.7), rgba(20,55,100,0.8)); border-color: rgba(120,200,250,0.55); color: #fff; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(60,140,210,0.25); }
+.main-menu-btn.primary { background: linear-gradient(135deg, #4da8da, #2b7cb8); color: #fff; border-color: rgba(80,180,230,0.5); box-shadow: 0 4px 20px rgba(50,150,220,0.35); }
+.main-menu-btn.primary:hover { background: linear-gradient(135deg, #5db8ea, #3b8cc8); box-shadow: 0 6px 28px rgba(50,160,230,0.5); }
+.main-menu-btn.exit { background: linear-gradient(135deg, rgba(60,20,20,0.6), rgba(30,10,10,0.7)); border-color: rgba(200,60,60,0.3); color: #e8a0a0; font-size: 0.9em; margin-top: 12px; }
+.main-menu-btn.exit:hover { background: linear-gradient(135deg, rgba(100,30,30,0.7), rgba(50,15,15,0.8)); border-color: rgba(220,80,80,0.5); color: #ff9999; }
+
+.game-over-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; flex-direction: column; }
+.game-over-overlay.active { display: flex; }
+.game-over-title { font-size: 3em; font-weight: 900; color: #ff4444; text-shadow: 0 0 30px rgba(255,60,60,0.7), 0 4px 8px rgba(0,0,0,0.5); margin-bottom: 24px; animation: gameOverShake 0.6s ease-in-out; }
+@keyframes gameOverShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-12px)} 40%{transform:translateX(12px)} 60%{transform:translateX(-8px)} 80%{transform:translateX(8px)} }
+.game-over-btn { padding: 12px 32px; font-size: 1.1em; font-weight: 700; border-radius: 12px; border: none; cursor: pointer; background: linear-gradient(135deg, #e04040, #b02020); color: #fff; box-shadow: 0 4px 16px rgba(255,60,60,0.4); transition: all 0.2s; font-family: inherit; }
+.game-over-btn:hover { background: linear-gradient(135deg, #ff5050, #d03030); box-shadow: 0 6px 20px rgba(255,60,60,0.6); transform: scale(1.05); }
+.bankrupt-banner { background: linear-gradient(135deg, rgba(180,30,30,0.5), rgba(100,10,10,0.5)); border: 2px solid rgba(255,60,60,0.6); border-radius: 10px; padding: 12px; text-align: center; margin-bottom: 8px; animation: redPulse 1s ease-in-out infinite; }
+.bankrupt-banner .bankrupt-title { font-size: 1em; font-weight: 800; color: #ff4444; text-shadow: 0 0 8px rgba(255,0,0,0.5); }
+.bankrupt-banner .bankrupt-info { font-size: 0.72em; color: #ff8888; margin-top: 4px; }
+.bankrupt-claim-btn { display: block; margin: 6px auto 0; padding: 6px 18px; font-size: 0.78em; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; background: linear-gradient(135deg, #e8a040, #c07020); color: #fff; transition: all 0.2s; font-family: inherit; }
+.bankrupt-claim-btn:hover { transform: scale(1.05); }
+
+.settings-popup { display: none; position: fixed; bottom: 64px; right: 16px; background: linear-gradient(160deg, rgba(14,34,58,0.98), rgba(8,20,38,0.98)); border: 1px solid rgba(100,180,220,0.35); border-radius: 14px; padding: 8px; z-index: 151; min-width: 200px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+.settings-popup.active { display: block; }
+.settings-item { padding: 10px 14px; border-radius: 10px; cursor: pointer; font-size: 0.8em; color: #c8ddf0; transition: all 0.15s; display: flex; flex-direction: column; gap: 2px; margin-bottom: 2px; }
+.settings-item:hover { background: rgba(100,180,220,0.15); color: #fff; }
+.settings-item .settings-desc { font-size: 0.75em; color: #6a90b8; font-weight: normal; }
+.settings-item:hover .settings-desc { color: #8ab4d8; }
+
+.info-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: linear-gradient(160deg, rgba(14,34,58,0.98), rgba(8,20,38,0.98)); border: 2px solid rgba(80,160,220,0.4); border-radius: 16px; padding: 20px; z-index: 200; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+.info-popup.active { display: block; }
+.info-popup h3 { color: #7ec8f8; margin-bottom: 8px; font-size: 0.95em; }
+.info-popup p { font-size: 0.8em; color: #a0c0e0; margin-bottom: 4px; line-height: 1.4; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
+.overlay.active { display: block; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(70,150,210,0.3); border-radius: 2px; }
+
+@media (max-width: 1100px) { .game-wrapper{flex-direction:column;height:auto} .side-panel{width:100%;min-width:unset;flex-direction:row;flex-wrap:wrap} .side-panel .panel{flex:1 1 45%;min-width:260px;max-height:300px} .center-area{min-width:unset;min-height:400px} }
+@media (max-width: 700px) { .side-panel{flex-direction:column} .side-panel .panel{flex:unset;max-height:250px} .top-bar{flex-wrap:wrap} .stat-card{min-width:70px;padding:8px 10px} }
+
+@keyframes overflowShake { 0%,100%{transform:translate(0,0)} 10%{transform:translate(-1px,-0.5px)} 20%{transform:translate(1px,0.5px)} 30%{transform:translate(-0.5px,1px)} 40%{transform:translate(0.5px,-1px)} 50%{transform:translate(-0.5px,-0.5px)} 60%{transform:translate(0.5px,0.5px)} 70%{transform:translate(0.5px,-0.5px)} 80%{transform:translate(-0.5px,0.5px)} 90%{transform:translate(0,0)} }
+.capacity-overflow .value { color: #ff3333 !important; display: inline-block; animation: overflowShake 0.15s linear infinite; }
+
+.overflow-banner { display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 250; pointer-events: none; text-align: center; background: linear-gradient(135deg, rgba(180,30,30,0.92), rgba(100,10,10,0.95)); border: 2px solid rgba(255,60,60,0.7); border-radius: 12px; padding: 10px 22px; box-shadow: 0 0 20px rgba(255,40,40,0.35); }
+.overflow-banner .overflow-title { font-size: 1em; font-weight: 800; color: #ff4444; }
+.overflow-banner .overflow-info { font-size: 0.7em; color: #ff8888; margin-top: 4px; }
+
+/* 控制台 */
+.console-overlay { display:none;position:fixed;z-index:9998;inset:0;background:transparent;pointer-events:none; }
+.console-panel { position:fixed;top:60px;left:50%;transform:translateX(-50%);width:480px;max-height:80vh;z-index:9999;background:linear-gradient(160deg,rgba(8,22,40,0.98),rgba(4,12,24,0.98));border:2px solid rgba(0,255,128,0.4);border-radius:14px;padding:14px;overflow-y:auto;user-select:none;box-shadow:0 0 40px rgba(0,255,128,0.15),0 8px 32px rgba(0,0,0,0.6); }
+.console-panel .console-title { color:#0f8;font-size:0.9em;font-weight:700;cursor:move;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid rgba(0,255,128,0.25);display:flex;align-items:center;gap:6px; }
+.console-panel .console-title .close-btn { margin-left:auto;cursor:pointer;color:#f44;font-size:1.2em;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,60,60,0.15); }
+.console-section { margin-bottom:10px;padding:8px;background:rgba(0,255,128,0.03);border:1px solid rgba(0,255,128,0.12);border-radius:10px; }
+.console-section .section-title { color:#5f8;font-size:0.75em;font-weight:600;margin-bottom:6px; }
+.console-row { display:flex;gap:6px;flex-wrap:wrap; }
+.console-btn { padding:5px 12px;border-radius:7px;border:1px solid rgba(0,255,128,0.25);background:rgba(0,40,20,0.6);color:#8f8;cursor:pointer;font-size:0.7em;font-family:inherit;transition:all 0.15s; }
+.console-btn:hover { background:rgba(0,80,40,0.7);color:#fff; }
+.console-btn.warn { border-color:rgba(255,120,30,0.4);color:#f96;background:rgba(40,15,0,0.5); }
+.console-btn.warn:hover { background:rgba(60,20,0,0.7); }
+.console-btn.danger { border-color:rgba(255,60,60,0.4);color:#f66;background:rgba(40,0,0,0.5); }
+.console-btn.danger:hover { background:rgba(60,0,0,0.7); }
+</style>
+</head>
+<body>
+<div class="main-menu-overlay" id="mainMenu">
+  <div class="main-menu-title">🐟 养鱼大亨</div>
+  <div class="main-menu-subtitle">Fish Farm Tycoon</div>
+  <button class="main-menu-btn primary" onclick="startGame('normal')">🆕 开始游戏</button>
+  <button class="main-menu-btn" onclick="startGame('quick')">⚡ 快速游戏</button>
+  <button class="main-menu-btn exit" onclick="exitGame()">🚪 退出</button>
+</div>
+
+<div class="game-wrapper">
+  <div class="side-panel" id="leftPanel">
+    <div class="panel">
+      <h3>🏪 商店</h3>
+      <div class="shop-tabs" id="shopTabs">
+        <div class="shop-tab active" onclick="switchTab('shop','fish')">🐟 鱼苗</div>
+        <div class="shop-tab" onclick="switchTab('shop','goods')">📦 商品</div>
+      </div>
+      <div class="shop-tab-content active" id="tabFish"><div id="shopList"></div></div>
+      <div class="shop-tab-content" id="tabGoods"><div id="goodsList"></div></div>
+    </div>
+    <div class="panel">
+      <h3>🧪 消耗品</h3>
+      <div class="shop-tabs" id="consumableTabs">
+        <div class="shop-tab active" onclick="switchTab('consumable','regular')">📦 常规</div>
+        <div class="shop-tab" onclick="switchTab('consumable','special')">⚡ 特殊</div>
+      </div>
+      <div class="shop-tab-content active" id="tabConsumableRegular"><div id="consumableList"></div></div>
+      <div class="shop-tab-content" id="tabConsumableSpecial"><div id="specialConsumableList"></div></div>
+    </div>
+    <div class="panel">
+      <h3>🔧 基础设施</h3>
+      <div id="upgradeList"></div>
+    </div>
+  </div>
+
+  <div class="center-area">
+    <div class="top-bar">
+      <div class="stat-card money"><div class="icon-circle money">💰</div><div class="info"><div class="label">资金</div><div class="value" id="moneyDisplay">0</div></div></div>
+      <div class="stat-card fish"><div class="icon-circle fish">⏱️</div><div class="info"><div class="label">游戏时间</div><div class="value" id="gameTimeDisplay">0分</div></div></div>
+      <div class="stat-card species"><div class="icon-circle species">🐠</div><div class="info"><div class="label">品种数</div><div class="value" id="speciesCount">0</div></div></div>
+      <div class="stat-card"><div class="icon-circle" style="background:rgba(180,130,255,0.2)">⚡</div><div class="info"><div class="label">容量</div><div class="value" id="capacityDisplay">8/10</div></div></div>
+    </div>
+    <div class="pond-container theme-default" id="pondContainer"><div class="pond-bg" id="pondBg"></div><div class="pond-empty-text" id="pondEmpty">🐟 鱼塘空空如也～去商店买鱼苗吧！</div></div>
+  </div>
+
+  <div class="side-panel right-panel" id="rightPanel">
+    <div class="panel" style="display:flex;flex-direction:column;overflow:hidden">
+      <h3 id="inventoryHeader">🏠 我的鱼</h3>
+      <div id="inventoryList" style="flex:1;overflow-y:auto;min-height:0"><div class="empty-text">还没有鱼~</div></div>
+    </div>
+    <div class="panel"><h3>🎨 鱼塘外观</h3><div id="themeList"></div></div>
+    <div class="panel"><h3 id="questHeader">📋 任务</h3><div id="questList"><div class="empty-text">购买新品种鱼解锁任务</div></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closePopup()"></div>
+<div class="info-popup" id="popup"></div>
+<div class="notification-area" id="notificationArea"></div>
+
+<div id="bankruptBanner" style="display:none;position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;pointer-events:none">
+  <div class="bankrupt-banner" style="pointer-events:auto"><div class="bankrupt-title">💸 您破产了！</div><div class="bankrupt-info">已发放 $100 补助金，请吸取教训重新开始</div></div>
+</div>
+<div class="overflow-banner" id="overflowBanner"><div class="overflow-title">⚠️ 鱼塘爆满！</div><div class="overflow-info">减少鱼数量以降低瘟疫爆发风险</div></div>
+<div class="game-over-overlay" id="gameOverOverlay"><div class="game-over-title">游戏结束</div><button class="game-over-btn" onclick="resetGame()">🔄 重新开始</button></div>
+
+<div class="settings-btn" id="settingsBtn" onclick="toggleSettings()" title="设置">⚙️</div>
+<div class="settings-popup" id="settingsPopup">
+  <div class="settings-item" onclick="resetGame()">🔄 重置鱼塘<span class="settings-desc">还原至初始状态</span></div>
+  <div class="settings-item" onclick="clearAllFish()">🗑️ 清空鱼塘<span class="settings-desc">删除所有鱼</span></div>
+</div>
+
+<!-- 开发者控制台 -->
+<div class="console-overlay" id="consoleOverlay"></div>
+<div class="console-panel" id="consolePanel" style="display:none">
+  <div class="console-title" id="consoleTitle">🛠️ 开发者控制台<span class="close-btn" onclick="closeConsole()">✕</span></div>
+  <div class="console-section"><div class="section-title">💰 资源</div><div class="console-row"><button class="console-btn" onclick="consoleGiveMoney()">+$10,000</button></div></div>
+  <div class="console-section"><div class="section-title">🔓 解锁全部</div><div class="console-row"><button class="console-btn" onclick="consoleUnlockAll()">全部满级 & 解锁</button></div></div>
+  <div class="console-section">
+    <div class="section-title">⚡ 激活事件</div>
+    <details><summary style="color:#0f8;font-size:0.7em;cursor:pointer">✨ 正面事件</summary>
+    <div class="console-row" style="margin-top:4px"><button class="console-btn" onclick="triggerGoldRush()">💰 淘鱼热</button><button class="console-btn" onclick="triggerRainbowGlow()">🌈 斑斓虹光</button></div></details>
+    <details style="margin-top:4px"><summary style="color:#f66;font-size:0.7em;cursor:pointer">💀 负面事件</summary>
+    <div class="console-row" style="margin-top:4px"><button class="console-btn warn" onclick="triggerRedTide()">🔴 赤潮</button><button class="console-btn danger" onclick="triggerSuperRedTide()">💀 超级赤潮</button><button class="console-btn warn" onclick="triggerPlague()">🦠 瘟疫</button></div></details>
+  </div>
+  <div class="console-section"><div class="section-title">🧹 工具</div><div class="console-row"><button class="console-btn" onclick="consoleGrowAll()">⚡ 一键成熟</button><button class="console-btn warn" onclick="endEvent()">清除当前事件</button><button class="console-btn danger" onclick="consoleClearTime()">清除游戏时间</button></div></div>
+</div>
+
+<script>
+// ========== 数据库 ==========
+const FISH_SPECIES = [
+  { id:'guppy', name:'孔雀鱼', icon:'🐠', buyPrice:15, sellPrice:30, growthTime:10, minLevel:1, desc:'新手入门品种，生长快利润低', size:1.0, color:'#ff9944', breedMin:6 },
+  { id:'goldfish', name:'金鱼', icon:'🐟', buyPrice:35, sellPrice:70, growthTime:18, minLevel:1, desc:'经典观赏鱼，稳定收益', size:1.1, color:'#ff8800', breedMin:5 },
+  { id:'angel', name:'神仙鱼', icon:'🐡', buyPrice:80, sellPrice:165, growthTime:28, minLevel:2, desc:'优雅的热带鱼，利润可观', size:1.2, color:'#ffcc00', breedMin:5 },
+  { id:'eel', name:'鳗鱼', icon:'🪱', buyPrice:150, sellPrice:320, growthTime:35, minLevel:3, desc:'细长滑溜的水中生灵', size:1.5, color:'#779944', breedMin:4 },
+  { id:'koi', name:'锦鲤', icon:'🐋', buyPrice:240, sellPrice:500, growthTime:38, minLevel:3, desc:'象征好运，高价值品种', size:1.4, color:'#ff6644', breedMin:4 },
+  { id:'discus', name:'七彩神仙', icon:'🐬', buyPrice:500, sellPrice:1050, growthTime:48, minLevel:4, desc:'鱼中之王，极高利润', size:1.5, color:'#44ccff', breedMin:4 },
+  { id:'arowana', name:'金龙鱼', icon:'🐉', buyPrice:1100, sellPrice:2400, growthTime:58, minLevel:5, desc:'顶级观赏鱼，天价回报', size:1.7, color:'#ffd700', breedMin:3 },
+  { id:'jellyfish', name:'斑斓水母', icon:'🎐', buyPrice:2200, sellPrice:4800, growthTime:72, minLevel:6, desc:'美丽的深海水母，价值千金', size:1.6, color:'#dd88ff', breedMin:3 },
+  { id:'bluering', name:'蓝环章鱼', icon:'🐙', buyPrice:3200, sellPrice:6800, growthTime:68, minLevel:6, desc:'优雅美丽又剧毒的存在', size:1.3, color:'#4488ff', breedMin:2, poison:true },
+  { id:'electricEel', name:'电鳗', icon:'🐍', buyPrice:4200, sellPrice:9000, growthTime:75, minLevel:7, desc:'释放强力电流的深水猎手', size:1.7, color:'#ffdd00', breedMin:2, shock:true },
+  { id:'shark', name:'鲨鱼', icon:'🦈', buyPrice:5500, sellPrice:12000, growthTime:80, minLevel:7, desc:'海洋的顶级捕食者', size:1.9, color:'#8899aa', breedMin:2, predator:true },
+  { id:'lanternfish', name:'灯笼鱼', icon:'🪔', buyPrice:15000, sellPrice:32000, growthTime:130, minLevel:7, desc:'深海中幽幽发光的捕食者', size:1.8, color:'#5577ee', breedMin:2, ancient:true, capacityCost:4 },
+  { id:'ancient', name:'远古存在', icon:'👁️', buyPrice:30000, sellPrice:80000, growthTime:180, minLevel:8, desc:'漆黑深海中不可直视之物', size:2.2, color:'#222244', breedMin:0, ancient:true, capacityCost:6 }
+], FS = new Map(FISH_SPECIES.map(s => [s.id, s])), FS_I = new Map(FISH_SPECIES.map((s, i) => [s.id, i]));
+
+const CONSUMABLES = [
+  { id:'feed', name:'精品饲料', icon:'🍚', cost:30, desc:'喂食后成熟鱼售价 +50%，体型更大', type:'feed' },
+  { id:'hormone', name:'生长激素', icon:'💉', cost:20, desc:'缩短生长时间60%，但售价 -40%', type:'hormone' },
+  { id:'booster', name:'茁壮补剂', icon:'💊', cost:100, desc:'使成熟鱼二次成长，培养周期与价格翻倍', type:'booster' }
+];
+const SPECIAL_CONSUMABLES = [
+  { id:'red_tide', name:'人工赤潮', icon:'🔴', cost:500000, desc:'立刻触发赤潮事件（有事件时不生效）', type:'event' },
+  { id:'rainbow_glow', name:'人工虹光', icon:'🌈', cost:1000000, desc:'立刻触斑斓虹光事件（有事件时不生效）', type:'event' }
+];
+const UPGRADES = [
+  { id:'tankLevel', name:'扩建鱼塘', icon:'🏗️', desc:'增加养殖容量上限', effect:'容量 +4', getCost:lv => Math.floor(50*Math.pow(1.6,lv-1)), getLv:s => s.infrastructure.tankLevel, max:10, baseCap:8, capPerLv:4 },
+  { id:'filterLevel', name:'净水系统', icon:'💧', desc:'改善水质，抑制病菌', effect:'瘟疫概率-10%/级', getCost:lv => Math.floor(80*Math.pow(1.55,lv)), getLv:s => s.infrastructure.filterLevel, max:8 },
+  { id:'feederLevel', name:'自动喂食器', icon:'🍥', desc:'定时投喂，加速生长', effect:'速度 +10%/级', getCost:lv => Math.floor(60*Math.pow(1.5,lv)), getLv:s => s.infrastructure.feederLevel, max:10, speedB:0.10 },
+  { id:'tempControl', name:'温控设备', icon:'🌡️', desc:'减少鱼苗死亡率', effect:'降低死亡率', getCost:lv => Math.floor(250*Math.pow(1.6,lv)), getLv:s => s.infrastructure.tempControl, max:6, mortR:0.15 }
+];
+const THEMES = [
+  { id:'default', name:'清澈水域', icon:'💧', cost:0, desc:'默认鱼塘，清爽自然', owned:true },
+  { id:'coral', name:'珊瑚礁', icon:'🪸', cost:200, desc:'温暖的珊瑚礁水域', owned:false },
+  { id:'deepsea', name:'深海秘境', icon:'🌊', cost:500, desc:'深邃神秘的海底世界', owned:false },
+  { id:'crystal', name:'水晶湖', icon:'💎', cost:1200, desc:'晶莹剔透的水晶水域', owned:false },
+  { id:'gold', name:'黄金池塘', icon:'👑', cost:3000, desc:'奢华的黄金池塘', owned:false },
+  { id:'redtide', name:'红色赤潮', icon:'🔴', cost:10000, desc:'令人感到一丝不安的气息...', owned:false },
+  { id:'abyss', name:'深渊裂缝', icon:'🕳️', cost:100000, desc:'你与我并无不同...', owned:false }
+];
+const PRODUCTS = [
+  { id:'oxygen1', name:'打氧机', icon:'🫧', cost:2000, desc:'永久增加所有鱼售价5% · 气泡+50% · 鱼游速+10%', tier:1, sellBonus:0.05, bubbleMult:1.5, speedMult:1.1 },
+  { id:'oxygen2', name:'高级打氧机', icon:'🫧', cost:5000, desc:'永久增加所有鱼售价10% · 气泡+100% · 鱼游速+20%', tier:2, sellBonus:0.10, bubbleMult:2.0, speedMult:1.2, requires:'oxygen1' },
+  { id:'net1', name:'抄网', icon:'🥅', cost:500, desc:'解锁一键卖出10条成熟鱼', tier:1, netLimit:10 },
+  { id:'net2', name:'捕鱼网', icon:'🕸️', cost:1200, desc:'解锁一键卖出无限条成熟鱼', tier:2, netLimit:Infinity, requires:'net1' }
+];
+
+// ========== 状态 ==========
+let GS = {
+  money: 100, fishInventory: [], completedQuests: [],
+  totalFishSold: {}, totalFedSold: 0, totalHormoneSold: 0,
+  totalUniqueSpeciesOwned: new Set(),
+  infrastructure: { tankLevel:1, filterLevel:0, feederLevel:0, tempControl:0 },
+  activeQuests: [], questIdCounter: 1, lastTick: Date.now(),
+  currentTheme: 'default', ownedThemes: new Set(['default']),
+  productsOwned: new Set(), rainbowChance: 0, bankruptcyCount: 0, redTideCount: 0,
+  totalRoeSold: 0, totalBredCount: 0, totalSupergrownSold: 0,
+  totalSharkHunts: 0, totalEelShocks: 0, totalLanternHunts: 0, totalEarned: 0, totalUpgrades: 0, totalLuckySells: 0,
+  missedEvents: 0,
+  lastEventType: null, sameEventStreak: 0,
+  gameTime: 0,
+  hasEverOwnedFish: false
+};
+
+// ========== 派生计算 ==========
+let tankUpg = UPGRADES.find(u => u.id==='tankLevel'), feederUpg = UPGRADES.find(u => u.id==='feederLevel'), tempUpg = UPGRADES.find(u => u.id==='tempControl');
+let GS_INF = GS.infrastructure; // 快捷引用
+
+function maxCap() { const rawBase = tankUpg.baseCap + GS_INF.tankLevel * tankUpg.capPerLv; return rawBase; }
+function hardCap() { return Math.ceil(maxCap() * 1.2); }
+function isOverCapacity() { return effCount() > maxCap(); }
+function effCount() { return GS.fishInventory.reduce((sum, f) => sum + (FS.get(f.speciesId)?.ancient ? (FS.get(f.speciesId).capacityCost || 6) : 1), 0); }
+function growSpeedMult() { let m = 1 + GS_INF.feederLevel * feederUpg.speedB; if (curEvent && curEvent.type==='gold-rush') m *= 2; if (isOverCapacity()) m = Math.max(0.1, m - 0.1); return m; }
+function mortRate() { return Math.max(0, 0.12 - GS_INF.tempControl * tempUpg.mortR); }
+
+function fishGrowth(fish) {
+  const sp = FS.get(fish.speciesId); if (!sp) return 1;
+  if (sp.ancient) { return Math.min(1, (Date.now() - fish.startTime) / (sp.growthTime * 1000)); }
+  const gsm = growSpeedMult();
+  const elapsed = (Date.now() - (fish.supergrown ? fish.superStartTime : fish.startTime)) / 1000;
+  const fullTime = (fish.supergrown ? sp.growthTime * 2 : sp.growthTime) / gsm;
+  return Math.min(1, elapsed / fullTime);
+}
+function fishReady(fish) { return fishGrowth(fish) >= 1; }
+function spIcon(sid) { const s = FS.get(sid); return s ? s.icon : '🐟'; }
+function spName(sid) { const s = FS.get(sid); return s ? s.name : sid; }
+
+// ========== 快捷DOM引用 ==========
+let $ = (id) => document.getElementById(id);
+let pondEl, pondEmptyEl, inventoryListEl, inventoryHeaderEl, moneyDisplayEl, gameTimeEl, speciesCountEl, capacityDisplayEl;
+let notifAreaEl, gameOverEl, bankruptBannerEl, settingsPopupEl, mainMenuEl, questHeaderEl;
+
+  // 通用的"删除鱼"辅助函数（多处使用）
+function _removeFishFromPond(fish) {
+  const uid = fish.uid;
+  if (pondFishEls[uid]) { pondFishEls[uid].remove(); delete pondFishEls[uid]; }
+  if (fishMoveTimers[uid]) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; }
+  if (fishStartTimers[uid]) { clearTimeout(fishStartTimers[uid]); delete fishStartTimers[uid]; }
+  if (fishResumeTimers[uid]) { clearTimeout(fishResumeTimers[uid]); delete fishResumeTimers[uid]; }
+  delete fishMoveOffset[uid]; delete fishCoords[uid]; fishPaused.delete(uid);
+  const idx = GS.fishInventory.findIndex(f => f.uid === uid);
+  if (idx !== -1) GS.fishInventory.splice(idx, 1);
+}
+
+// ========== 鱼塘可视化 ==========
+let pondFishEls = {}, fishMoveTimers = {}, fishMoveOffset = {};
+// 每鱼独立坐标系统 + 暂停/恢复控制
+let fishCoords = {};        // { uid: { x, y, facingRight } }  逻辑坐标
+let fishPaused = new Set(); // 暂停中的鱼UID集合
+let fishResumeTimers = {};  // { uid: setTimeoutHandle } 鼠标离开后恢复移动的延迟定时器
+let fishStartTimers = {};   // { uid: setTimeoutHandle } scheduleFishMove的初始延时，可取消
+let causticsCanvas, causticsCtx, causticsAnimId, causticPhase = 0;
+
+function initPondDecorations() {
+  pondEl.querySelectorAll('.bubble,.weed,.rock').forEach(e => e.remove());
+  let bm = GS.productsOwned.has('oxygen2') ? 2.0 : GS.productsOwned.has('oxygen1') ? 1.5 : 1.0;
+  for (let i = 0, bc = Math.floor(12 * bm); i < bc; i++) {
+    const b = document.createElement('div'); b.className = 'bubble';
+    b.style.cssText = `width:${4+Math.random()*12}px;height:${4+Math.random()*12}px;left:${5+Math.random()*90}%;bottom:${-(2+Math.random()*8)}%;animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()*5}s;`;
+    pondEl.appendChild(b);
+  }
+  for (let i = 0; i < 5; i++) {
+    const w = document.createElement('div'); w.className = 'weed';
+    w.style.cssText = `left:${5+i*18+Math.random()*8}%;bottom:0;font-size:${16+Math.random()*20}px;animation-delay:${Math.random()*2}s;animation-duration:${3+Math.random()*3}s;`;
+    w.textContent = ['🌿','🪸','🌊','🌱','🪴'][i]; pondEl.appendChild(w);
+  }
+  for (let i = 0; i < 3; i++) {
+    const r = document.createElement('div'); r.className = 'rock';
+    r.style.cssText = `left:${10+Math.random()*80}%;bottom:0;font-size:${14+Math.random()*20}px;`;
+    r.textContent = '🪨'; pondEl.appendChild(r);
+  }
+}
+
+function getPondBounds() {
+  const rect = pondEl.getBoundingClientRect();
+  return { w: Math.max(100, rect.width - 50), h: Math.max(100, rect.height - 60), padX: 25, padY: 30 };
+}
+
+function updatePondFish() {
+  const bounds = getPondBounds();
+  const currentUids = new Set(GS.fishInventory.map(f => f.uid));
+  Object.keys(pondFishEls).forEach(uid => {
+    if (!currentUids.has(+uid) && !pondFishEls[uid].classList.contains('selling')) {
+      pondFishEls[uid].remove(); delete pondFishEls[uid];
+    }
+  });
+  GS.fishInventory.forEach(fish => {
+    if (!pondFishEls[fish.uid]) {
+      const uid = fish.uid;
+      const x = bounds.padX + Math.random() * bounds.w;
+      const y = bounds.padY + Math.random() * bounds.h;
+      const facingRight = Math.random() < 0.5;
+      fishCoords[uid] = { x, y, facingRight };
+      const el = document.createElement('div'); el.className = 'pond-fish';
+      el.textContent = spIcon(fish.speciesId);
+      el.style.cssText = `left:${x}px;top:${y}px;font-size:${1.5+Math.random()*0.5}em;transform:scaleX(${facingRight?-1:1})`;
+      pondEl.appendChild(el); pondFishEls[uid] = el;
+      scheduleFishMove(uid, el);
+    }
+  });
+  pondEmptyEl.style.display = GS.fishInventory.length ? 'none' : 'block';
+}
+
+function initCaustics() {
+  let canvas = pondEl.querySelector('.pond-caustics');
+  if (!canvas) { canvas = document.createElement('canvas'); canvas.className = 'pond-caustics'; pondEl.appendChild(canvas); }
+  causticsCanvas = canvas; causticsCtx = canvas.getContext('2d');
+  resizeCaustics(); drawCausticsFrame();
+}
+function resizeCaustics() {
+  if (!causticsCanvas) return;
+  const r = pondEl.getBoundingClientRect(); causticsCanvas.width = r.width; causticsCanvas.height = r.height;
+}
+function drawCausticsFrame() {
+  if (!causticsCtx) return;
+  if (document.hidden) { causticsAnimId = requestAnimationFrame(drawCausticsFrame); return; }
+  const w = causticsCanvas.width, h = causticsCanvas.height;
+  causticsCtx.clearRect(0, 0, w, h); causticPhase += 0.008;
+  for (let y = 0; y < h; y += 6) {
+    for (let x = 0; x < w; x += 6) {
+      const nx = x / w, ny = y / h;
+      const v = Math.sin(nx*12+causticPhase*1.7)*Math.cos(ny*8+causticPhase*2.1) + Math.sin(nx*20-causticPhase*1.3)*Math.cos(ny*14+causticPhase) + Math.sin((nx+ny)*16+causticPhase*1.5);
+      const alpha = ((v + 3) / 6) * 0.12;
+      if (alpha > 0.02) { causticsCtx.fillStyle = `rgba(180,220,255,${alpha})`; causticsCtx.fillRect(x, y, 6, 6); }
+    }
+  }
+  causticsAnimId = requestAnimationFrame(drawCausticsFrame);
+}
+
+function initLightRays() {
+  pondEl.querySelectorAll('.light-ray').forEach(e => e.remove());
+  for (let i = 0; i < 4; i++) {
+    const ray = document.createElement('div'); ray.className = 'light-ray';
+    ray.style.cssText = `left:${8+i*25+Math.random()*10}%;width:${12+Math.random()*18}px;animation-delay:${Math.random()*3}s;animation-duration:${5+Math.random()*4}s;`;
+    pondEl.appendChild(ray);
+  }
+}
+
+function scheduleFishMove(uid, el) {
+  if (fishMoveTimers[uid]) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; }
+  if (fishStartTimers[uid]) { clearTimeout(fishStartTimers[uid]); delete fishStartTimers[uid]; }
+  const interval = 5000 + Math.random() * 7000;
+  const offset = fishMoveOffset[uid] || (Math.random() * interval);
+  fishMoveOffset[uid] = offset;
+  fishStartTimers[uid] = setTimeout(() => {
+    if (fishPaused.has(uid)) { delete fishStartTimers[uid]; return; }
+    moveSingleFish(uid, el);
+    fishMoveTimers[uid] = setInterval(() => {
+      if (fishPaused.has(uid)) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; return; }
+      moveSingleFish(uid, el);
+    }, interval);
+    delete fishStartTimers[uid];
+  }, offset);
+}
+
+function moveSingleFish(uid, el) {
+  const fish = GS.fishInventory.find(f => f.uid === uid);
+  if (!fish || !el || !el.isConnected) {
+    if (fishMoveTimers[uid]) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; }
+    if (fishStartTimers[uid]) { clearTimeout(fishStartTimers[uid]); delete fishStartTimers[uid]; }
+    return;
+  }
+  if (fishPaused.has(uid)) return;
+  // 从fishCoords读取逻辑坐标
+  let coord = fishCoords[uid];
+  if (!coord) {
+    const bounds = getPondBounds();
+    coord = { x: bounds.padX + Math.random() * bounds.w, y: bounds.padY + Math.random() * bounds.h, facingRight: true };
+    fishCoords[uid] = coord;
+  }
+  const bounds = getPondBounds();
+  const sp = FS.get(fish.speciesId);
+  const sizeEm = sp ? 1.5 + 0.3 * (FS_I.get(fish.speciesId) || 0) : 1.6;
+  const curX = coord.x, curY = coord.y;
+  const mx = bounds.w * 0.15, my = bounds.h * 0.15;
+  const nearLeft = curX < bounds.padX + mx, nearRight = curX > bounds.padX + bounds.w - mx;
+  const nearTop = curY < bounds.padY + my, nearBottom = curY > bounds.padY + bounds.h - my;
+  let dx = nearLeft ? Math.random()*bounds.w*0.55 : nearRight ? -Math.random()*bounds.w*0.55 : (Math.random()-0.5)*bounds.w*0.55;
+  let dy = nearTop ? Math.random()*bounds.h*0.45 : nearBottom ? -Math.random()*bounds.h*0.45 : (Math.random()-0.5)*bounds.h*0.45;
+  let nx = Math.max(bounds.padX, Math.min(bounds.padX + bounds.w, curX + dx));
+  let ny = Math.max(bounds.padY, Math.min(bounds.padY + bounds.h, curY + dy));
+  // 更新方向：x增大→朝右
+  coord.facingRight = nx > curX;
+  // 更新逻辑坐标
+  coord.x = nx; coord.y = ny;
+  const mt = 5 + Math.random() * 4;
+  el.style.left = nx + 'px'; el.style.top = ny + 'px';
+  el.style.transform = `scaleX(${coord.facingRight?-1:1})`;
+  el.style.fontSize = sizeEm + 'em';
+  el.style.transition = `left ${mt}s linear, top ${mt}s ease-in-out, transform 0.5s ease`;
+}
+
+function animateFishInPond() {
+  Object.entries(pondFishEls).forEach(([uid, el]) => { if (!fishMoveTimers[+uid]) scheduleFishMove(+uid, el); });
+}
+// 统一管理所有游戏定时器
+let gameIntervals = [];
+function addGameInterval(id) { gameIntervals.push(id); return id; }
+function clearGameIntervals() { gameIntervals.forEach(id => clearInterval(id)); gameIntervals = []; }
+
+setTimeout(animateFishInPond, 600);
+
+// ========== 启动/停止游戏定时器 ==========
+function setupGameIntervals() {
+  // 鱼类移动GC
+  addGameInterval(setInterval(() => {
+    const curUids = new Set(GS.fishInventory.map(f => f.uid));
+    Object.keys(fishMoveTimers).forEach(uid => { if (!curUids.has(+uid)) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; delete fishMoveOffset[uid]; } });
+  }, 5000));
+  // 事件调度
+  scheduleNextEvent();
+  // rainbowChance累计
+  addGameInterval(setInterval(() => { if (!curEvent) GS.rainbowChance += 5; }, 30000));
+  // 鲨鱼捕食
+  addGameInterval(setInterval(sharkHuntLoop, 18000));
+  // 电鳗放电（每20秒20%概率）
+  addGameInterval(setInterval(electricEelShock, 20000));
+  // 灯笼鱼捕食（每30秒50%概率）
+  addGameInterval(setInterval(lanternHuntLoop, 30000));
+  // 繁殖与鱼籽
+  addGameInterval(setInterval(doBreedingCheck,15000));
+  addGameInterval(setInterval(roeSpawnLoop,8000));
+  // 喂食器满级
+  addGameInterval(setInterval(() => {
+    if (GS_INF.feederLevel < 10 || !GS.fishInventory.length) return;
+    if (Math.random() < 0.02) {
+      const c = GS.fishInventory.filter(f => !f.fed && !f.hormoned && !f.supergrown && !FS.get(f.speciesId)?.ancient);
+      if (c.length) { const t = c[Math.floor(Math.random()*c.length)]; t.fed = true; notif('🍥 自动喂食器投喂了'+spName(t.speciesId)+'，获得⭐标！'); }
+    }
+  }, 1000));
+  // 瘟疫判定
+  addGameInterval(setInterval(() => {
+    if (curEvent || GS.fishInventory.length < 2) return;
+    const fillRatio = effCount() / maxCap(); let prob;
+    if (fillRatio >= 1.2) prob = 65; else if (fillRatio >= 1.1) prob = 45; else if (fillRatio > 1.0) prob = 30;
+    else if (fillRatio >= 0.999) prob = 14; else if (fillRatio >= 0.8) prob = 10; else if (fillRatio >= 0.6) prob = 8;
+    else if (fillRatio >= 0.4) prob = 6; else if (fillRatio >= 0.2) prob = 4; else prob = 2;
+    prob = Math.max(0, prob - GS_INF.filterLevel * 10);
+    if (prob > 0 && Math.random()*100 < prob) triggerPlague();
+  }, 60000));
+  // 游戏主循环
+  addGameInterval(setInterval(gameLoop, 480));
+}
+
+// ========== 统一切换Tab ==========
+function switchTab(category, tab) {
+  const tabsId = category === 'shop' ? 'shopTabs' : 'consumableTabs';
+  const map = { shop: { fish: 'tabFish', goods: 'tabGoods' }, consumable: { regular: 'tabConsumableRegular', special: 'tabConsumableSpecial' } };
+  document.querySelectorAll('#' + tabsId + ' .shop-tab').forEach(t => t.classList.remove('active'));
+  Object.values(map[category]).forEach(id => $(id).classList.remove('active'));
+  document.querySelector('#' + tabsId + ' .shop-tab[onclick*="' + tab + '"]').classList.add('active');
+  $(map[category][tab]).classList.add('active');
+}
+
+function formatGameTime(sec) {
+  const s = Math.floor(sec);
+  const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+  if (d > 0) return d + '天 ' + h + '时';
+  if (h > 0) return h + '时 ' + m + '分';
+  if (m > 0) return m + '分 ' + (s % 60) + '秒';
+  return (s % 60) + '秒';
+}
+
+// ========== 渲染 ==========
+let lastMoney = 0;
+function updateTopBar() {
+  const el = moneyDisplayEl;
+  el.textContent = GS.money.toLocaleString();
+  if (GS.money > lastMoney) {
+    el.animate([
+      { transform: 'scale(1)', color: '#ffc850', offset: 0 },
+      { transform: 'scale(1.15)', color: '#ffe080', offset: 0.3 },
+      { transform: 'scale(1)', color: '#ffc850', offset: 1 }
+    ], { duration: 250, easing: 'ease-out' });
+  } else if (GS.money < lastMoney && lastMoney > 0) {
+    el.animate([
+      { transform: 'scale(1)', color: '#ffc850', offset: 0 },
+      { transform: 'scale(1.1)', color: '#ff8888', offset: 0.4 },
+      { transform: 'scale(1)', color: '#ffc850', offset: 1 }
+    ], { duration: 250, easing: 'ease-out' });
+  }
+  lastMoney = GS.money;
+  gameTimeEl.textContent = formatGameTime(GS.gameTime);
+  speciesCountEl.textContent = GS.totalUniqueSpeciesOwned.size;
+  const overflow = isOverCapacity();
+  if (overflow) {
+    capacityDisplayEl.parentElement.classList.add('capacity-overflow');
+    capacityDisplayEl.textContent = effCount() + '/' + maxCap() + ' ⚠️';
+  } else {
+    capacityDisplayEl.parentElement.classList.remove('capacity-overflow');
+    capacityDisplayEl.textContent = effCount() + '/' + maxCap();
+  }
+  const ob = $('overflowBanner'); if (ob) ob.style.display = overflow ? 'block' : 'none';
+}
+
+function renderShop() {
+  const c = $('shopList'), cap = maxCap(), full = GS.fishInventory.length >= cap;
+  c.innerHTML = FISH_SPECIES.map(sp => {
+    const owned = GS.totalUniqueSpeciesOwned.has(sp.id), canBuy = GS.money >= sp.buyPrice;
+    const meets = GS_INF.tankLevel >= sp.minLevel;
+    let reason = !canBuy ? '资金不足' : !meets ? '需鱼塘Lv'+sp.minLevel : full ? '鱼塘已满' : '';
+    if (!meets || full) return `<div class="shop-item" style="opacity:0.4"><div class="fish-icon">${sp.icon}</div><div class="info"><div class="name" style="color:#5a6a80">${sp.name} ${!meets?'🔒':''}</div><div class="details">${!meets?'需鱼塘Lv'+sp.minLevel:'鱼塘已满'}</div></div><div class="price">$${sp.buyPrice}</div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
+    if (!canBuy) return `<div class="shop-item"><div class="fish-icon">${sp.icon}</div><div class="info"><div class="name">${sp.name} ${owned?'✅':''}</div><div class="details">${sp.desc} · ${sp.growthTime}s · 售$${sp.sellPrice}</div></div><button class="btn btn-primary btn-xs" disabled style="color:#6a8aa0">💲${sp.buyPrice}</button><button class="btn btn-primary btn-xs" disabled style="opacity:0.5;cursor:default">💰</button></div>`;
+    const rawBase = tankUpg.baseCap + GS_INF.tankLevel * tankUpg.capPerLv;
+    const totalEff = GS.fishInventory.reduce((sum, f) => sum + (FS.get(f.speciesId)?.ancient ? (FS.get(f.speciesId).capacityCost || 6) : 1), 0);
+    const avail = Math.max(0, rawBase - totalEff);
+    const newCost = (sp.ancient && sp.capacityCost) ? sp.capacityCost : 1;
+    const maxByCap = Math.floor(avail / newCost);
+    const maxByMoney = Math.floor(GS.money / sp.buyPrice);
+    const mq = Math.min(99, maxByMoney, maxByCap);
+    return `<div class="shop-item"><div class="fish-icon">${sp.icon}</div><div class="info"><div class="name">${sp.name} ${owned?'✅':''}</div><div class="details">${sp.desc} · ${sp.growthTime}s · 售$${sp.sellPrice}</div></div><button class="btn btn-primary btn-xs" onclick="buyFish('${sp.id}')">💲${sp.buyPrice}</button><button class="btn btn-primary btn-xs" onclick="buyFishBatch('${sp.id}',${mq>5?5:mq})" ${mq<2?'disabled style="opacity:0.5;cursor:default"':''}>x${mq>5?5:mq}</button></div>`;
+  }).join('');
+}
+
+function renderGoods() {
+  $('goodsList').innerHTML = PRODUCTS.map(p => {
+    if (GS.productsOwned.has(p.id)) return `<div class="product-item" style="opacity:0.4"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name" style="color:#5a6a80">${p.name} ✅</div><div class="product-desc">已拥有</div></div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">✅</span></div>`;
+    if (p.requires && !GS.productsOwned.has(p.requires)) return `<div class="product-item" style="opacity:0.4"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name" style="color:#5a6a80">${p.name}</div><div class="product-desc">需前置商品 · $${p.cost.toLocaleString()}</div></div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
+    const canBuy = GS.money >= p.cost, dis = !canBuy;
+    return `<div class="product-item"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div></div><button class="btn btn-primary btn-xs" onclick="buyProduct('${p.id}')" ${dis?'disabled style="color:#6a8aa0"':''}>${canBuy?'💲'+p.cost.toLocaleString():'💲'+p.cost.toLocaleString()}</button></div>`;
+  }).join('');
+}
+
+function renderInventory() {
+  const c = inventoryListEl;
+  if (!GS.fishInventory.length) { c.innerHTML = '<div class="empty-text">还没有鱼~</div>'; inventoryHeaderEl.innerHTML = '🏠 我的鱼'; return; }
+  const sorted = [...GS.fishInventory].sort((a, b) => {
+    const ar = fishReady(a) ? 0 : 1, br = fishReady(b) ? 0 : 1;
+    if (ar !== br) return ar - br;
+    if (ar === 0) return (FS.get(b.speciesId)||{sellPrice:0}).sellPrice - (FS.get(a.speciesId)||{sellPrice:0}).sellPrice;
+    return fishGrowth(b) - fishGrowth(a);
+  });
+  const readyC = sorted.filter(f => fishReady(f)).length;
+  const hasNet = GS.productsOwned.has('net1') || GS.productsOwned.has('net2');
+  inventoryHeaderEl.innerHTML = (hasNet && readyC >= 2) ? `🏠 我的鱼 <button class="btn btn-warning btn-xs" style="margin-left:auto" onclick="sellAllReady()">💰 一键卖出 (${readyC})</button>` : '🏠 我的鱼';
+  c.innerHTML = sorted.map(fish => {
+    const sp = FS.get(fish.speciesId); if (!sp) return '';
+    const g = fishGrowth(fish), pct = Math.round(g * 100), ready = g >= 1;
+    const actualPrice = getFishActualSellPrice(fish);
+    let badges = ''; if (fish.supergrown) badges += '💎'; if (fish.fed) badges += '⭐'; if (fish.hormoned) badges += '💉'; if (fish.plagued) badges += '🦠'; if (sp.ancient) badges += '🦴';
+    const barColor = fish.supergrown ? '#ff8844,#ffaa66' : ready ? '#4caf80,#7ee8a0' : '#4da8da,#7ec8f8';
+    return `<div class="fish-inv-item" style="${ready?'border-color:rgba(80,220,120,0.45);background:rgba(22,50,38,0.45);':''}"><div class="fish-icon">${sp.icon}</div><div class="info"><div class="name">${sp.name} ${badges}</div><div class="growth-bar-wrap"><div class="growth-bar ${ready?'ready':''}" style="width:${pct}%;background:linear-gradient(90deg,${barColor})"></div></div><div class="growth-text">${ready?(fish.supergrown?'💎二次成长中 · 售 $'+actualPrice:'✅已成熟 · 售 $'+actualPrice):'生长中 '+pct+'%'}</div></div><button class="btn btn-success btn-xs" onclick="sellFishInventory(${fish.uid},this)" ${!ready?'disabled':''}>${ready?'卖出':'未成熟'}</button></div>`;
+  }).join('');
+}
+
+function renderUpgrades() {
+  $('upgradeList').innerHTML = UPGRADES.map(upg => {
+    const lv = upg.getLv(GS), maxed = lv >= upg.max;
+    const cost = upg.getCost(upg.id === 'tankLevel' ? lv + 1 : lv);
+    const can = GS.money >= cost;
+    let lbl = maxed ? '已满级' : can ? `升级 $${cost.toLocaleString()}` : '资金不足';
+    let segs = '<div style="display:flex;gap:2px;margin-top:3px">';
+    for (let i = 0; i < upg.max; i++) segs += `<div style="flex:1;height:4px;border-radius:2px;background:${i<lv?'linear-gradient(90deg,#4da8da,#7ec8f8)':'rgba(255,255,255,.08)'}"></div>`;
+    segs += '</div>';
+    return `<div class="upgrade-item"><div class="icon">${upg.icon}</div><div class="info"><div class="name">${upg.name} <span class="level">Lv.${lv}/${upg.max}</span></div><div class="desc">${upg.desc} · ${upg.effect}</div>${segs}</div><button class="btn btn-warning btn-xs" onclick="buyUpgrade('${upg.id}')" ${(maxed||!can)?'disabled':''}>${lbl}</button></div>`;
+  }).join('');
+}
+
+function renderThemes() {
+  $('themeList').innerHTML = THEMES.map(th => {
+    const owned = GS.ownedThemes.has(th.id), active = GS.currentTheme === th.id;
+    let btn = '';
+    if (!owned) { btn = `<button class="btn btn-primary btn-xs" onclick="buyTheme('${th.id}')" ${GS.money<th.cost?'disabled':''}>$${th.cost}</button>`; }
+    else if (active) { btn = '<span class="active-theme">使用中</span>'; }
+    else { btn = `<button class="btn btn-success btn-xs" onclick="setTheme('${th.id}')">使用</button>`; }
+    return `<div class="theme-item"><div class="icon">${th.icon}</div><div class="info"><div class="name">${th.name} ${owned&&!active?'<span class="owned">✅</span>':''}</div><div class="desc">${th.desc}</div></div>${btn}</div>`;
+  }).join('');
+}
+
+function renderQuests() {
+  const c = $('questList');
+  if (!GS.activeQuests.length) { c.innerHTML = '<div class="empty-text">购买新品种鱼解锁任务</div>'; questHeaderEl.innerHTML = '📋 任务'; return; }
+  const sorted = [...GS.activeQuests].sort((a, b) => {
+    const aDone = Math.min(a.currentCount, a.targetCount) >= a.targetCount ? 0 : 1;
+    const bDone = Math.min(b.currentCount, b.targetCount) >= b.targetCount ? 0 : 1;
+    if (aDone !== bDone) return aDone - bDone;
+    const aPct = Math.min(a.currentCount, a.targetCount) / a.targetCount;
+    const bPct = Math.min(b.currentCount, b.targetCount) / b.targetCount;
+    return bPct - aPct;
+  });
+  const doneCount = sorted.filter(q => Math.min(q.currentCount, q.targetCount) >= q.targetCount).length;
+  questHeaderEl.innerHTML = doneCount ? `📋 任务 <button class="btn btn-warning btn-xs" style="margin-left:auto" onclick="claimAllQuests()">🎁 一键领取 (${doneCount})</button>` : '📋 任务';
+  c.innerHTML = sorted.map(q => {
+    const prog = Math.min(q.currentCount, q.targetCount), pct = Math.round((prog / q.targetCount) * 100), done = prog >= q.targetCount;
+    let desc;
+    if (q.type==='sell') desc='卖出'+q.targetCount+'条'+spName(q.targetSpecies);
+    else if (q.type==='fed') desc='卖出'+q.targetCount+'条⭐饲料鱼';
+    else if (q.type==='hormone') desc='卖出'+q.targetCount+'条💉激素鱼';
+    else if (q.type==='event_survive') desc='赤潮后重建鱼塘';
+    else if (q.type==='event_gold') desc='淘鱼热期间卖出'+q.targetCount+'条⭐鱼';
+    else if (q.type==='variety') desc='拥有'+q.targetCount+'种鱼';
+    else if (q.type==='roe_collect') desc='收集出售'+q.targetCount+'颗🥚鱼籽';
+    else if (q.type==='supergrown_sell') desc='卖出'+q.targetCount+'条💎茁壮鱼';
+    else if (q.type==='breed_count') desc='种群自然繁衍'+q.targetCount+'条鱼苗';
+    else if (q.type==='shark_hunt') desc='鲨鱼捕食'+q.targetCount+'次';
+    else if (q.type==='eel_shock') desc='电鳗电死'+q.targetCount+'条鱼';
+    else if (q.type==='lantern_hunt') desc='灯笼鱼捕食'+q.targetCount+'条鱼';
+    else if (q.type==='ancient_sell') desc='售出'+q.targetCount+'条远古存在';
+    else if (q.type==='total_earn') desc='累计赚取 $'+q.targetCount.toLocaleString();
+    else desc='任务';
+    return `<div class="quest-item ${done?'completed':''}"><div class="info"><div class="title">${q.title}</div><div class="desc">${desc} · ${q.type==='event_survive'?'已完成':(prog+'/'+q.targetCount)}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="reward">🎁 $${q.reward.toLocaleString()}</div></div>${done?`<button class="btn btn-success btn-xs" style="flex-shrink:0;align-self:flex-end" onclick="claimQuest(${q.id})">领取</button>`:''}</div>`;
+  }).join('');
+}
+
+function claimAllQuests() {
+  const done = GS.activeQuests.filter(q => Math.min(q.currentCount, q.targetCount) >= q.targetCount);
+  if (!done.length) { notif('没有可领取的任务'); return; }
+  let total = 0;
+  done.forEach(q => {
+    total += q.reward;
+    GS.money += q.reward;
+    GS.completedQuests.push(q.id);
+  });
+  GS.activeQuests = GS.activeQuests.filter(q => Math.min(q.currentCount, q.targetCount) < q.targetCount);
+  notif('🎉 一键领取'+done.length+'个任务，+$'+total.toLocaleString()+'！');
+  renderAll();
+}
+
+function renderConsumables() {
+  $('consumableList').innerHTML = CONSUMABLES.map(cs => {
+    const canBuy = GS.money >= cs.cost, maxBatch = Math.min(5, Math.floor(GS.money / cs.cost));
+    return `<div class="shop-item"><div class="fish-icon">${cs.icon}</div><div class="info"><div class="name">${cs.name}</div><div class="details">${cs.desc}</div></div><button class="btn btn-primary btn-xs" onclick="buyConsumable('${cs.id}')" ${!canBuy?'disabled style="color:#6a8aa0"':''}>💲${cs.cost}</button><button class="btn btn-primary btn-xs" onclick="buyConsumableBatch('${cs.id}')" ${!(canBuy&&maxBatch>=2)?'disabled style="opacity:0.5;cursor:default"':''}>x${maxBatch}</button></div>`;
+  }).join('');
+}
+
+function renderSpecialConsumables() {
+  const js = GS.totalFishSold['jellyfish'] || 0;
+  $('specialConsumableList').innerHTML = SPECIAL_CONSUMABLES.map(cs => {
+    let locked = null;
+    if (cs.id === 'red_tide' && GS.redTideCount < 3) locked = '需经历' + (3 - GS.redTideCount) + '次赤潮';
+    if (cs.id === 'rainbow_glow' && js < 5) locked = '需出售' + (5 - js) + '条斑斓水母';
+    if (locked) return `<div class="shop-item" style="opacity:0.4"><div class="fish-icon">❓</div><div class="info"><div class="name" style="color:#5a6a80">???</div><div class="details">${locked}</div></div><div class="price">——</div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
+    const canBuy = GS.money >= cs.cost, ongoing = curEvent !== null;
+    let label = ongoing ? '正在进行事件' : !canBuy ? '资金不足' : '购买';
+    return `<div class="shop-item"><div class="fish-icon">${cs.icon}</div><div class="info"><div class="name">${cs.name}</div><div class="details">${cs.desc}</div></div><div class="price">$${cs.cost.toLocaleString()}</div><button class="btn btn-primary btn-xs" onclick="buySpecialConsumable('${cs.id}')" ${(!canBuy||ongoing)?'disabled':''}>${label}</button></div>`;
+  }).join('');
+}
+
+function renderAll() { updateTopBar(); renderShop(); renderGoods(); renderConsumables(); renderSpecialConsumables(); renderInventory(); renderUpgrades(); renderThemes(); renderQuests(); updatePondFish(); }
+
+// ========== 价格计算 ==========
+function getFishActualSellPrice(fish) {
+  const sp = FS.get(fish.speciesId); if (!sp) return 0;
+  let price = sp.sellPrice;
+  if (sp.ancient) return price;
+  if (fish.supergrown) price = Math.floor(price * 2);
+  if (fish.fed) price = Math.floor(price * 1.5);
+  if (fish.hormoned) price = Math.floor(price * 0.6);
+  const oxB = GS.productsOwned.has('oxygen2') ? 0.10 : GS.productsOwned.has('oxygen1') ? 0.05 : 0;
+  if (oxB) price = Math.floor(price * (1 + oxB));
+  if (curEvent && curEvent.type === 'rainbow') price = Math.floor(price * 1.2);
+  if (fish.plagued) price = Math.floor(price * 0.1);
+  if (fish.sharkBonus) price += fish.sharkBonus;
+  return price;
+}
+
+// ========== 游戏操作 ==========
+let uidC = 1;
+function buyFish(sid) {
+  const sp = FS.get(sid); if (!sp) return;
+  if (GS.money < sp.buyPrice) { notif('💰 资金不足！'); return; }
+  const rawBase = tankUpg.baseCap + GS_INF.tankLevel * tankUpg.capPerLv;
+  const totalEff = GS.fishInventory.reduce((sum, f) => sum + (FS.get(f.speciesId)?.ancient ? (FS.get(f.speciesId).capacityCost || 6) : 1), 0);
+  const newEff = (sp.ancient && sp.capacityCost) ? sp.capacityCost : 1;
+  if (totalEff + newEff > rawBase) { notif('🏠 鱼塘已满！'); return; }
+  if (GS_INF.tankLevel < sp.minLevel) { notif('🔒 需要鱼塘Lv'+sp.minLevel+'！'); return; }
+  GS.money -= sp.buyPrice;
+  const nf = { uid: uidC++, speciesId: sp.id, startTime: Date.now() };
+  if (curEvent && curEvent.type === 'gold-rush' && !sp.ancient) nf.fed = true;
+  if (curEvent && curEvent.type === 'plague' && !sp.ancient && Math.random() < 0.45) nf.plagued = true;
+  GS.fishInventory.push(nf);
+  const pr = (curEvent && curEvent.type === 'rainbow') ? 0.35 : 0.05;
+  if (sp.poison && Math.random() < pr) {
+    const victims = GS.fishInventory.filter(f => f.speciesId !== sid && f.uid !== uidC - 1);
+    if (victims.length) { const v = victims[Math.floor(Math.random() * victims.length)]; _removeFishFromPond(v); notif('☠️ 蓝环章鱼释放毒素，毒死了一条'+spName(v.speciesId)+'！'); }
+    else notif('🐙 蓝环章鱼安静地游入鱼塘~');
+  }
+  const prev = GS.totalUniqueSpeciesOwned.size; GS.totalUniqueSpeciesOwned.add(sp.id);
+  GS.hasEverOwnedFish = true;
+  notif('🐟 购买'+sp.name+'鱼苗！');
+  if (GS.totalUniqueSpeciesOwned.size > prev) tryGenQuests(sp.id);
+  renderAll();
+}
+
+function buyFishBatch(sid, count) {
+  const sp = FS.get(sid); if (!sp) return;
+  const tc = sp.buyPrice * count;
+  if (GS.money < tc) { notif('💰 资金不足！'); return; }
+  const rawBase = tankUpg.baseCap + GS_INF.tankLevel * tankUpg.capPerLv;
+  const totalEff = GS.fishInventory.reduce((sum, f) => sum + (FS.get(f.speciesId)?.ancient ? (FS.get(f.speciesId).capacityCost || 6) : 1), 0);
+  const newEff = (sp.ancient && sp.capacityCost) ? sp.capacityCost * count : count;
+  if (totalEff + newEff > rawBase) { notif('🏠 鱼塘容量不足！'); return; }
+  GS.money -= tc;
+  for (let i = 0; i < count; i++) { const nf = { uid: uidC++, speciesId: sp.id, startTime: Date.now() }; if (curEvent && curEvent.type === 'gold-rush' && !sp.ancient) nf.fed = true; if (curEvent && curEvent.type === 'plague' && !sp.ancient && Math.random() < 0.45) nf.plagued = true; GS.fishInventory.push(nf); }
+  const prev = GS.totalUniqueSpeciesOwned.size; GS.totalUniqueSpeciesOwned.add(sp.id);
+  GS.hasEverOwnedFish = true;
+  const pr = (curEvent && curEvent.type === 'rainbow') ? 0.35 : 0.05;
+  if (sp.poison && Math.random() < pr) { const victims = GS.fishInventory.filter(f => f.speciesId !== sid); if (victims.length) { const v = victims[Math.floor(Math.random() * victims.length)]; _removeFishFromPond(v); notif('☠️ 蓝环章鱼释放毒素，毒死了一条'+spName(v.speciesId)+'！'); } }
+  notif('🐟 批量购买'+count+'条'+sp.name+'鱼苗！');
+  if (GS.totalUniqueSpeciesOwned.size > prev) tryGenQuests(sp.id);
+  renderAll();
+}
+
+function sellFishInventory(uid, btnEl) {
+  const itemEl = btnEl ? btnEl.closest('.fish-inv-item') : null;
+  if (itemEl) {
+    // 占位：保留原始高度，防止下方列表瞬间上移
+    const rect = itemEl.getBoundingClientRect();
+    itemEl.style.visibility = 'hidden';
+    itemEl.style.height = rect.height + 'px';
+    itemEl.dataset._sold = '1';
+    // 创建浮层动画克隆
+    const anim = itemEl.cloneNode(true);
+    anim.style.visibility = 'visible';
+    anim.style.position = 'fixed';
+    anim.style.left = rect.left + 'px';
+    anim.style.top = rect.top + 'px';
+    anim.style.width = rect.width + 'px';
+    anim.style.height = 'auto';
+    anim.style.margin = '0';
+    anim.style.transform = 'translateX(0)';
+    anim.style.transition = 'none';
+    anim.style.zIndex = '99999';
+    anim.style.pointerEvents = 'none';
+    document.body.appendChild(anim);
+    requestAnimationFrame(() => { anim.classList.add('selling-swipe'); });
+    setTimeout(() => {
+      if (itemEl.isConnected) itemEl.remove();
+      if (anim.isConnected) anim.remove();
+    }, 500);
+  }
+  sellFish(uid);
+}
+
+function sellFish(uid) {
+  const idx = GS.fishInventory.findIndex(f => f.uid === uid); if (idx === -1) return;
+  const fish = GS.fishInventory[idx]; if (!fishReady(fish)) { notif('⏳ 还未成熟！'); return; }
+  const sp = FS.get(fish.speciesId); if (!sp) return;
+  if (!sp.ancient && Math.random() < mortRate()) { _removeFishFromPond(fish); notif('💀 '+sp.name+'不幸死亡...升级温控设备吧'); renderAll(); updateQuestProgress(); return; }
+  if (!sp.ancient) GS.totalLuckySells++;
+  const actualPrice = getFishActualSellPrice(fish);
+  GS.money += actualPrice; GS.totalEarned += actualPrice; if (!sp.ancient && fish.supergrown) GS.totalSupergrownSold++;
+  if (sp.id === 'ancient') ancientSellEffect();
+  if (pondFishEls[uid]) {
+    const pfe = pondFishEls[uid];
+    const rect = pfe.getBoundingClientRect();
+    pfe.style.position = 'fixed';
+    pfe.style.left = rect.left + 'px';
+    pfe.style.top = rect.top + 'px';
+    pfe.style.margin = '0';
+    pfe.style.transform = 'scale(1)';
+    pfe.style.transition = 'none';
+    pfe.style.zIndex = '99999';
+    document.body.appendChild(pfe);
+    delete pondFishEls[uid];
+    requestAnimationFrame(() => { pfe.classList.add('selling'); });
+    setTimeout(() => { if (pfe.isConnected) pfe.remove(); }, 800);
+  }
+  if (fishMoveTimers[uid]) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; delete fishMoveOffset[uid]; }
+  GS.fishInventory.splice(idx, 1);
+  GS.totalFishSold[fish.speciesId] = (GS.totalFishSold[fish.speciesId] || 0) + 1;
+  if (fish.fed) GS.totalFedSold++;
+  if (fish.hormoned) GS.totalHormoneSold++;
+  if (sp.id === 'jellyfish') GS.rainbowChance += 2;
+  notif('💰 卖出'+sp.name+'，+$'+actualPrice+'！');
+  if (curEvent && curEvent.type === 'gold-rush') shake();
+  updateQuestProgress();
+  requestAnimationFrame(() => { renderAll(); });
+}
+
+function sellAllReady() {
+  const nl = GS.productsOwned.has('net2') ? Infinity : GS.productsOwned.has('net1') ? 10 : 0;
+  if (!nl) { notif('需要购买抄网才能一键卖出！'); return; }
+  const readyFish = GS.fishInventory.filter(f => fishReady(f));
+  if (readyFish.length < 2) { notif('需要至少2条成熟鱼才能一键卖出'); return; }
+  const toSell = readyFish.slice(0, nl);
+  let te = 0, fc = 0, hc = 0, deaths = 0;
+  // 对每个待售鱼创建列表滑动动画
+  toSell.forEach((fish, idx) => {
+    const itemBtn = document.querySelector('.btn.btn-success.btn-xs[onclick*="sellFishInventory('+fish.uid+',');
+    const itemEl = itemBtn ? itemBtn.closest('.fish-inv-item') : null;
+    if (itemEl) {
+      const rect = itemEl.getBoundingClientRect();
+      itemEl.style.visibility = 'hidden';
+      itemEl.style.height = rect.height + 'px';
+      itemEl.dataset._sold = '1';
+      const anim = itemEl.cloneNode(true);
+      anim.style.visibility = 'visible';
+      anim.style.position = 'fixed';
+      anim.style.left = rect.left + 'px';
+      anim.style.top = rect.top + 'px';
+      anim.style.width = rect.width + 'px';
+      anim.style.height = 'auto';
+      anim.style.margin = '0';
+      anim.style.transform = 'translateX(0)';
+      anim.style.transition = 'none';
+      anim.style.zIndex = '99999';
+      anim.style.pointerEvents = 'none';
+      document.body.appendChild(anim);
+      requestAnimationFrame(() => { anim.classList.add('selling-swipe'); });
+      setTimeout(() => {
+        if (itemEl.isConnected) itemEl.remove();
+        if (anim.isConnected) anim.remove();
+      }, 500 + idx * 30);
+    }
+    if (pondFishEls[fish.uid]) {
+      const pfe = pondFishEls[fish.uid];
+      const rect = pfe.getBoundingClientRect();
+      pfe.style.position = 'fixed';
+      pfe.style.left = rect.left + 'px';
+      pfe.style.top = rect.top + 'px';
+      pfe.style.margin = '0';
+      pfe.style.transform = 'scale(1)';
+      pfe.style.transition = 'none';
+      pfe.style.zIndex = '99999';
+      document.body.appendChild(pfe);
+      delete pondFishEls[fish.uid];
+      requestAnimationFrame(() => { pfe.classList.add('selling'); });
+      setTimeout(() => { if (pfe.isConnected) pfe.remove(); }, 800);
+    }
+    if (fishMoveTimers[fish.uid]) { clearInterval(fishMoveTimers[fish.uid]); delete fishMoveTimers[fish.uid]; delete fishMoveOffset[fish.uid]; }
+  });
+  for (let i = toSell.length - 1; i >= 0; i--) {
+    const fish = toSell[i];
+    if (Math.random() < mortRate()) { deaths++; _removeFishFromPond(fish); continue; }
+    te += getFishActualSellPrice(fish);
+    if (fish.fed) fc++; if (fish.hormoned) hc++;
+    GS.totalFishSold[fish.speciesId] = (GS.totalFishSold[fish.speciesId] || 0) + 1;
+    const fishIdx = GS.fishInventory.findIndex(f => f.uid === fish.uid); if (fishIdx !== -1) GS.fishInventory.splice(fishIdx, 1);
+  }
+  GS.totalFedSold += fc; GS.totalHormoneSold += hc; GS.money += te;
+  const sold = toSell.length - deaths;
+  if (sold) { notif('💰 一键卖出'+sold+'条鱼，共获得 $'+te.toLocaleString()+'！'+(deaths?' ('+deaths+'条死亡)':'')); if (te >= 100000) confetti(); if (curEvent && curEvent.type === 'gold-rush') shake(); if (toSell.some(f => FS.get(f.speciesId)?.id === 'ancient')) ancientSellEffect(); }
+  else notif('💀 '+deaths+'条鱼全部死亡！升级温控设备吧');
+  updateQuestProgress();
+  requestAnimationFrame(() => { renderAll(); });
+}
+
+function buyProduct(pid) {
+  const p = PRODUCTS.find(x => x.id === pid); if (!p) return;
+  if (GS.productsOwned.has(pid)) { notif('已经拥有！'); return; }
+  if (GS.money < p.cost) { notif('💰 资金不足！'); return; }
+  if (p.requires && !GS.productsOwned.has(p.requires)) { notif('需要先购买前置商品！'); return; }
+  GS.money -= p.cost; GS.productsOwned.add(pid);
+  if (pid === 'oxygen1' || pid === 'oxygen2') initPondDecorations();
+  notif('🛒 购买了'+p.name+'！'); renderAll();
+}
+
+function buyConsumable(cid) {
+  const cs = CONSUMABLES.find(x => x.id === cid); if (!cs) return;
+  if (GS.money < cs.cost) { notif('💰 资金不足！'); return; }
+  if (cid === 'booster') {
+    const eligible = GS.fishInventory.filter(f => fishReady(f) && !f.hormoned && !f.supergrown && !FS.get(f.speciesId)?.ancient);
+    if (!eligible.length) { notif('没有可二次成长的成熟鱼！'); return; }
+    GS.money -= cs.cost; const t = eligible[Math.floor(Math.random() * eligible.length)];
+    t.supergrown = true; t.superStartTime = Date.now(); notif('💊 已对一条'+spName(t.speciesId)+'使用茁壮补剂！');
+  } else {
+    const unfed = GS.fishInventory.filter(f => !f.fed && !f.hormoned && !f.supergrown && !fishReady(f) && !FS.get(f.speciesId)?.ancient);
+    if (!unfed.length) { notif('没有可使用的未成熟鱼！'); return; }
+    GS.money -= cs.cost; const t = unfed[Math.floor(Math.random() * unfed.length)];
+    if (cid === 'feed') { t.fed = true; notif('🍚 已喂食一条'+spName(t.speciesId)+'！'); }
+    else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000; notif('💉 已注射激素给一条'+spName(t.speciesId)+'！'); }
+  }
+  renderAll();
+}
+
+function buyConsumableBatch(cid) {
+  const cs = CONSUMABLES.find(x => x.id === cid); if (!cs) return;
+  if (cid === 'booster') {
+    const eligible = GS.fishInventory.filter(f => fishReady(f) && !f.hormoned && !f.supergrown && !FS.get(f.speciesId)?.ancient);
+    if (!eligible.length) { notif('没有可二次成长的成熟鱼！'); return; }
+    const mx = Math.floor(GS.money / cs.cost); if (mx < 2) { notif('💰 资金不够批量购买！'); return; }
+    const batch = Math.min(5, eligible.length, mx); GS.money -= cs.cost * batch;
+    for (let i = 0; i < batch; i++) { const t = eligible[i]; t.supergrown = true; t.superStartTime = Date.now(); }
+    notif('💊 批量对'+batch+'条成熟鱼使用茁壮补剂！'); renderAll(); return;
+  }
+  const unfed = GS.fishInventory.filter(f => !f.fed && !f.hormoned && !f.supergrown && !fishReady(f) && !FS.get(f.speciesId)?.ancient);
+  if (!unfed.length) { notif('没有可使用的未成熟鱼！'); return; }
+  const mx = Math.floor(GS.money / cs.cost); if (mx < 2) { notif('💰 资金不够批量购买！'); return; }
+  const batch = Math.min(5, unfed.length, mx); GS.money -= cs.cost * batch;
+  for (let i = 0; i < batch; i++) { const t = unfed[i]; if (cid === 'feed') t.fed = true; else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000; } }
+  notif(cid==='feed'?'🍚 批量喂食'+batch+'条鱼！':'💉 批量注射'+batch+'条鱼！'); renderAll();
+}
+
+function buySpecialConsumable(cid) {
+  const cs = SPECIAL_CONSUMABLES.find(x => x.id === cid); if (!cs) return;
+  if (curEvent) { notif('⌛ 鱼儿们的磨难尚未结束...'); return; }
+  if (GS.money < cs.cost) { notif('💰 资金不足！'); return; }
+  GS.money -= cs.cost;
+  if (cid === 'red_tide') { notif('🔴 人工赤潮即将降临！'); triggerRedTide(); }
+  else if (cid === 'rainbow_glow') { notif('🌈 人工虹光将照耀鱼塘！'); triggerRainbowGlow(); }
+  renderAll();
+}
+
+function buyUpgrade(uid) {
+  const upg = UPGRADES.find(u => u.id === uid); if (!upg) return;
+  const lv = upg.getLv(GS); if (lv >= upg.max) { notif('🔒 已满级！'); return; }
+  const cost = upg.getCost(uid === 'tankLevel' ? lv + 1 : lv);
+  if (GS.money < cost) { notif('💰 资金不足！'); return; }
+  GS.money -= cost; GS.totalUpgrades++; GS_INF[uid === 'tankLevel' ? 'tankLevel' : uid === 'filterLevel' ? 'filterLevel' : uid === 'feederLevel' ? 'feederLevel' : 'tempControl']++;
+  notif('🔧 '+upg.name+' → Lv.'+upg.getLv(GS)); renderAll();
+}
+
+function buyTheme(tid) {
+  const th = THEMES.find(t => t.id === tid); if (!th || GS.ownedThemes.has(tid)) { notif(th?'已拥有该外观':''); return; }
+  if (GS.money < th.cost) { notif('💰 资金不足！'); return; }
+  GS.money -= th.cost; GS.ownedThemes.add(tid); GS.currentTheme = tid; applyTheme(tid);
+  notif('🎨 解锁鱼塘外观：'+th.name+'！'); renderAll();
+}
+function setTheme(tid) { if (!GS.ownedThemes.has(tid)) { notif('请先购买该外观'); return; } GS.currentTheme = tid; applyTheme(tid); notif('🎨 切换为：'+THEMES.find(t=>t.id===tid).name); renderAll(); }
+function applyTheme(tid) { THEMES.forEach(t => pondEl.classList.remove('theme-' + t.id)); pondEl.classList.add('theme-' + tid); }
+
+// ========== 任务 ==========
+function genSellQuest(sid) { const tc = Math.floor(Math.random()*5)+3, sp = FS.get(sid), diff = FS_I.get(sid)+1; return {id:GS.questIdCounter++,type:'sell',targetSpecies:sid,targetCount:tc,currentCount:0,reward:tc*sp.sellPrice+diff*30,title:'📦 订单需求',generatedAt:Date.now()}; }
+function genFedQuest() { const tc = Math.floor(Math.random()*3)+2; return {id:GS.questIdCounter++,type:'fed',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*45+30,title:'⭐ 优质食材',generatedAt:Date.now()}; }
+function genHormoneQuest() { const tc = Math.floor(Math.random()*3)+2; return {id:GS.questIdCounter++,type:'hormone',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*25+20,title:'💉 快速出栏',generatedAt:Date.now()}; }
+function genVarietyQuest() { const cur = GS.totalUniqueSpeciesOwned.size, tc = Math.min(cur+Math.floor(Math.random()*2)+1,FISH_SPECIES.length); return {id:GS.questIdCounter++,type:'variety',targetSpecies:null,targetCount:tc,currentCount:cur,reward:tc*100,title:'🌈 收藏家挑战',generatedAt:Date.now()}; }
+function genEventSurviveQuest(reward) { return {id:GS.questIdCounter++,type:'event_survive',targetSpecies:null,targetCount:0,currentCount:0,reward:reward||300,title:'🛡️ 劫后余生',generatedAt:Date.now()}; }
+function genEventGoldQuest() { const baseFed = GS.totalFedSold||0; return {id:GS.questIdCounter++,type:'event_gold',targetSpecies:null,targetCount:Math.floor(Math.random()*4)+3,currentCount:0,reward:(Math.floor(Math.random()*4)+3)*60+50,title:'💰 淘鱼热潮',generatedAt:Date.now(),_baseFedSold:baseFed}; }
+function genRoeCollectQuest() { const tc=Math.floor(Math.random()*3)+3; return {id:GS.questIdCounter++,type:'roe_collect',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*80,title:'🥚 鱼子酱！',generatedAt:Date.now()}; }
+function genSupergrownQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'supergrown_sell',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*200,title:'💎 茁壮之星',generatedAt:Date.now()}; }
+function genBreedCountQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'breed_count',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*120,title:'🐣 家族兴旺',generatedAt:Date.now()}; }
+function genSharkHuntQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'shark_hunt',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*300,title:'🦈 顶级捕食者',generatedAt:Date.now()}; }
+function genTotalEarnQuest() { const milestones=[5000,20000,50000,100000]; let cur=GS.totalEarned||0,next=milestones.find(m=>m>cur)||100000; return {id:GS.questIdCounter++,type:'total_earn',targetSpecies:null,targetCount:next,currentCount:cur,reward:Math.floor(next*0.05),title:'💰 大亨之路',generatedAt:Date.now()}; }
+function genEelShockQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'eel_shock',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*250,title:'⚡ 连锁闪电',generatedAt:Date.now()}; }
+function genLanternHuntQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'lantern_hunt',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*400,title:'🪔 深海猎手',generatedAt:Date.now()}; }
+function genAncientSellQuest() { const tc=Math.floor(Math.random()*2)+1; return {id:GS.questIdCounter++,type:'ancient_sell',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*2000,title:'👁️ 直面深渊',generatedAt:Date.now()}; }
+function tryGenQuests(newSid) {
+  if (!GS.activeQuests.some(q => q.type === 'sell' && q.targetSpecies === newSid)) { GS.activeQuests.push(genSellQuest(newSid)); notif('📋 新任务：卖出'+spName(newSid)+'！'); }
+  if (!GS.activeQuests.some(q => q.type === 'variety') && GS.totalUniqueSpeciesOwned.size >= 2 && Math.random() < 0.6) { GS.activeQuests.push(genVarietyQuest()); notif('📋 新任务：收藏家挑战！'); }
+  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'fed')) { GS.activeQuests.push(genFedQuest()); notif('📋 新任务：优质养殖！'); }
+  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'hormone')) { GS.activeQuests.push(genHormoneQuest()); notif('📋 新任务：快速养殖！'); }
+  if (GS.totalRoeSold >= 1 && Math.random() < 0.5 && !GS.activeQuests.some(q => q.type === 'roe_collect')) { GS.activeQuests.push(genRoeCollectQuest()); notif('📋 新任务：鱼子酱！'); }
+  if (GS.totalSupergrownSold >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'supergrown_sell')) { GS.activeQuests.push(genSupergrownQuest()); notif('📋 新任务：茁壮之星！'); }
+  if (GS.totalBredCount >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'breed_count')) { GS.activeQuests.push(genBreedCountQuest()); notif('📋 新任务：家族兴旺！'); }
+  if (GS.totalSharkHunts >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'shark_hunt')) { GS.activeQuests.push(genSharkHuntQuest()); notif('📋 新任务：顶级捕食者！'); }
+  if (GS.totalEarned >= 5000 && !GS.activeQuests.some(q => q.type === 'total_earn')) { GS.activeQuests.push(genTotalEarnQuest()); notif('📋 新任务：大亨之路！'); }
+  if (GS.totalEelShocks >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'eel_shock')) { GS.activeQuests.push(genEelShockQuest()); notif('📋 新任务：⚡连锁闪电！'); }
+  if (GS.totalLanternHunts >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'lantern_hunt')) { GS.activeQuests.push(genLanternHuntQuest()); notif('📋 新任务：🪔深海猎手！'); }
+  if ((GS.totalFishSold['ancient']||0) >= 1 && Math.random() < 0.50 && !GS.activeQuests.some(q => q.type === 'ancient_sell')) { GS.activeQuests.push(genAncientSellQuest()); notif('📋 新任务：👁️直面深渊！'); }
+}
+
+function updateQuestProgress() {
+  GS.activeQuests.forEach(q => { if (q.type==='sell') q.currentCount = GS.totalFishSold[q.targetSpecies]||0; else if (q.type==='variety') q.currentCount = GS.totalUniqueSpeciesOwned.size; else if (q.type==='fed') q.currentCount = GS.totalFedSold||0; else if (q.type==='hormone') q.currentCount = GS.totalHormoneSold||0; else if (q.type==='roe_collect') q.currentCount = GS.totalRoeSold||0; else if (q.type==='supergrown_sell') q.currentCount = GS.totalSupergrownSold||0; else if (q.type==='breed_count') q.currentCount = GS.totalBredCount||0; else if (q.type==='shark_hunt') q.currentCount = GS.totalSharkHunts||0; else if (q.type==='eel_shock') q.currentCount = GS.totalEelShocks||0; else if (q.type==='lantern_hunt') q.currentCount = GS.totalLanternHunts||0; else if (q.type==='ancient_sell') q.currentCount = GS.totalFishSold['ancient']||0; else if (q.type==='total_earn') q.currentCount = GS.totalEarned||0; else if (q.type==='event_gold') q.currentCount = Math.max(0,(GS.totalFedSold||0)-(q._baseFedSold||0)); else if (q.type==='event_survive') q.currentCount = q.targetCount; });
+}
+
+function claimQuest(qid) {
+  const idx = GS.activeQuests.findIndex(q => q.id === qid); if (idx === -1) return;
+  const q = GS.activeQuests[idx];
+  let prog; if (q.type==='sell') prog = GS.totalFishSold[q.targetSpecies]||0; else if (q.type==='variety') prog = GS.totalUniqueSpeciesOwned.size; else if (q.type==='fed') prog = GS.totalFedSold||0; else if (q.type==='hormone') prog = GS.totalHormoneSold||0; else if (q.type==='roe_collect') prog = GS.totalRoeSold||0; else if (q.type==='supergrown_sell') prog = GS.totalSupergrownSold||0; else if (q.type==='breed_count') prog = GS.totalBredCount||0; else if (q.type==='shark_hunt') prog = GS.totalSharkHunts||0; else if (q.type==='eel_shock') prog = GS.totalEelShocks||0; else if (q.type==='lantern_hunt') prog = GS.totalLanternHunts||0; else if (q.type==='ancient_sell') prog = GS.totalFishSold['ancient']||0; else if (q.type==='total_earn') prog = GS.totalEarned||0; else if (q.type==='event_gold') prog = Math.max(0,(GS.totalFedSold||0)-(q._baseFedSold||0)); else if (q.type==='event_survive') prog = q.targetCount; else prog = 0;
+  if (prog < q.targetCount) { notif('❌ 未完成！'); return; }
+  GS.money += q.reward; GS.completedQuests.push(q.id); notif('🎉 任务完成！+$'+q.reward.toLocaleString()+'！');
+  if (q.type==='variety' && GS.totalUniqueSpeciesOwned.size >= q.targetCount && GS.totalUniqueSpeciesOwned.size < FISH_SPECIES.length) { if (Math.random()<0.5 && !GS.activeQuests.some(aq=>aq.type==='variety'&&aq.id!==q.id)) GS.activeQuests.push(genVarietyQuest()); }
+  if (q.type==='total_earn' && GS.totalEarned >= q.targetCount) { if (Math.random()<0.5 && !GS.activeQuests.some(aq=>aq.type==='total_earn'&&aq.id!==q.id)) GS.activeQuests.push(genTotalEarnQuest()); }
+  GS.activeQuests.splice(idx, 1); renderAll();
+}
+
+// ========== 事件系统 ==========
+let curEvent = null, eventCheckTimer, plagueTickId;
+
+function setupEventCountdown(evt, interval) {
+  const cdInterval = setInterval(() => {
+    let remaining;
+    if (evt.type === 'red-tide') { remaining = evt.countdown; } else { remaining = Math.max(0, Math.ceil((evt.endTime - Date.now()) / 1000)); }
+    const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = remaining;
+    if (remaining <= 0 || (evt.type==='red-tide' && evt.countdown <= 0)) { clearInterval(cdInterval); if (evt.type==='red-tide') executeRedTide(); else endEvent(); }
+  }, interval || 500);
+  return cdInterval;
+}
+
+function triggerRedTide() { if (curEvent) return;
+  curEvent = { type:'red-tide', countdown:5, endTime:0 };
+  pondEl.classList.add('event-red-tide');
+  let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner red'; pondEl.appendChild(banner); }
+  banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">5</div>';
+  notif('🔴 赤潮预警！5秒后将杀死所有鱼！快卖出！');
+  curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeRedTide(); } }, 1000);
+}
+
+function executeRedTide() {
+  GS.redTideCount++;
+  const ancientFish = GS.fishInventory.filter(f => FS.get(f.speciesId)?.ancient);
+  const normalFish = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient);
+  // 随机杀死50%的非远古鱼
+  const shuffled = [...normalFish].sort(() => Math.random() - 0.5);
+  const killCount = Math.ceil(shuffled.length / 2);
+  const toKill = shuffled.slice(0, killCount);
+  const toKillUids = new Set(toKill.map(f => f.uid));
+  const cnt = normalFish.length;
+  toKill.forEach(f => _removeFishFromPond(f));
+  if (!GS.activeQuests.some(q => q.type === 'event_survive')) GS.activeQuests.push(genEventSurviveQuest(100));
+  endEvent(); notif(cnt ? '💀 赤潮杀死了'+killCount+'/'+cnt+'条鱼！幸存一半' : '🔴 赤潮退去，鱼塘幸免于难'); renderAll();
+}
+
+function triggerSuperRedTide() { if (curEvent) return;
+  curEvent = { type:'super-red-tide', countdown:5, endTime:0 };
+  pondEl.classList.add('event-super-red-tide');
+  let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#ff8888'; pondEl.appendChild(banner); }
+  banner.innerHTML = '<div class="event-title">💀 超级赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">5</div>';
+  notif('💀 超级赤潮预警！5秒后将杀死所有鱼！快卖出！');
+  curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeSuperRedTide(); } }, 1000);
+}
+
+function executeSuperRedTide() {
+  const ancientFish = GS.fishInventory.filter(f => FS.get(f.speciesId)?.ancient);
+  const cnt = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient).length;
+  const ancientUids = new Set(ancientFish.map(f => f.uid));
+  Object.keys(pondFishEls).forEach(uid => { if (!ancientUids.has(+uid)) { pondFishEls[uid].remove(); delete pondFishEls[uid]; } });
+  Object.keys(fishMoveTimers).forEach(uid => { if (!ancientUids.has(+uid)) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; delete fishMoveOffset[uid]; } });
+  GS.fishInventory = ancientFish;
+  if (!GS.activeQuests.some(q => q.type === 'event_survive')) GS.activeQuests.push(genEventSurviveQuest(1000));
+  endEvent(); notif(cnt ? '💀 超级赤潮杀死了'+cnt+'条鱼！' : '💀 超级赤潮退去，鱼塘幸免于难'); renderAll();
+}
+
+function triggerGoldRush() { if (curEvent) return;
+  const dur = 25; curEvent = { type:'gold-rush', countdown:0, endTime:Date.now()+dur*1000, _totalDuration:dur*1000 };
+  pondEl.classList.add('event-gold-rush');
+  GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp?.ancient) { f.eventFed = true; if (!f.fed) f.fed = true; } });
+  for (let i = 0; i < 24; i++) { const b = document.createElement('div'); b.className = 'bubble bubble-event'; b.style.cssText = `width:${4+Math.random()*12}px;height:${4+Math.random()*12}px;left:${5+Math.random()*90}%;bottom:${-(2+Math.random()*8)}%;animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*3}s;`; b.addEventListener('animationend', () => { if (b.isConnected) b.remove(); }); pondEl.appendChild(b); }
+  let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner gold'; pondEl.appendChild(banner); }
+  banner.innerHTML = '<div class="event-title">💰 淘鱼热！</div><div class="event-desc">（生长速度+100%，所有鱼变为⭐）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
+  notif('💰 淘鱼热！'+dur+'秒内生长速度+100%，所有鱼变为⭐！');
+  if (!GS.activeQuests.some(q => q.type === 'event_gold')) GS.activeQuests.push(genEventGoldQuest());
+  curEvent._cdInterval = setupEventCountdown(curEvent, 500);
+}
+
+function triggerPlague() { if (curEvent) return;
+  const dur = 10; curEvent = { type:'plague', countdown:0, endTime:Date.now()+dur*1000 };
+  pondEl.classList.add('event-plague'); GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp?.ancient && Math.random() < 0.45) f.plagued = true; });
+  let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#66ff66'; pondEl.appendChild(banner); }
+  banner.innerHTML = '<div class="event-title">🦠 瘟疫爆发！</div><div class="event-desc">（45%鱼患病，每6秒20%死亡或传染，售价降至10%）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
+  notif('🦠 瘟疫爆发！'+dur+'秒内45%鱼患病，每6秒可能死亡或传染');
+  curEvent._cdInterval = setupEventCountdown(curEvent, 500); startPlagueTick();
+}
+
+function triggerRainbowGlow() { if (curEvent) return;
+  const dur = 20; curEvent = { type:'rainbow', countdown:0, endTime:Date.now()+dur*1000 };
+  pondEl.classList.add('event-rainbow');
+  let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#fff'; pondEl.appendChild(banner); }
+  banner.innerHTML = '<div class="event-title">🌈 斑斓虹光！</div><div class="event-desc">（生长立即+50% 售价+20% 机制概率+30%）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
+  notif('🌈 斑斓虹光照耀鱼塘！生长立即+50% 售价+20% 机制概率+30%');
+  GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp || sp.ancient || fishReady(f)) return; const gt = f.supergrown ? sp.growthTime*2 : sp.growthTime; const rushMs = Math.floor(gt*0.5*1000/growSpeedMult()); f.startTime -= rushMs; if (f.supergrown && f.superStartTime) f.superStartTime -= rushMs; });
+  curEvent._cdInterval = setupEventCountdown(curEvent, 500);
+}
+
+function endEvent() { if (!curEvent) return; if (curEvent._cdInterval) clearInterval(curEvent._cdInterval);
+  if (curEvent.type==='gold-rush') { const now = Date.now(); GS.fishInventory.forEach(f => { if (f.eventFed) { f.startTime -= (now - f.startTime); if (f.supergrown&&f.superStartTime) f.superStartTime -= (now - f.superStartTime); delete f.eventFed; } }); }
+  pondEl.classList.remove('event-red-tide','event-gold-rush','event-rainbow','event-plague','event-super-red-tide'); const bn = pondEl.querySelector('.event-banner'); if (bn) bn.remove();
+  pondEl.querySelectorAll('.bubble-event').forEach(b => b.remove());
+  curEvent = null; GS.missedEvents = 0; GS.rainbowChance = 0; renderAll(); scheduleNextEvent();
+}
+
+// 从存档恢复事件
+function restoreEvent(state) {
+  if (!state || !state.type) return;
+  const type = state.type;
+  if (type === 'red-tide') {
+    let countdown = state.countdown || 5;
+    if (countdown <= 0) { executeRedTide(); return; }
+    curEvent = { type:'red-tide', countdown, endTime:0 };
+    pondEl.classList.add('event-red-tide');
+    let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner red'; pondEl.appendChild(banner); }
+    banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">'+countdown+'</div>';
+    notif('🔴 赤潮预警！'+countdown+'秒后将杀死所有鱼！快卖出！');
+    curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeRedTide(); } }, 1000);
+  } else if (type === 'super-red-tide') {
+    let countdown = state.countdown || 5;
+    if (countdown <= 0) { executeSuperRedTide(); return; }
+    curEvent = { type:'super-red-tide', countdown, endTime:0 };
+    pondEl.classList.add('event-super-red-tide');
+    let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#ff8888'; pondEl.appendChild(banner); }
+    banner.innerHTML = '<div class="event-title">💀 超级赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">'+countdown+'</div>';
+    notif('💀 超级赤潮预警！'+countdown+'秒后将杀死所有鱼！快卖出！');
+    curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeSuperRedTide(); } }, 1000);
+  } else if (type === 'gold-rush') {
+    let endTime = state.endTime || Date.now();
+    const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    if (remaining <= 0) { endEvent(); return; }
+    curEvent = { type:'gold-rush', countdown:0, endTime, _totalDuration:state._totalDuration || 25000 };
+    pondEl.classList.add('event-gold-rush');
+    let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner gold'; pondEl.appendChild(banner); }
+    banner.innerHTML = '<div class="event-title">💰 淘鱼热！</div><div class="event-desc">（生长速度+100%，所有鱼变为⭐）</div><div class="event-countdown" id="eventCountdown">'+remaining+'</div>';
+    notif('💰 淘鱼热继续！剩余'+remaining+'秒！');
+    curEvent._cdInterval = setupEventCountdown(curEvent, 500);
+  } else if (type === 'plague') {
+    let endTime = state.endTime || Date.now();
+    const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    if (remaining <= 0) { endEvent(); return; }
+    curEvent = { type:'plague', countdown:0, endTime };
+    pondEl.classList.add('event-plague');
+    let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#66ff66'; pondEl.appendChild(banner); }
+    banner.innerHTML = '<div class="event-title">🦠 瘟疫爆发！</div><div class="event-desc">（45%鱼患病，每6秒20%死亡或传染，售价降至10%）</div><div class="event-countdown" id="eventCountdown">'+remaining+'</div>';
+    notif('🦠 瘟疫持续！剩余'+remaining+'秒');
+    curEvent._cdInterval = setupEventCountdown(curEvent, 500);
+    startPlagueTick();
+  } else if (type === 'rainbow') {
+    let endTime = state.endTime || Date.now();
+    const remaining = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
+    if (remaining <= 0) { endEvent(); return; }
+    curEvent = { type:'rainbow', countdown:0, endTime };
+    pondEl.classList.add('event-rainbow');
+    let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#fff'; pondEl.appendChild(banner); }
+    banner.innerHTML = '<div class="event-title">🌈 斑斓虹光！</div><div class="event-desc">（生长立即+50% 售价+20% 机制概率+30%）</div><div class="event-countdown" id="eventCountdown">'+remaining+'</div>';
+    notif('🌈 斑斓虹光持续！剩余'+remaining+'秒');
+    curEvent._cdInterval = setupEventCountdown(curEvent, 500);
+  }
+  renderAll();
+}
+
+function startPlagueTick() { if (plagueTickId) return;
+  plagueTickId = setInterval(() => { const pf = GS.fishInventory.filter(f => f.plagued); if (!pf.length) { clearInterval(plagueTickId); plagueTickId = null; return; }
+    pf.forEach(f => { const fsp = FS.get(f.speciesId); if (fsp?.ancient) return; if (Math.random()<0.20) { _removeFishFromPond(f); notif('💀 一条患病的鱼死亡了...'); return; } const h = GS.fishInventory.filter(g => !g.plagued && !FS.get(g.speciesId)?.ancient); if (h.length && Math.random() < Math.max(0.4, 1.0 - GS_INF.filterLevel * 0.075)) { const t = h[Math.floor(Math.random()*h.length)]; t.plagued = true; notif('🦠 '+spName(t.speciesId)+'被传染了瘟疫！'); } });
+  }, 6000);
+}
+
+function triggerByType(type) { if(type==='rainbow')triggerRainbowGlow(); else if(type==='redTide'){if(GS.redTideCount>=3&&GS.totalUniqueSpeciesOwned.has('ancient')&&Math.random()<0.5)triggerSuperRedTide();else triggerRedTide();} else if(type==='goldRush')triggerGoldRush(); else triggerPlague(); }
+function recordStreak(type) { if (type === GS.lastEventType) { GS.sameEventStreak++; } else { GS.lastEventType = type; GS.sameEventStreak = 1; } }
+
+function scheduleNextEvent() { if (eventCheckTimer) clearTimeout(eventCheckTimer);
+  eventCheckTimer = setTimeout(() => {
+    // 从未拥有过鱼 → 不调度事件
+    if (!GS.hasEverOwnedFish) { scheduleNextEvent(); return; }
+    // 已有事件进行中 → 等待
+    if (curEvent) { scheduleNextEvent(); return; }
+    // 新手保护期：前1分钟不触发任何事件
+    if (GS.gameTime < 60) { scheduleNextEvent(); return; }
+    // 1-3分钟正面事件增益+25%
+    const rookBuff = (GS.gameTime < 180) ? 25 : 0;
+    const jellyInPond = GS.fishInventory.filter(f => f.speciesId === 'jellyfish').length;
+    const am = GS.fishInventory.some(f => FS.get(f.speciesId)?.ancient) ? 1.2 : 1;
+    const hasAncient = GS.fishInventory.some(f => FS.get(f.speciesId)?.ancient);
+    const plagueP = Math.max(0, (0.85*am-0.7)*100 - GS_INF.filterLevel * 10 + (hasAncient ? 25 : 0) - (rookBuff * 0.6));
+    let probs = [{ n:'rainbow', p:GS.rainbowChance + jellyInPond + rookBuff }, { n:'redTide', p:(0.35*am)*100 + (hasAncient ? 25 : 0) - (rookBuff * 0.4) }, { n:'goldRush', p:Math.max(0,0.7-0.35*am)*100 + rookBuff }, { n:'plague', p:plagueP }];
+    let penaltyApplied = false;
+    if (GS.sameEventStreak >= 3 && GS.lastEventType) {
+      const pe = probs.find(p => p.n === GS.lastEventType);
+      if (pe && pe.p > 1) { pe.origP = pe.p; pe.p = 1; penaltyApplied = true; }
+    }
+    let candidates = plagueP > 0 ? [...probs] : probs.filter(p => p.n !== 'plague');
+    candidates.sort((a, b) => b.p - a.p);
+    const w = candidates[0].n;
+    if (GS.missedEvents >= 3) {
+      if (penaltyApplied && candidates[0].p === 1) { const pw = probs.find(p => p.n === GS.lastEventType); if (pw && pw.origP) pw.p = pw.origP; }
+      triggerByType(w); recordStreak(w); GS.missedEvents = 0; return;
+    }
+    const winner = probs.find(p => p.n === w);
+    const effectiveP = winner.origP || winner.p;
+    if (Math.random() * 100 < effectiveP) { triggerByType(w); recordStreak(w); GS.missedEvents = 0; }
+    else { GS.missedEvents++; scheduleNextEvent(); }
+  }, 20000 + Math.random()*25000);
+}
+
+// ========== 鲨鱼捕食 ==========
+function sharkHuntLoop() { const sharks = GS.fishInventory.filter(f => f.speciesId==='shark'); if (!sharks.length) return;
+  sharks.forEach(shark => { if (Math.random() > ((curEvent&&curEvent.type==='rainbow')?0.20:0.50)) return;
+    const prey = GS.fishInventory.filter(f => f.speciesId!=='shark' && !FS.get(f.speciesId)?.ancient); if (!prey.length) return;
+    const target = prey[Math.floor(Math.random()*prey.length)]; const psp = FS.get(target.speciesId);
+    _removeFishFromPond(target); GS.totalSharkHunts++; if (!shark.sharkBonus) shark.sharkBonus = 0;
+    const pv = psp?psp.sellPrice:0; shark.sharkBonus += pv;
+    notif('🦈 鲨鱼捕食了一条'+(psp?psp.name:'鱼')+'！自身售价 +$'+pv); renderAll();
+  });
+}
+
+// ========== 电鳗放电 ==========
+function electricEelShock() {
+  const eels = GS.fishInventory.filter(f => f.speciesId==='electricEel' && fishReady(f));
+  if (!eels.length) return;
+  eels.forEach(eel => {
+    if (Math.random() > 0.20) return;
+    const targets = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient);
+    if (!targets.length) return;
+    const v = targets[Math.floor(Math.random()*targets.length)];
+    _removeFishFromPond(v); GS.totalEelShocks++; notif('⚡ 电鳗释放电流，电死了一条'+spName(v.speciesId)+'！'); renderAll();
+  });
+}
+
+// ========== 灯笼鱼捕食 ==========
+function lanternHuntLoop() {
+  const lanterns = GS.fishInventory.filter(f => f.speciesId==='lanternfish');
+  if (!lanterns.length) return;
+  lanterns.forEach(l => {
+    if (Math.random() > 0.50) return;
+    const prey = GS.fishInventory.filter(f => f.speciesId!=='lanternfish' && !FS.get(f.speciesId)?.ancient);
+    if (!prey.length) return;
+    const t = prey[Math.floor(Math.random()*prey.length)];
+    _removeFishFromPond(t); GS.totalLanternHunts++; notif('🪔 灯笼鱼捕食了一条'+spName(t.speciesId)+'！'); renderAll();
+  });
+}
+
+// ========== 繁殖与鱼籽 ==========
+function doBreedingCheck() { if (effCount() >= hardCap()) return;
+  const bySp = {}; GS.fishInventory.forEach(f => { if (!bySp[f.speciesId]) bySp[f.speciesId]=[]; bySp[f.speciesId].push(f); });
+  for (const [sid, fishes] of Object.entries(bySp)) { const sp = FS.get(sid); if (!sp||sp.ancient||fishes.length<Math.max(2,sp.breedMin)) continue;
+    const rp = (curEvent&&curEvent.type==='rainbow')?0.30:0; const count = Math.random()<(0.3+rp)?(Math.random()<(0.4+rp)?2:1):0;
+    for (let i=0;i<count;i++) { if (effCount() >= hardCap()) { notif('💀 鱼塘极度爆满，新生鱼苗窒息死亡...'); break; }
+      GS.fishInventory.push({uid:uidC++,speciesId:sid,startTime:Date.now()}); }
+    if (count) { GS.totalBredCount += count; notif('🐣 '+sp.name+'种群繁衍出'+count+'条鱼苗！'); }
+  }
+}
+let roeParticles=[], roeIdC=1;
+function spawnRoeParticle(speciesId) { const bounds = getPondBounds(); const sp = FS.get(speciesId);
+  const el = document.createElement('div'); const x = bounds.padX+Math.random()*bounds.w; const rc = sp?sp.color:'#ffcc44';
+  el.style.cssText='position:absolute;width:14px;height:14px;left:'+x+'px;top:'+(-(5+Math.random()*15))+'px;background:radial-gradient(circle,'+rc+'cc,'+rc+'88);border:2px solid '+rc+';box-shadow:0 0 10px '+rc+'aa,0 0 20px '+rc+'66;cursor:pointer;pointer-events:auto;z-index:21;border-radius:50%;animation:roeGlow 1.5s ease-in-out infinite;';
+  el.title='🥚 鱼籽 - 点击出售'; el.onclick=(e)=>{e.stopPropagation();roeParticles=roeParticles.filter(rp=>rp.el!==el);el.remove();const v=sp?Math.floor(sp.sellPrice*0.15):5;GS.money+=v;GS.totalRoeSold++;GS.totalEarned+=v;notif('🥚 卖出鱼籽，+$'+v+'！');renderAll();};
+  pondEl.appendChild(el); notif('🥚 '+sp.name+'种群产出了一颗鱼籽！');
+  const rp={id:roeIdC++,el,x,y:bounds.padY,targetY:bounds.padY+bounds.h*0.5+Math.random()*bounds.h*0.4,value:sp?Math.floor(sp.sellPrice*0.15):5,speciesId}; roeParticles.push(rp);
+  const drop=()=>{if(!el.isConnected)return;const cy=parseFloat(el.style.top)||rp.y;if(cy<rp.targetY){el.style.top=(cy+0.15+Math.random()*0.5)+'px';el.style.opacity=Math.max(0.5,1-(cy-rp.y)/(rp.targetY-rp.y)*0.5);requestAnimationFrame(drop);}}; requestAnimationFrame(drop);
+  setTimeout(()=>{if(el.isConnected){el.remove();roeParticles=roeParticles.filter(rp=>rp.el!==el);}},30000);
+}
+function roeSpawnLoop() { if (!GS.fishInventory.length) return; const bs={};GS.fishInventory.forEach(f=>{if(!bs[f.speciesId])bs[f.speciesId]=[];bs[f.speciesId].push(f);});
+  for(const[sid,fishes]of Object.entries(bs)){const sp=FS.get(sid);if(!sp||sp.ancient||fishes.length<Math.max(2,sp.breedMin)||roeParticles.filter(rp=>rp.speciesId===sid).length>=3)continue;
+    const rp=(curEvent&&curEvent.type==='rainbow')?0.30:0;if(Math.random()<(0.25+rp))spawnRoeParticle(sid);}
+}
+
+// ========== 特效 ==========
+let confettiActive = false;
+function ancientSellEffect() {
+  const isRed = curEvent && curEvent.type === 'super-red-tide';
+  if (isRed) {
+    pondEl.classList.add('ancient-red-selling');
+    const w = document.querySelector('.game-wrapper'); if (w) w.classList.add('ancient-shaking');
+    setTimeout(() => {
+      pondEl.classList.remove('ancient-red-selling');
+      const w = document.querySelector('.game-wrapper'); if (w) w.classList.remove('ancient-shaking');
+    }, 1200);
+  } else {
+    pondEl.classList.add('ancient-selling');
+    const w = document.querySelector('.game-wrapper'); if (w) w.classList.add('ancient-shaking');
+    setTimeout(() => {
+      pondEl.classList.remove('ancient-selling');
+      const w = document.querySelector('.game-wrapper'); if (w) w.classList.remove('ancient-shaking');
+    }, 1200);
+  }
+}
+function confetti() { if (confettiActive) return; confettiActive = true; const em = ['🎉','🎊','✨','💫','💰','⭐','🌟','💎'];
+  for (let i = 0; i < 30; i++) { const p = document.createElement('div'); p.className = 'confetti-piece'; p.textContent = em[Math.floor(Math.random()*em.length)]; p.style.left = (Math.random()*100)+'%'; p.style.animationDelay = (Math.random()*0.8)+'s'; document.body.appendChild(p); setTimeout(() => { if (p.isConnected) p.remove(); }, 4800); }
+  setTimeout(() => { confettiActive = false; }, 4000);
+}
+function shake() { const w = document.querySelector('.game-wrapper'); if (w) { w.classList.add('shaking'); setTimeout(() => w.classList.remove('shaking'), 300); } }
+
+// ========== 通知 ==========
+function notif(msg) { const el = document.createElement('div'); el.className = 'notification'; el.textContent = msg; notifAreaEl.appendChild(el); setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000); }
+
+// ========== 设置与菜单 ==========
+// ========== 控制台 ==========
+let consoleClickCount = 0, consoleClickTimer = null;
+let consoleDragOffset = { x: 0, y: 0 }, consoleDragging = false;
+
+function toggleSettings() {
+  // 连击检测：5次快速点击打开控制台
+  consoleClickCount++;
+  if (consoleClickTimer) clearTimeout(consoleClickTimer);
+  if (consoleClickCount >= 5) {
+    consoleClickCount = 0; openConsole(); return;
+  }
+  consoleClickTimer = setTimeout(() => { consoleClickCount = 0; }, 800);
+  settingsPopupEl.classList.toggle('active');
+}
+
+function openConsole() { $('consolePanel').style.display = 'block'; $('consoleOverlay').style.display = 'block'; settingsPopupEl.classList.remove('active'); }
+function closeConsole() { $('consolePanel').style.display = 'none'; $('consoleOverlay').style.display = 'none'; }
+function consoleGiveMoney() { GS.money += 100000; notif('🛠️ 开发者：+$100,000'); renderAll(); }
+function consoleUnlockAll() {
+  GS.infrastructure.tankLevel = UPGRADES.find(u=>u.id==='tankLevel').max;
+  GS.infrastructure.filterLevel = UPGRADES.find(u=>u.id==='filterLevel').max;
+  GS.infrastructure.feederLevel = UPGRADES.find(u=>u.id==='feederLevel').max;
+  GS.infrastructure.tempControl = UPGRADES.find(u=>u.id==='tempControl').max;
+  GS.redTideCount = 3; GS.totalFishSold['jellyfish'] = 5;
+  FISH_SPECIES.forEach(sp => GS.totalUniqueSpeciesOwned.add(sp.id));
+  THEMES.forEach(th => GS.ownedThemes.add(th.id));
+  PRODUCTS.forEach(p => GS.productsOwned.add(p.id));
+  GS.money += 100000; notif('🛠️ 开发者：已解锁全部内容！'); renderAll();
+}
+function consoleClearTime() { GS.gameTime = 0; notif('🛠️ 开发者：游戏时间已清除'); renderAll(); }
+function consoleGrowAll() { GS.fishInventory.forEach(f => { f.startTime = 0; if (f.supergrown) f.superStartTime = 0; }); notif('🛠️ 开发者：所有鱼已成熟！'); renderAll(); }
+
+document.addEventListener('click', e => { if (settingsPopupEl.classList.contains('active') && !settingsPopupEl.contains(e.target) && e.target !== $('settingsBtn')) settingsPopupEl.classList.remove('active'); });
+function resetGame() { closeConsole(); consoleClickCount = 0; if (consoleClickTimer) { clearTimeout(consoleClickTimer); consoleClickTimer = null; } settingsPopupEl.classList.remove('active'); gameOverEl.classList.remove('active'); bankruptBannerEl.style.display = 'none'; localStorage.removeItem('fishFarmSave2'); returnToMenu(); notif('🔄 已返回主菜单'); }
+function clearAllFish() { settingsPopupEl.classList.remove('active'); roeParticles.forEach(rp => { if (rp.el.isConnected) rp.el.remove(); }); roeParticles = [];
+  Object.keys(pondFishEls).forEach(uid => { pondFishEls[uid].remove(); delete pondFishEls[uid]; });
+  Object.keys(fishMoveTimers).forEach(uid => { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; });
+  fishMoveOffset = {}; pondFishEls = {}; GS.fishInventory = []; updateQuestProgress(); renderAll(); notif('🗑️ 鱼塘已清空');
+}
+function closePopup() { $('popup').classList.remove('active'); $('overlay').classList.remove('active'); }
+
+function checkBankruptcy() { if (GS.fishInventory.length || FISH_SPECIES.some(sp => GS.money >= sp.buyPrice)) return;
+  GS.bankruptcyCount++; if (GS.bankruptcyCount >= 2) { gameOverEl.classList.add('active'); notif('💀 你再次破产了！游戏结束'); }
+  else { GS.money += 100; bankruptBannerEl.style.display = 'block'; notif('💸 您破产了！已发放 $100 补助金'); setTimeout(() => { bankruptBannerEl.style.display = 'none'; }, 5000); } renderAll();
+}
+
+// ========== 统一游戏循环（合并双定时器为单一线程） ==========
+function updateInventoryGrowth() {
+  if (!GS.fishInventory.length) return;
+  const items = inventoryListEl.querySelectorAll('.fish-inv-item');
+  items.forEach(item => {
+    const btn = item.querySelector('.btn-success');
+    if (!btn) return;
+    const match = btn.getAttribute('onclick').match(/\d+/);
+    if (!match) return;
+    const uid = +match[0];
+    const fish = GS.fishInventory.find(f => f.uid === uid);
+    if (!fish) return;
+    const g = fishGrowth(fish), pct = Math.round(g * 100), ready = g >= 1;
+    const bar = item.querySelector('.growth-bar');
+    const text = item.querySelector('.growth-text');
+    if (bar && text) {
+      bar.style.width = pct + '%';
+      if (ready) bar.classList.add('ready'); else bar.classList.remove('ready');
+      const actualPrice = getFishActualSellPrice(fish);
+      text.textContent = ready ? (fish.supergrown ? '💎二次成长中 · 售 $' + actualPrice : '✅已成熟 · 售 $' + actualPrice) : '生长中 ' + pct + '%';
+      if (ready) { item.style.borderColor = 'rgba(80,220,120,0.45)'; item.style.background = 'rgba(22,50,38,0.45)'; btn.disabled = false; btn.textContent = '卖出'; }
+    }
+  });
+  // 同步刷新头部"一键卖出"按钮的成熟鱼数量
+  const hasNet = GS.productsOwned.has('net1') || GS.productsOwned.has('net2');
+  const readyC = GS.fishInventory.filter(f => fishReady(f)).length;
+  inventoryHeaderEl.innerHTML = (hasNet && readyC >= 2) ? `🏠 我的鱼 <button class="btn btn-warning btn-xs" style="margin-left:auto" onclick="sellAllReady()">💰 一键卖出 (${readyC})</button>` : (hasNet ? '🏠 我的鱼' : inventoryHeaderEl.innerHTML);
+}
+
+function gameLoop() { GS.gameTime += 0.48; updateQuestProgress(); updateTopBar(); updateInventoryGrowth(); updatePondFish(); checkBankruptcy(); }
+
+// ========== 存档 ==========
+function saveGame() { localStorage.setItem('fishFarmSave2', JSON.stringify({ money:GS.money, fishInventory:GS.fishInventory, completedQuests:GS.completedQuests, totalFishSold:GS.totalFishSold, totalFedSold:GS.totalFedSold, totalHormoneSold:GS.totalHormoneSold, totalUniqueSpeciesOwned:[...GS.totalUniqueSpeciesOwned], infrastructure:GS.infrastructure, activeQuests:GS.activeQuests, questIdCounter:GS.questIdCounter, uidC, currentTheme:GS.currentTheme, ownedThemes:[...GS.ownedThemes], bankruptcyCount:GS.bankruptcyCount, productsOwned:[...GS.productsOwned], rainbowChance:GS.rainbowChance, redTideCount:GS.redTideCount, totalRoeSold:GS.totalRoeSold, totalBredCount:GS.totalBredCount, totalSupergrownSold:GS.totalSupergrownSold, totalSharkHunts:GS.totalSharkHunts, totalEelShocks:GS.totalEelShocks, totalLanternHunts:GS.totalLanternHunts, totalEarned:GS.totalEarned, totalUpgrades:GS.totalUpgrades, totalLuckySells:GS.totalLuckySells, gameTime:GS.gameTime, missedEvents:GS.missedEvents, lastEventType:GS.lastEventType, sameEventStreak:GS.sameEventStreak, hasEverOwnedFish:GS.hasEverOwnedFish, eventState:curEvent?{type:curEvent.type,countdown:curEvent.countdown||0,endTime:curEvent.endTime||0,_totalDuration:curEvent._totalDuration||0}:null })); }
+window.addEventListener('beforeunload', saveGame);
+
+function loadGame() { const raw = localStorage.getItem('fishFarmSave2'); if (!raw) return false; try { const d = JSON.parse(raw); GS.money=d.money||100; GS.fishInventory=d.fishInventory||[]; GS.completedQuests=d.completedQuests||[]; GS.totalFishSold=d.totalFishSold||{}; GS.totalFedSold=d.totalFedSold||0; GS.totalHormoneSold=d.totalHormoneSold||0; GS.totalUniqueSpeciesOwned=new Set(d.totalUniqueSpeciesOwned||[]); GS.infrastructure=d.infrastructure||{tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0}; GS_INF=GS.infrastructure; GS.activeQuests=d.activeQuests||[]; GS.questIdCounter=d.questIdCounter||1; GS.lastTick=Date.now(); uidC=d.uidC||1; GS.currentTheme=d.currentTheme||'default'; GS.ownedThemes=new Set(d.ownedThemes||['default']); GS.productsOwned=new Set(d.productsOwned||[]); GS.bankruptcyCount=d.bankruptcyCount||0; GS.rainbowChance=d.rainbowChance||0; GS.totalRoeSold=d.totalRoeSold||0;GS.totalBredCount=d.totalBredCount||0;GS.totalSupergrownSold=d.totalSupergrownSold||0;GS.totalSharkHunts=d.totalSharkHunts||0;GS.totalEelShocks=d.totalEelShocks||0;GS.totalLanternHunts=d.totalLanternHunts||0;GS.totalEarned=d.totalEarned||0;GS.totalUpgrades=d.totalUpgrades||0;GS.totalLuckySells=d.totalLuckySells||0; GS.redTideCount=d.redTideCount||0; GS.gameTime=d.gameTime||0; GS.missedEvents=d.missedEvents||0; GS.lastEventType=d.lastEventType||null; GS.sameEventStreak=d.sameEventStreak||0; GS.hasEverOwnedFish=d.hasEverOwnedFish||false; applyTheme(GS.currentTheme); return true; } catch(e) { return false; } }
+
+// ========== 初始化 ==========
+function initGame() { GS.money=100;GS.fishInventory=[];GS.completedQuests=[];GS.totalFishSold={};GS.totalFedSold=0;GS.totalHormoneSold=0;GS.totalUniqueSpeciesOwned=new Set();GS.infrastructure={tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0};GS.activeQuests=[];GS.questIdCounter=1;GS.lastTick=Date.now();uidC=1;GS.currentTheme='default';GS.ownedThemes=new Set(['default']);GS.bankruptcyCount=0;GS.productsOwned=new Set();GS.redTideCount=0;GS.rainbowChance=0;GS.totalEarned=0;GS.totalRoeSold=0;GS.totalBredCount=0;GS.totalSupergrownSold=0;GS.totalSharkHunts=0;GS.totalUpgrades=0;GS.totalLuckySells=0;GS.missedEvents=0;GS.lastEventType=null;GS.sameEventStreak=0;GS.gameTime=0;GS.hasEverOwnedFish=false;pondFishEls={};GS_INF=GS.infrastructure; lastMoney=100; gameOverEl.classList.remove('active'); bankruptBannerEl.style.display='none'; applyTheme('default'); renderAll(); notif('🎮 欢迎来到养鱼大亨！'); }
+function cleanPondDom() {
+  clearGameIntervals();
+  if (eventCheckTimer) { clearTimeout(eventCheckTimer); eventCheckTimer = null; }
+  if (plagueTickId) { clearInterval(plagueTickId); plagueTickId = null; }
+  curEvent = null; confettiActive = false; roeParticles = [];
+  pondEl.querySelectorAll('.pond-fish,.bubble,.weed,.rock,.pond-ripple,.fish-speech,.event-banner').forEach(e=>e.remove());
+  Object.keys(fishMoveTimers).forEach(uid=>{clearInterval(fishMoveTimers[uid]);delete fishMoveTimers[uid];});
+  Object.keys(fishStartTimers).forEach(uid=>{clearTimeout(fishStartTimers[uid]);delete fishStartTimers[uid];});
+  Object.keys(fishResumeTimers).forEach(uid=>{clearTimeout(fishResumeTimers[uid]);delete fishResumeTimers[uid];});
+  fishMoveOffset={};pondFishEls={};fishCoords={};fishPaused.clear();
+  pondEl.classList.remove('event-red-tide','event-gold-rush','event-rainbow','event-plague','event-super-red-tide','ancient-selling');
+  gameOverEl.classList.remove('active');bankruptBannerEl.style.display='none';
+  if(causticsAnimId){cancelAnimationFrame(causticsAnimId);causticsAnimId=null;}
+}
+function startGame(mode) {
+  mainMenuEl.style.display='none'; cleanPondDom(); initGame();
+  GS.money=(mode==='quick')?1000:100;
+  setupGameIntervals();
+  initPondDecorations();initCaustics();initLightRays();updatePondFish();setupPondRipple();setupFishInteractions();
+  notif(mode==='quick'?'⚡ 快速游戏模式开始！初始资金 $1000':'🎮 游戏开始！初始资金 $100');
+}
+function exitGame() { window.close(); }
+function returnToMenu() { cleanPondDom(); mainMenuEl.style.display='flex'; }
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 缓存所有常用DOM引用
+  pondEl = $('pondContainer'); pondEmptyEl = $('pondEmpty'); inventoryListEl = $('inventoryList');
+  inventoryHeaderEl = $('inventoryHeader'); moneyDisplayEl = $('moneyDisplay'); gameTimeEl = $('gameTimeDisplay');
+  speciesCountEl = $('speciesCount'); capacityDisplayEl = $('capacityDisplay'); notifAreaEl = $('notificationArea');
+  gameOverEl = $('gameOverOverlay'); bankruptBannerEl = $('bankruptBanner'); settingsPopupEl = $('settingsPopup');
+  mainMenuEl = $('mainMenu'); questHeaderEl = $('questHeader');
+  pondFishEls = {}; pondEl.querySelectorAll('.pond-fish').forEach(e => e.remove());
+  if (loadGame()) {
+    mainMenuEl.style.display = 'none';
+    initPondDecorations(); initCaustics(); initLightRays(); updatePondFish();
+    setupPondRipple(); setupFishInteractions(); applyTheme(GS.currentTheme);
+    renderAll(); notif('💾 存档已加载！欢迎回来~');
+    setupGameIntervals();
+    // 恢复存档中的事件
+    const raw = localStorage.getItem('fishFarmSave2');
+    if (raw) {
+      try {
+        const d = JSON.parse(raw);
+        if (d.eventState) restoreEvent(d.eventState);
+      } catch(e) {}
+    }
+  }
+});
+
+function setupPondRipple() { pondEl.addEventListener('click', function(e) { if (e.target.closest('.pond-fish')) return;
+  const rect = pondEl.getBoundingClientRect(), x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const ripple = document.createElement('div'); ripple.className = 'pond-ripple'; ripple.style.left = x+'px'; ripple.style.top = y+'px';
+  pondEl.appendChild(ripple); setTimeout(() => { if (ripple.isConnected) ripple.remove(); }, 800);
+});}
+
+function setupFishInteractions() {
+  pondEl.addEventListener('mouseover', function(e) {
+    const fishEl = e.target.closest('.pond-fish'); if (!fishEl) return;
+    const uid = +Object.keys(pondFishEls).find(k => pondFishEls[k] === fishEl); if (!uid) return;
+    // 清除可能存在的恢复定时器（防止快速离开/进入产生重叠）
+    if (fishResumeTimers[uid]) { clearTimeout(fishResumeTimers[uid]); delete fishResumeTimers[uid]; }
+    // 标记暂停
+    fishPaused.add(uid);
+    // 清除移动定时器
+    if (fishMoveTimers[uid]) { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; }
+    if (fishStartTimers[uid]) { clearTimeout(fishStartTimers[uid]); delete fishStartTimers[uid]; }
+    // 冻结视觉位置
+    const pr = pondEl.getBoundingClientRect(), fr = fishEl.getBoundingClientRect();
+    // 保存原有transition以便后续恢复
+    fishEl._origTransition = fishEl.style.transition;
+    fishEl.style.transition = 'none';
+    fishEl.style.left = (fr.left - pr.left)+'px';
+    fishEl.style.top = (fr.top - pr.top)+'px';
+    // 同步fishCoords到冻结位置（避免mouseout后逻辑坐标与视觉脱节）
+    if (fishCoords[uid]) {
+      fishCoords[uid].x = fr.left - pr.left;
+      fishCoords[uid].y = fr.top - pr.top;
+    }
+    // 放大（保持原有朝向）
+    const coord = fishCoords[uid];
+    const right = coord ? coord.facingRight : true;
+    fishEl.style.transform = `scaleX(${right?-1.35:1.35})`;
+    fishEl.classList.add('hovered');
+  });
+  pondEl.addEventListener('mouseout', function(e) {
+    const fishEl = e.target.closest('.pond-fish'); if (!fishEl) return;
+    const uid = +Object.keys(pondFishEls).find(k => pondFishEls[k] === fishEl); if (!uid || !fishEl.isConnected) return;
+    fishEl.classList.remove('hovered');
+    // 从fishCoords获取逻辑朝向
+    const coord = fishCoords[uid];
+    const right = coord ? coord.facingRight : true;
+    fishEl.style.transform = `scaleX(${right?-1:1})`;
+    fishEl.style.transition = fishEl._origTransition !== undefined ? fishEl._origTransition : '';
+    // 0.2秒延迟后再恢复移动，防止快速悬停时叠加
+    if (fishResumeTimers[uid]) { clearTimeout(fishResumeTimers[uid]); }
+    fishResumeTimers[uid] = setTimeout(() => {
+      fishPaused.delete(uid);
+      delete fishResumeTimers[uid];
+      scheduleFishMove(uid, fishEl);
+    }, 200);
+  });
+  pondEl.addEventListener('click', function(e) { const fishEl = e.target.closest('.pond-fish'); if (!fishEl) return;
+    e.stopPropagation(); const uid = +Object.keys(pondFishEls).find(k => pondFishEls[k] === fishEl); if (!uid) return;
+    const fish = GS.fishInventory.find(f => f.uid === uid); if (!fish) return; showFishSpeech(fishEl, fish);
+  });
+}
+
+function showFishSpeech(fishEl, fish) {
+  pondEl.querySelectorAll('.fish-speech').forEach(el => el.remove());
+  const sp=FS.get(fish.speciesId),cap=effCount()/maxCap(),totalFish=GS.fishInventory.length;
+  let pool=sp?.id==='ancient'?['饥饿...','ꇮꈊ...ꈦꍔꍰ..ꎇ','我仍然凝视...','...','聆听吧...']:['你好啊！','太阳很暖和','水温正合适','咕噜咕噜...','我有点饿','❤'];
+  if(sp?.id!=='ancient'){if(cap>0.9)pool=['有点挤...','太多了！','我感觉不舒服...'];else if(totalFish===1)pool=['好孤单...','想交点朋友','❤'];}
+  const s=document.createElement('div');s.className='fish-speech';s.textContent=pool[Math.floor(Math.random()*pool.length)];
+  s.style.visibility='hidden';pondEl.appendChild(s);
+  const rect=fishEl.getBoundingClientRect(),pr=pondEl.getBoundingClientRect();
+  s.style.left=(rect.left-pr.left+rect.width/2-s.offsetWidth/2)+'px';s.style.top=(rect.top-pr.top-28)+'px';s.style.visibility='visible';
+  setTimeout(()=>{s.classList.add('fade-out');setTimeout(()=>{if(s.isConnected)s.remove();},500);},2000);
+}
+window.addEventListener('resize', () => { setTimeout(animateFishInPond, 300); resizeCaustics(); });
+
+// ========== 控制台拖拽 ==========
+(function() {
+  const cp = $('consolePanel');
+  const ct = $('consoleTitle');
+  if (!cp || !ct) return;
+  ct.addEventListener('mousedown', function(e) {
+    if (e.target.classList.contains('close-btn')) return;
+    consoleDragging = true;
+    const rect = cp.getBoundingClientRect();
+    consoleDragOffset.x = e.clientX - rect.left;
+    consoleDragOffset.y = e.clientY - rect.top;
+    cp.style.cursor = 'grabbing';
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!consoleDragging || cp.style.display === 'none') return;
+    cp.style.left = (e.clientX - consoleDragOffset.x) + 'px';
+    cp.style.top = (e.clientY - consoleDragOffset.y) + 'px';
+    cp.style.transform = 'none';
+  });
+  window.addEventListener('mouseup', function() {
+    if (consoleDragging) { cp.style.cursor = ''; consoleDragging = false; }
+  });
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>游戏详情 | DoubleX GameStudio</title>
+    <title id="pageTitle">游戏详情 | DoubleX GameStudio</title>
+    <meta name="description" id="pageDesc" content="DoubleX GameStudio 游戏详情页面">
+    <!-- 动态数据加载前先根据 URL 参数设置 meta 信息 -->
+    <script>
+        (function() {
+            var gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
+            var titleMap = { geometry: '几何 - 像素科幻弹幕射击', fishfarm: '养鱼大亨 - 放置养成鱼类收集' };
+            var descMap = { geometry: '《几何》极简几何美学×极致弹幕挑战 — DoubleX GameStudio', fishfarm: '《养鱼大亨》鱼类收集养成放置模拟游戏 — DoubleX GameStudio' };
+            document.title = (titleMap[gameKey] || '几何') + ' | DoubleX GameStudio';
+            var desc = document.getElementById('pageDesc');
+            if (desc) desc.content = descMap[gameKey] || 'DoubleX GameStudio 游戏详情页面';
+        })();
+    </script>
+    <!-- 游戏数据 -->
+    <script src="games-data.js"></script>
     <style>
         /* ===== 全局重置 & 基础样式 ===== */
         * {
@@ -511,6 +525,21 @@
             padding: 60px 0;
             border-top: 1px solid var(--gray-700);
             border-bottom: 1px solid var(--gray-700);
+        }
+
+        /* 数据加载前隐藏动态内容防止闪烁 */
+        .detail-content .info-grid,
+        .detail-content .features-section,
+        .detail-content .screenshots-section,
+        .detail-content .cta-section {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .detail-content.loaded .info-grid,
+        .detail-content.loaded .features-section,
+        .detail-content.loaded .screenshots-section,
+        .detail-content.loaded .cta-section {
+            opacity: 1;
         }
 
         .cta-section p {
@@ -1146,72 +1175,7 @@
             const params = new URLSearchParams(window.location.search);
             const game = params.get('game') || 'geometry';
 
-            const gameData = {
-                geometry: {
-                    title: '几何',
-                    subtitle: '像素科幻 × 硬核横板射击',
-                    badge: '✦ 像素 · 平台射击',
-                    desc: '《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合了科幻、硬核、横板闯关、射击与 roguelike 等元素。玩家可选择众多角色中的其一进行控制，在由模板房间随机组合而成的关卡中杀出一条血路，探寻"几何"与"自我"之间相连的意义。',
-                    desc2: '游戏强调"有得必有失"——获取强大力量时必须付出代价。玩家需要持续思考留下真正有用的力量、武器或道具，过于繁杂的搭配反而会陷入不利处境。每张地图最后都设有强大 BOSS，击败后获得独特能力与通往下一关的钥匙。',
-                    desc3: '整体基调融合赛博朋克、科幻与复古未来风格，低明度配色营造"被压抑的张力"，角色头部点缀高饱和纯色彰显鲜明个性。规则几何图形代表玩家一方，不规则扭曲图形为敌对阵营，形成强烈的视觉对立。',
-                    cover: 'images/art/GEOMETRY/《几何》宣传图_1.png',
-                    meta: {
-                        '预计上线': '2027 年 7 月',
-                        '游戏类型': '2D 平台射击',
-                        '发布平台': 'Steam / itch.io',
-                        '引擎': 'Godot Engine',
-                        '最新版本': 'dev0.1',
-                        '语言支持': '中文 / English'
-                    },
-                    features: [
-                        { icon: '🎯', title: '多角色选择', desc: '在众多角色中选择其一进行控制，每个角色拥有独特的几何头部设计与性格特征，多角色设定解决重复游玩枯燥感。' },
-                        { icon: '🗺️', title: '随机地图生成', desc: '采用模板房间随机排列组合，通过通道连接形成独立完整的地图，每次游玩都有全新体验。' },
-                        { icon: '🎨', title: '低明度色彩美学', desc: '低明度+高饱和配色营造"被压抑的张力"，规则几何形代表玩家，不规则扭曲形代表敌对阵营，视觉对立强烈。' },
-                        { icon: '⚖️', title: '有得必有失', desc: '获取强大力量时必须付出代价，玩家需要持续取舍真正有用的武器与道具，繁杂搭配可能让你陷入不利处境。' }
-                    ],
-                    screenshots: [
-                        'images/game/GEOMETRY/《几何》游戏截图_1.jpg',
-                        'images/game/GEOMETRY/《几何》游戏截图_2.jpg',
-                        'images/game/GEOMETRY/《几何》游戏截图_3.jpg',
-                        'images/game/GEOMETRY/《几何》游戏截图_4.jpg'
-                    ],
-                    videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493',
-                    tagline: '准备好迎接几何弹幕的洗礼了吗？'
-                },
-                fishfarm: {
-                    title: '养鱼大亨',
-                    subtitle: '放置养成 × 鱼类收集',
-                    badge: '✦ 养成 · 模拟',
-                    desc: '《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。',
-                    desc2: '玩家通过买卖鱼苗、等待成长、解锁新鱼种来一步步扩张鱼塘版图。大量事件随机袭来，各类特殊机制鱼让鱼塘生态充满变数与趣味，每次游玩游戏都能体验到新的乐趣。',
-                    desc3: '活泼可爱的各式鱼类搭配沉浸式动态鱼塘，通过努力一步步解锁新内容让收集过程充满成就感。游戏节奏轻松休闲，适合碎片化时间随时打开收鱼、卖鱼、解锁更多新内容。',
-                    cover: 'images/game/FISHFARM/cover.png',
-                    meta: {
-                        '最新版本': 'v1.2-web',
-                        '游戏类型': '放置养成',
-                        '发布平台': 'Web',
-                        '最近更新': '2026-07-12',
-                        '核心玩法': '鱼类收集 · 事件养成',
-                        '语言支持': '中文'
-                    },
-                    features: [
-                        { icon: '🐟', title: '大量鱼类收集', desc: '大量珍奇可爱小鱼，等你收集解锁，培养独特种群与物种对抗，随心游玩！' },
-                        { icon: '🌊', title: '迎接随机事件', desc: '普通游戏过于乏味？随机事件带你体验独特乐趣，运筹帷幄成为养鱼大亨！' },
-                        { icon: '⚡', title: '特殊鱼类机制', desc: '物种对抗还是和谐相处？霸道大鱼捕食弱小邻居？动态生态互动真实有趣！' },
-                        { icon: '🦴', title: '远古之鱼传说', desc: '解锁稀有远古鱼类，见证独特内容与全新特效，探寻鱼塘内暗流涌动的秘密...' }
-                    ],
-                    screenshots: [
-                        'images/game/FISHFARM/screenshot_1.png',
-                        'images/game/FISHFARM/screenshot_2.png',
-                        'images/game/FISHFARM/screenshot_3.png',
-                        'images/game/FISHFARM/screenshot_4.png'
-                    ],
-                    videoUrl: '',
-                    tagline: '来鱼塘养成你的水下世界！'
-                }
-            };
-
-            const data = gameData[game] || gameData.geometry;
+            const data = GAME_DATA[game] || GAME_DATA.geometry;
 
             document.getElementById('gameTitle').textContent = data.title;
             document.getElementById('gameSubtitle').textContent = data.subtitle;
@@ -1249,9 +1213,14 @@
                 </div>
             `).join('');
 
-            // 更新视频链接和CTA按钮
+            // 更新游戏试玩/视频链接和CTA按钮
             const videoBtn = document.querySelector('.cta-section .btn-primary');
-            if (data.videoUrl) {
+            if (data.gameUrl) {
+                videoBtn.href = data.gameUrl;
+                videoBtn.textContent = '立即试玩';
+                videoBtn.target = '';
+                videoBtn.rel = '';
+            } else if (data.videoUrl) {
                 videoBtn.href = data.videoUrl;
                 videoBtn.textContent = '观看宣传视频';
                 videoBtn.target = '_blank';
@@ -1262,6 +1231,9 @@
                 videoBtn.target = '';
                 videoBtn.rel = '';
             }
+
+            // 显示内容（防闪烁）
+            document.querySelector('.detail-content').classList.add('loaded');
 
             // 重新注册滚动观察器
             setTimeout(() => {
