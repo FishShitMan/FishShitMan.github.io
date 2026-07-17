@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="icon/DX_Logo_white.png" type="image/png">
     <title>DoubleX GameStudio | 游戏开发工作室</title>
     <style>
         @font-face {
@@ -711,10 +712,38 @@
             background: var(--black);
         }
 
-        .news-timeline {
+        .news-timeline-wrap {
             max-width: 800px;
             margin: 0 auto;
             position: relative;
+        }
+
+        .news-timeline-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(transparent, var(--black) 80%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .news-timeline {
+            max-height: 415px;
+            overflow-y: auto;
+            padding-right: 5px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gray-600) transparent;
+        }
+
+        .news-timeline::-webkit-scrollbar {
+            width: 4px;
+        }
+        .news-timeline::-webkit-scrollbar-thumb {
+            background: var(--gray-600);
+            border-radius: 2px;
         }
 
         .news-timeline::before {
@@ -730,7 +759,11 @@
         .news-item {
             padding-left: 60px;
             position: relative;
-            margin-bottom: 50px;
+            margin-bottom: 35px;
+        }
+
+        .news-item:last-child {
+            margin-bottom: 10px;
         }
 
         .news-item::before {
@@ -754,15 +787,15 @@
         }
 
         .news-item h3 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .news-item p {
             color: var(--gray-400);
-            line-height: 1.7;
-            font-size: 15px;
+            line-height: 1.6;
+            font-size: 14px;
         }
 
         /* ===== CONTACT 区域 ===== */
@@ -1387,20 +1420,20 @@
                     <span class="icon">🗡️</span>
                 </div>
                 <div class="project-overlay">
-                    <h3>失落王朝</h3>
-                    <p>像素风格 rogue-like 地牢探险</p>
+                    <h3>螺旋塔</h3>
+                    <p>卡通风格 轻度肉鸽 地牢探险</p>
                     <span class="tag">像素 · Rogue-like</span>
                     <a class="nav-link disabled" href="javascript:;" data-game="lost-dynasty">即将推出</a>
                 </div>
             </div>
             <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-url="" data-game="dreamweaver">
                 <div class="project-bg">
-                    <span class="icon">🧩</span>
+                    <span class="icon">☣️</span>
                 </div>
                 <div class="project-overlay">
-                    <h3>梦境编织者</h3>
-                    <p>解谜叙事冒险游戏，探索潜意识世界</p>
-                    <span class="tag">解谜 · 叙事</span>
+                    <h3>异种</h3>
+                    <p>像素风格 动作游戏 多主角多视角</p>
+                    <span class="tag">动作 · 角色扮演</span>
                     <a class="nav-link disabled" href="javascript:;" data-game="dreamweaver">即将推出</a>
                 </div>
             </div>
@@ -1419,7 +1452,7 @@
                 <div class="team-avatar">🧑‍💻</div>
                 <h3>PencilboX</h3>
                 <div class="role">主程</div>
-                <p>全栈游戏开发者，4年游戏开发经验，热爱技术与创新。</p>
+                <p>全栈游戏开发者，6年游戏开发经验，热爱技术与创新。</p>
             </div>
             <div class="team-card reveal" style="transition-delay: 0.15s;">
                 <div class="team-avatar">🎨</div>
@@ -1434,21 +1467,33 @@
     <section class="news" id="news">
         <h2 class="section-title reveal">最新动态</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">LATEST NEWS</p>
-        <div class="news-timeline">
-            <div class="news-item reveal-left">
-                <div class="news-date">2026.07.12</div>
-                <h3>🐟 《养鱼大亨》v1.2web 版本更新上线</h3>
-                <p>新增全新事件、全新鱼种、全新机制，大量物种平衡重构，为您带来更沉浸式的养鱼体验！。</p>
-            </div>
-            <div class="news-item reveal-left" style="transition-delay: 0.1s;">
-                <div class="news-date">2026.06.15</div>
-                <h3>🎮 《几何》随机地图系统完成</h3>
-                <p>模板房间随机排列组合功能已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
-            </div>
-            <div class="news-item reveal-left" style="transition-delay: 0.2s;">
-                <div class="news-date">2026.04.01</div>
-                <h3>⚙️ 《几何》核心玩法原型完成</h3>
-                <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制获得团队一致好评。</p>
+        <div class="news-timeline-wrap">
+            <div class="news-timeline">
+                <div class="news-item reveal-left">
+                    <div class="news-date">2026.07.16</div>
+                    <h3>🐟 《养鱼大亨》v1.3 更新上线</h3>
+                    <p>新增电鳗、灯笼鱼、远古存在专属任务，事件系统持久化不丢失进度，新手保护期与前期增益让上手更轻松。</p>
+                </div>
+                <div class="news-item reveal-left" style="transition-delay: 0.05s;">
+                    <div class="news-date">2026.07.12</div>
+                    <h3>🐟 《养鱼大亨》v1.2 更新上线</h3>
+                    <p>超级赤潮事件来袭，新增电鳗、灯笼鱼等深海鱼类，电鳗放电与灯笼鱼捕食机制带来全新生态互动体验。</p>
+                </div>
+                <div class="news-item reveal-left" style="transition-delay: 0.1s;">
+                    <div class="news-date">2025.07.09</div>
+                    <h3>🐟 《养鱼大亨》v1.1 更新上线</h3>
+                    <p>游戏体验全面优化，鱼群游动交互更流畅自然，平衡性调整与稳定性修复，为玩家带来更沉浸的养鱼乐趣。</p>
+                </div>
+                <div class="news-item reveal-left" style="transition-delay: 0.15s;">
+                    <div class="news-date">2026.06.15</div>
+                    <h3>🎮 《几何》随机地图系统完成</h3>
+                    <p>模板房间随机排列组合功能已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
+                </div>
+                <div class="news-item reveal-left" style="transition-delay: 0.2s;">
+                    <div class="news-date">2026.04.01</div>
+                    <h3>⚙️ 《几何》核心玩法原型完成</h3>
+                    <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制获得团队一致好评。</p>
+                </div>
             </div>
         </div>
     </section>
