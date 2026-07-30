@@ -13,11 +13,11 @@ const GAME_DATA = {
         desc3: '整体基调融合赛博朋克、科幻与复古未来风格，低明度配色营造"被压抑的张力"，角色头部点缀高饱和纯色彰显鲜明个性。规则几何图形代表玩家一方，不规则扭曲图形为敌对阵营，形成强烈的视觉对立。',
         cover: 'images/art/GEOMETRY/《几何》宣传图_1.png',
         meta: {
-            '预计上线': '2027 年 7 月',
+            '最新版本': 'dev0.1',
             '游戏类型': '2D 平台射击',
             '发布平台': 'Steam / itch.io',
-            '引擎': 'Godot Engine',
-            '最新版本': 'dev0.1',
+            '游戏引擎': 'Godot Engine',
+            '游戏玩法': '平台射击 · Rogue-like',
             '语言支持': '中文 / English'
         },
         features: [
@@ -33,7 +33,9 @@ const GAME_DATA = {
             'images/game/GEOMETRY/《几何》游戏截图_4.jpg'
         ],
         videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493',
-        tagline: '准备好迎接几何弹幕的洗礼了吗？'
+        tagline: '准备好迎接几何弹幕的洗礼了吗？',
+        // Hero 区域右侧跳转按钮
+        action: { type: 'video', url: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493', text: '观看视频' }
     },
     fishfarm: {
         key: 'fishfarm',
@@ -45,11 +47,11 @@ const GAME_DATA = {
         desc3: '活泼可爱的各式鱼类搭配沉浸式动态鱼塘，通过努力一步步解锁新内容让收集过程充满成就感。游戏节奏轻松休闲，适合碎片化时间随时打开收鱼、卖鱼、解锁更多新内容。',
         cover: 'images/game/FISHFARM/cover.png',
         meta: {
-            '最新版本': 'v1.2-web',
+            '最新版本': 'v1.4-web',
             '游戏类型': '放置养成',
             '发布平台': 'Web',
-            '最近更新': '2026-07-12',
-            '核心玩法': '鱼类收集 · 事件养成',
+            '游戏引擎': 'HTML5 / JavaScript',
+            '游戏玩法': '鱼类收集 · 事件养成',
             '语言支持': '中文'
         },
         features: [
@@ -66,6 +68,8 @@ const GAME_DATA = {
         ],
         gameUrl: '../game/index.html',
         videoUrl: '',
-        tagline: '来鱼塘养成你的水下世界！'
+        tagline: '来鱼塘养成你的水下世界！',
+        // Hero 区域右侧跳转按钮
+        action: { type: 'play', url: '../game/index.html', text: '立即试玩' }
     }
 };

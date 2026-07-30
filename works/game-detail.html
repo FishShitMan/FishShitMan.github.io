@@ -6,243 +6,32 @@
     <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
     <title id="pageTitle">游戏详情 | DoubleX GameStudio</title>
     <meta name="description" id="pageDesc" content="DoubleX GameStudio 游戏详情页面">
-    <!-- 动态数据加载前先根据 URL 参数设置 meta 信息 -->
-    <script>
-        (function() {
-            var gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
-            var titleMap = { geometry: '几何 - 像素科幻弹幕射击', fishfarm: '养鱼大亨 - 放置养成鱼类收集' };
-            var descMap = { geometry: '《几何》极简几何美学×极致弹幕挑战 — DoubleX GameStudio', fishfarm: '《养鱼大亨》鱼类收集养成放置模拟游戏 — DoubleX GameStudio' };
-            document.title = (titleMap[gameKey] || '几何') + ' | DoubleX GameStudio';
-            var desc = document.getElementById('pageDesc');
-            if (desc) desc.content = descMap[gameKey] || 'DoubleX GameStudio 游戏详情页面';
-        })();
-    </script>
-    <!-- 游戏数据 -->
-    <script src="games-data.js"></script>
+    <link rel="stylesheet" href="../assets/common.css">
     <style>
-        /* ===== 全局重置 & 基础样式 ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --black: #000000;
-            --white: #ffffff;
-            --gray-100: #f5f5f5;
-            --gray-200: #e0e0e0;
-            --gray-300: #b0b0b0;
-            --gray-400: #808080;
-            --gray-500: #505050;
-            --gray-600: #303030;
-            --gray-700: #1a1a1a;
-            --gray-800: #0d0d0d;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: var(--black);
-            color: var(--white);
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* ===== 自定义光标 ===== */
-        .cursor-dot {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: #ffffff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            box-shadow: 0 0 25px #ffffff,
-                        0 0 50px rgba(255, 255, 255, 0.7),
-                        0 0 80px rgba(255, 255, 255, 0.4);
-            transform: translate(-50%, -50%);
-        }
-
-        .cursor-ring {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            border: 2.5px solid var(--white);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99998;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5),
-                        inset 0 0 15px rgba(255, 255, 255, 0.08);
-            transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-        }
-
-        .cursor-ring.active {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--gray-100);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
-                        inset 0 0 25px rgba(255, 255, 255, 0.08);
-        }
-
-        .cursor-ripple {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 1.5px solid var(--white);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99997;
-            transform: translate(-50%, -50%);
-            animation: rippleOut 0.7s ease-out forwards;
-        }
-
-        @keyframes rippleOut {
-            0% { width: 20px; height: 20px; opacity: 1; }
-            100% { width: 120px; height: 120px; opacity: 0; }
-        }
-
-        /* ===== 粒子背景 Canvas ===== */
-        #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* ===== 导航栏 ===== */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-            transition: all 0.4s ease;
-            background: transparent;
-        }
-
-        .navbar.scrolled {
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(20px);
-            padding: 15px 50px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--white);
-            text-decoration: none;
-        }
-
-        .logo .highlight-x {
-            color: var(--gray-100);
-            font-size: 34px;
-            font-weight: 900;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 35px;
-        }
-
-        .nav-links a {
-            color: var(--gray-300);
+        /* ===== 导航栏返回主页 ===== */
+        .nav-back-link {
+            color: var(--gray-400);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             letter-spacing: 1px;
             text-transform: uppercase;
             transition: all 0.3s ease;
-            position: relative;
-            padding: 5px 0;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--white);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover {
-            color: var(--white);
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .menu-toggle {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-            gap: 6px;
-        }
-
-        .menu-toggle span {
-            width: 28px;
-            height: 2px;
-            background: var(--white);
-            transition: all 0.3s ease;
-        }
-
-        .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-        .menu-toggle.active span:nth-child(2) { opacity: 0; }
-        .menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
-        }
-
-        /* ===== 返回链接 ===== */
-        .back-link {
-            position: fixed;
-            top: 100px;
-            left: 50px;
-            z-index: 999;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: var(--gray-400);
-            text-decoration: none;
-            font-size: 13px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
+            gap: 8px;
         }
 
-        .back-link:hover {
+        .nav-back-link:hover {
             color: var(--white);
-            gap: 15px;
         }
 
-        .back-link .arrow {
-            font-size: 18px;
+        .nav-back-link .arrow {
+            font-size: 16px;
             transition: transform 0.3s ease;
         }
 
-        .back-link:hover .arrow {
+        .nav-back-link:hover .arrow {
             transform: translateX(-5px);
         }
 
@@ -303,7 +92,7 @@
             font-weight: 900;
             letter-spacing: 8px;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin-bottom: 0;
             text-shadow: 0 0 60px rgba(0,0,0,0.8);
         }
 
@@ -311,6 +100,57 @@
             font-size: 16px;
             color: var(--gray-400);
             letter-spacing: 3px;
+        }
+
+        /* Hero 操作按钮 — 与 subtitle 同行，贴右，底部对齐 */
+        .hero-title-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-subtitle-row {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .hero-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border: 1.5px solid var(--white);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: all 0.35s ease;
+            background: transparent;
+            white-space: nowrap;
+        }
+
+        .hero-action-btn:hover {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .hero-action-btn.disabled {
+            border-color: var(--gray-600);
+            color: var(--gray-500);
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .hero-action-btn.disabled:hover {
+            background: transparent;
+            color: var(--gray-500);
+            box-shadow: none;
         }
 
         /* ===== 内容区域 ===== */
@@ -357,7 +197,11 @@
             margin-bottom: 18px;
         }
 
-        /* 详情元数据 */
+        /* 详情元数据 — padding-top 使 meta-list 首行与左侧正文首行对齐 */
+        .reveal-right {
+            padding-top: 40px;
+        }
+
         .meta-list {
             list-style: none;
             padding: 30px;
@@ -528,21 +372,6 @@
             border-bottom: 1px solid var(--gray-700);
         }
 
-        /* 数据加载前隐藏动态内容防止闪烁 */
-        .detail-content .info-grid,
-        .detail-content .features-section,
-        .detail-content .screenshots-section,
-        .detail-content .cta-section {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .detail-content.loaded .info-grid,
-        .detail-content.loaded .features-section,
-        .detail-content.loaded .screenshots-section,
-        .detail-content.loaded .cta-section {
-            opacity: 1;
-        }
-
         .cta-section p {
             color: var(--gray-400);
             font-size: 16px;
@@ -587,123 +416,22 @@
             color: var(--black);
         }
 
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 50px;
-            border-top: 1px solid var(--gray-700);
-            background: var(--black);
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer p {
-            color: var(--gray-500);
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-
-        .footer .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin-bottom: 20px;
-        }
-
-        .footer .footer-links a {
-            color: var(--gray-400);
-            text-decoration: none;
-            font-size: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        .footer .footer-links a:hover {
-            color: var(--white);
-        }
-
-        /* 回到顶部按钮 */
-        .back-to-top {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            width: 48px;
-            height: 48px;
-            background: transparent;
-            border: 2px solid var(--gray-600);
-            color: var(--white);
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 5000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* 数据加载前隐藏动态内容防止闪烁 */
+        .detail-content .info-grid,
+        .detail-content .features-section,
+        .detail-content .screenshots-section,
+        .detail-content .cta-section {
             opacity: 0;
-            transform: translateY(20px);
-            pointer-events: none;
-            transition: all 0.4s ease;
+            transition: opacity 0.3s ease;
         }
-
-        .back-to-top.visible {
+        .detail-content.loaded .info-grid,
+        .detail-content.loaded .features-section,
+        .detail-content.loaded .screenshots-section,
+        .detail-content.loaded .cta-section {
             opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
         }
 
-        .back-to-top:hover {
-            border-color: var(--white);
-            background: var(--white);
-            color: var(--black);
-            transform: translateY(-4px);
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-        }
-
-        /* 滚动动画 */
-        .reveal {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: all 0.8s ease;
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .reveal-left {
-            opacity: 0;
-            transform: translateX(-60px);
-            transition: all 0.8s ease;
-        }
-
-        .reveal-left.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .reveal-right {
-            opacity: 0;
-            transform: translateX(60px);
-            transition: all 0.8s ease;
-        }
-
-        .reveal-right.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== 响应式设计 ===== */
+        /* ===== 响应式 ===== */
         @media (max-width: 1024px) {
             .detail-hero .hero-info {
                 padding: 0 40px;
@@ -722,9 +450,8 @@
             .screenshots-grid {
                 grid-template-columns: 1fr;
             }
-            .back-link {
-                left: 30px;
-                top: 90px;
+            .nav-back-link {
+                font-size: 13px;
             }
         }
 
@@ -744,43 +471,12 @@
                 font-size: 32px;
                 letter-spacing: 4px;
             }
-            .navbar {
-                padding: 15px 25px;
-            }
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: rgba(0, 0, 0, 0.98);
-                flex-direction: column;
-                padding: 30px;
-                gap: 25px;
-                border-bottom: 1px solid var(--gray-700);
-            }
-            .nav-links.active {
-                display: flex;
-            }
-            .menu-toggle {
-                display: flex;
-            }
-            .back-link {
-                top: 80px;
-                left: 15px;
+            .nav-back-link {
                 font-size: 11px;
             }
             .cta-section .btn-outline {
                 margin-left: 0;
                 margin-top: 15px;
-            }
-            body {
-                cursor: auto;
-            }
-            .cursor-dot,
-            .cursor-ring,
-            .cursor-ripple {
-                display: none !important;
             }
         }
 
@@ -797,6 +493,19 @@
             }
         }
     </style>
+    <!-- 动态数据加载前先根据 URL 参数设置 meta 信息 -->
+    <script>
+        (function() {
+            var gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
+            var titleMap = { geometry: '几何 - 像素科幻弹幕射击', fishfarm: '养鱼大亨 - 放置养成鱼类收集' };
+            var descMap = { geometry: '《几何》极简几何美学×极致弹幕挑战 — DoubleX GameStudio', fishfarm: '《养鱼大亨》鱼类收集养成放置模拟游戏 — DoubleX GameStudio' };
+            document.title = (titleMap[gameKey] || '几何') + ' | DoubleX GameStudio';
+            var desc = document.getElementById('pageDesc');
+            if (desc) desc.content = descMap[gameKey] || 'DoubleX GameStudio 游戏详情页面';
+        })();
+    </script>
+    <!-- 游戏数据 -->
+    <script src="games-data.js"></script>
 </head>
 <body>
 
@@ -809,13 +518,15 @@
 
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
-        <a href="../index.html" class="logo">Double<span class="highlight-x">X</span></a>
+        <a href="../index.html" class="nav-back-link">
+            <span class="arrow">&#9664;</span> 返回主页
+        </a>
         <ul class="nav-links" id="navLinks">
-            <li><a href="../index.html">首页</a></li>
-            <li><a href="../index.html#about">关于</a></li>
-            <li><a href="../index.html#projects">作品</a></li>
-            <li><a href="../index.html#team">团队</a></li>
-            <li><a href="../index.html#contact">联系</a></li>
+            <li><a href="../index.html" class="gray-link">首页</a></li>
+            <li><a href="../index.html#about" class="gray-link">关于</a></li>
+            <li><a href="../index.html#projects" class="gray-link">作品</a></li>
+            <li><a href="../index.html#team" class="gray-link">团队</a></li>
+            <li><a href="../index.html#contact" class="gray-link">联系</a></li>
         </ul>
         <div class="menu-toggle" id="menuToggle">
             <span></span>
@@ -824,126 +535,25 @@
         </div>
     </nav>
 
-    <!-- ===== 返回链接 ===== -->
-    <a href="../index.html#projects" class="back-link" id="backLink">
-        <span class="arrow">&#9664;</span> 返回作品
-    </a>
-
     <!-- ===== Hero 封面横幅 ===== -->
     <section class="detail-hero" id="gameHero">
-        <img class="hero-cover" src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何游戏封面" id="heroCover">
+        <img class="hero-cover" src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="" id="heroCover">
         <div class="hero-gradient"></div>
         <div class="hero-info">
             <span class="game-badge" id="gameBadge">✦ 弹幕 · 几何</span>
-            <h1 id="gameTitle">几何</h1>
-            <p class="subtitle" id="gameSubtitle">极简几何美学 × 极致弹幕挑战</p>
+            <div class="hero-title-row">
+                <h1 id="gameTitle">几何</h1>
+            </div>
+            <div class="hero-subtitle-row">
+                <p class="subtitle" id="gameSubtitle">极简几何美学 × 极致弹幕挑战</p>
+                <a class="hero-action-btn" id="heroActionBtn" href="javascript:;" target="_blank" rel="noopener">观看视频</a>
+            </div>
         </div>
     </section>
 
-    <!-- ===== 内容区域 ===== -->
-    <div class="detail-content">
-
-        <!-- 游戏介绍 + 元数据 -->
-        <div class="info-grid">
-            <div class="info-left reveal-left">
-                <h2>关于游戏</h2>
-                <p id="gameDesc">
-                    《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合了科幻、硬核、横板闯关、射击与 roguelike 等元素。
-                    玩家可选择众多角色中的其一进行控制，在由数个模板房间随机排列组合而成的关卡中杀出一条血路，
-                    并在混沌的世界中探知"几何"为何降临，寻找"几何"与"自我"之间相连的意义。
-                </p>
-                <p id="gameDesc2">
-                    游戏强调"有得必有失"——获取强大力量时必须付出代价。玩家需要持续思考留下真正有用的力量、武器或道具，
-                    过于繁杂的搭配反而会陷入不利处境。每张地图最后都设有强大 BOSS，击败后获得独特能力与通往下一关的钥匙。
-                </p>
-                <p id="gameDesc3">
-                    整体基调融合赛博朋克、科幻与复古未来风格，低明度配色营造"被压抑的张力"，角色头部点缀高饱和纯色彰显鲜明个性。
-                    规则几何图形代表玩家一方，不规则扭曲图形为敌对阵营，形成强烈的视觉对立。
-                </p>
-            </div>
-            <div class="reveal-right">
-                <ul class="meta-list">
-                    <li>
-                        <span class="meta-label">发布日期</span>
-                        <span class="meta-value">2025 年 12 月</span>
-                    </li>
-                    <li>
-                        <span class="meta-label">游戏类型</span>
-                        <span class="meta-value">弹幕射击 / 动作</span>
-                    </li>
-                    <li>
-                        <span class="meta-label">游戏平台</span>
-                        <span class="meta-value">PC / Mac</span>
-                    </li>
-                    <li>
-                        <span class="meta-label">引擎</span>
-                        <span class="meta-value">Unity Engine</span>
-                    </li>
-                    <li>
-                        <span class="meta-label">最新版本</span>
-                        <span class="meta-value">v1.2.3</span>
-                    </li>
-                    <li>
-                        <span class="meta-label">语言支持</span>
-                        <span class="meta-value">中文 / English</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 游戏特色 -->
-        <div class="features-section">
-            <h2 class="reveal">游戏特色</h2>
-            <div class="features-grid">
-                <div class="feature-card reveal" style="transition-delay: 0.1s;">
-                    <div class="feature-icon">🔺</div>
-                    <h3>极简几何美学</h3>
-                    <p>以三角形、正方形、圆形等基础几何图形打造独一无二的视觉风格，每一帧都是设计艺术。</p>
-                </div>
-                <div class="feature-card reveal" style="transition-delay: 0.2s;">
-                    <div class="feature-icon">⚡</div>
-                    <h3>极致弹幕挑战</h3>
-                    <p>精心编排的弹幕模式，从温和到疯狂逐级递进，挑战你的反应速度极限。</p>
-                </div>
-                <div class="feature-card reveal" style="transition-delay: 0.3s;">
-                    <div class="feature-icon">🎵</div>
-                    <h3>原创电音配乐</h3>
-                    <p>专为游戏打造的电子音乐，节奏与弹幕模式完美同步，让每一次闪避都踩在节拍上。</p>
-                </div>
-                <div class="feature-card reveal" style="transition-delay: 0.4s;">
-                    <div class="feature-icon">🏆</div>
-                    <h3>全球排行榜</h3>
-                    <p>与世界各地的玩家同台竞技，在无尽模式中冲击最高分，争夺排行榜桂冠。</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 游戏截图 -->
-        <div class="screenshots-section">
-            <h2 class="reveal">游戏截图</h2>
-            <div class="screenshots-grid">
-                <div class="screenshot-item reveal" style="transition-delay: 0.1s;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_1.jpg" alt="几何游戏截图1">
-                </div>
-                <div class="screenshot-item reveal" style="transition-delay: 0.2s;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_2.jpg" alt="几何游戏截图2">
-                </div>
-                <div class="screenshot-item reveal" style="transition-delay: 0.3s;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_3.jpg" alt="几何游戏截图3">
-                </div>
-                <div class="screenshot-item reveal" style="transition-delay: 0.4s;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_4.jpg" alt="几何游戏截图4">
-                </div>
-            </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="cta-section reveal">
-            <p id="ctaTagline">准备好迎接几何弹幕的洗礼了吗？</p>
-            <a href="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493" class="btn btn-primary" target="_blank" rel="noopener">观看宣传视频</a>
-            <a href="index.html" class="btn btn-outline">浏览更多截图</a>
-        </div>
-
+    <!-- ===== 内容区域（动态渲染） ===== -->
+    <div class="detail-content" id="detailContent">
+        <!-- 内容完全由 JS 动态生成 -->
     </div>
 
     <!-- ===== Footer ===== -->
@@ -961,295 +571,116 @@
     <!-- ===== 回到顶部按钮 ===== -->
     <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
 
+    <!-- ===== 公共脚本 ===== -->
+    <script src="../assets/common.js"></script>
+
+    <!-- ===== 页面独有脚本 ===== -->
     <script>
         // ===================================================================
-        // 0. 回到顶部按钮
-        // ===================================================================
-        const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        });
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // ===================================================================
-        // 1. 粒子背景系统
-        // ===================================================================
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 150 };
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.baseSize = this.size;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.1;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (mouse.x !== null) {
-                    const dx = this.x - mouse.x;
-                    const dy = this.y - mouse.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < mouse.radius) {
-                        const force = (mouse.radius - dist) / mouse.radius;
-                        const dirX = dx / dist;
-                        const dirY = dy / dist;
-                        this.x += dirX * force * 3;
-                        this.y += dirY * force * 3;
-                    }
-                }
-                if (this.x < 0 || this.x > canvas.width ||
-                    this.y < 0 || this.y > canvas.height) {
-                    this.reset();
-                }
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            const count = Math.min(Math.floor((canvas.width * canvas.height) / 8000), 150);
-            particles = [];
-            for (let i = 0; i < count; i++) {
-                particles.push(new Particle());
-            }
-        }
-        initParticles();
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initParticles();
-        });
-
-        function drawConnections() {
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    const maxDist = 120;
-                    if (dist < maxDist) {
-                        const opacity = (1 - dist / maxDist) * 0.2;
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            drawConnections();
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        document.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-        document.addEventListener('mouseleave', () => {
-            mouse.x = null;
-            mouse.y = null;
-        });
-
-        // ===================================================================
-        // 2. 自定义光标
-        // ===================================================================
-        const cursorDot = document.getElementById('cursorDot');
-        const cursorRing = document.getElementById('cursorRing');
-        let ringX = 0, ringY = 0;
-        let mouseX = 0, mouseY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursorDot.style.left = mouseX + 'px';
-            cursorDot.style.top = mouseY + 'px';
-        });
-
-        function animateCursor() {
-            ringX += (mouseX - ringX) * 0.35;
-            ringY += (mouseY - ringY) * 0.35;
-            cursorRing.style.left = ringX + 'px';
-            cursorRing.style.top = ringY + 'px';
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        document.querySelectorAll('a, button, .feature-card, .screenshot-item, .btn').forEach(el => {
-            el.addEventListener('mouseenter', () => { cursorRing.classList.add('active'); });
-            el.addEventListener('mouseleave', () => { cursorRing.classList.remove('active'); });
-        });
-
-        document.addEventListener('click', (e) => {
-            const ripple = document.createElement('div');
-            ripple.className = 'cursor-ripple';
-            ripple.style.left = e.clientX + 'px';
-            ripple.style.top = e.clientY + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        });
-
-        if ('ontouchstart' in window) {
-            cursorDot.style.display = 'none';
-            cursorRing.style.display = 'none';
-        }
-
-        // ===================================================================
-        // 3. 移动端菜单
-        // ===================================================================
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
-        menuToggle.addEventListener('click', () => {
-            menuToggle.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                menuToggle.classList.remove('active');
-                navLinks.classList.remove('active');
-            });
-        });
-
-        // ===================================================================
-        // 4. 导航栏滚动效果
-        // ===================================================================
-        const navbar = document.getElementById('navbar');
-        const backLink = document.getElementById('backLink');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 80) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // ===================================================================
-        // 5. 滚动动画
-        // ===================================================================
-        const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-        revealElements.forEach(el => observer.observe(el));
-
-        // ===================================================================
-        // 6. URL 参数解析 - 支持多游戏动态数据
+        // 游戏详情 - 动态渲染
         // ===================================================================
         (function() {
-            const params = new URLSearchParams(window.location.search);
-            const game = params.get('game') || 'geometry';
-
-            const data = GAME_DATA[game] || GAME_DATA.geometry;
-
-            document.getElementById('gameTitle').textContent = data.title;
-            document.getElementById('gameSubtitle').textContent = data.subtitle;
-            document.getElementById('gameBadge').textContent = data.badge;
-            document.getElementById('gameDesc').textContent = data.desc;
-            document.getElementById('gameDesc2').textContent = data.desc2;
-            document.getElementById('gameDesc3').textContent = data.desc3;
-            document.getElementById('ctaTagline').textContent = data.tagline;
-            document.getElementById('heroCover').src = data.cover;
-
-            // 更新元数据
-            const metaList = document.querySelector('.meta-list');
-            metaList.innerHTML = Object.entries(data.meta).map(([label, value]) => `
-                <li>
-                    <span class="meta-label">${label}</span>
-                    <span class="meta-value">${value}</span>
-                </li>
-            `).join('');
-
-            // 更新特色
-            const featuresGrid = document.querySelector('.features-grid');
-            featuresGrid.innerHTML = data.features.map((f, i) => `
-                <div class="feature-card reveal" style="transition-delay: ${0.1 * (i + 1)}s;">
-                    <div class="feature-icon">${f.icon}</div>
-                    <h3>${f.title}</h3>
-                    <p>${f.desc}</p>
-                </div>
-            `).join('');
-
-            // 更新截图
-            const screenshotsGrid = document.querySelector('.screenshots-grid');
-            screenshotsGrid.innerHTML = data.screenshots.map((src, i) => `
-                <div class="screenshot-item reveal" style="transition-delay: ${0.1 * (i + 1)}s;">
-                    <img src="${src}" alt="${data.title}游戏截图${i + 1}">
-                </div>
-            `).join('');
-
-            // 更新游戏试玩/视频链接和CTA按钮
-            const videoBtn = document.querySelector('.cta-section .btn-primary');
-            if (data.gameUrl) {
-                videoBtn.href = data.gameUrl;
-                videoBtn.textContent = '立即试玩';
-                videoBtn.target = '';
-                videoBtn.rel = '';
-            } else if (data.videoUrl) {
-                videoBtn.href = data.videoUrl;
-                videoBtn.textContent = '观看宣传视频';
-                videoBtn.target = '_blank';
-                videoBtn.rel = 'noopener';
-            } else {
-                videoBtn.href = 'javascript:;';
-                videoBtn.textContent = '即将体验';
-                videoBtn.target = '';
-                videoBtn.rel = '';
+            const gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
+            const data = GAME_DATA[gameKey];
+            if (!data) {
+                document.getElementById('detailContent').innerHTML = '<div style="text-align:center;padding:100px 0;color:var(--gray-400)"><h2>游戏数据未找到</h2><p style="margin-top:20px">请返回作品页面选择游戏。</p></div>';
+                return;
             }
 
-            // 显示内容（防闪烁）
-            document.querySelector('.detail-content').classList.add('loaded');
+            // 更新 Hero
+            document.getElementById('heroCover').src = data.cover;
+            document.getElementById('heroCover').alt = data.title + '封面';
+            document.getElementById('gameBadge').textContent = data.badge;
+            document.getElementById('gameTitle').textContent = data.title;
+            document.getElementById('gameSubtitle').textContent = data.subtitle;
 
-            // 重新注册滚动观察器
-            setTimeout(() => {
-                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-            }, 100);
+            // Hero 右侧操作按钮
+            const heroBtn = document.getElementById('heroActionBtn');
+            if (data.action) {
+                if (data.action.type === 'coming') {
+                    heroBtn.classList.add('disabled');
+                    heroBtn.href = 'javascript:;';
+                    heroBtn.textContent = data.action.text || '敬请期待';
+                } else {
+                    heroBtn.classList.remove('disabled');
+                    heroBtn.href = data.action.url || 'javascript:;';
+                    heroBtn.target = data.action.type === 'play' ? '_self' : '_blank';
+                    heroBtn.rel = data.action.type === 'play' ? '' : 'noopener';
+                    heroBtn.textContent = data.action.text || '了解更多';
+                }
+            }
 
-            // 更新标题
-            document.title = data.title + ' | DoubleX GameStudio';
+            // 构建内容
+            const content = document.getElementById('detailContent');
+
+            // 信息网格
+            let metaHTML = '';
+            Object.entries(data.meta).forEach(([label, value]) => {
+                metaHTML += '<li><span class="meta-label">' + label + '</span><span class="meta-value">' + value + '</span></li>';
+            });
+
+            const infoGrid = document.createElement('div');
+            infoGrid.className = 'info-grid';
+            infoGrid.innerHTML = `
+                <div class="info-left reveal-left">
+                    <h2>关于游戏</h2>
+                    <p>${data.desc}</p>
+                    <p>${data.desc2}</p>
+                    <p>${data.desc3}</p>
+                </div>
+                <div class="reveal-right">
+                    <ul class="meta-list">${metaHTML}</ul>
+                </div>
+            `;
+            content.appendChild(infoGrid);
+
+            // 游戏特色
+            if (data.features && data.features.length) {
+                const featuresSection = document.createElement('div');
+                featuresSection.className = 'features-section';
+                let featuresHTML = '<h2 class="reveal">游戏特色</h2><div class="features-grid">';
+                data.features.forEach((f, i) => {
+                    featuresHTML += '<div class="feature-card reveal" style="transition-delay: ' + (0.1 * (i + 1)) + 's;">'
+                        + '<div class="feature-icon">' + f.icon + '</div>'
+                        + '<h3>' + f.title + '</h3>'
+                        + '<p>' + f.desc + '</p>'
+                        + '</div>';
+                });
+                featuresHTML += '</div>';
+                featuresSection.innerHTML = featuresHTML;
+                content.appendChild(featuresSection);
+            }
+
+            // 游戏截图
+            if (data.screenshots && data.screenshots.length) {
+                const ssSection = document.createElement('div');
+                ssSection.className = 'screenshots-section';
+                let ssHTML = '<h2 class="reveal">游戏截图</h2><div class="screenshots-grid">';
+                data.screenshots.forEach((ss, i) => {
+                    ssHTML += '<div class="screenshot-item reveal" style="transition-delay: ' + (0.1 * (i + 1)) + 's;">'
+                        + '<img src="' + ss + '" alt="' + data.title + '截图' + (i + 1) + '">'
+                        + '</div>';
+                });
+                ssHTML += '</div>';
+                ssSection.innerHTML = ssHTML;
+                content.appendChild(ssSection);
+            }
+
+            // CTA 区域 — 从 data.action 获取主按钮内容
+            const ctaSection = document.createElement('div');
+            ctaSection.className = 'cta-section reveal';
+            let ctaHTML = '<p>' + data.tagline + '</p>';
+            if (data.action && data.action.type !== 'coming') {
+                const isExternal = data.action.type === 'video';
+                ctaHTML += '<a href="' + data.action.url + '" class="btn btn-primary" ' + (isExternal ? 'target="_blank" rel="noopener"' : '') + '>' + data.action.text + '</a>';
+            }
+            ctaHTML += '<a href="index.html" class="btn btn-outline">浏览画廊</a>';
+            ctaSection.innerHTML = ctaHTML;
+            content.appendChild(ctaSection);
+
+            // 标记加载完成
+            content.classList.add('loaded');
         })();
-
-        // ===================================================================
-        // 7. 控制台彩蛋
-        // ===================================================================
-        console.log('%c DoubleX GameStudio — 游戏详情 ', 'font-size: 24px; font-weight: bold; background: #000; color: #fff; padding: 10px 20px;');
-        console.log('%c 探索游戏的每一个细节 ', 'font-size: 14px; color: #888;');
     </script>
 
 </body>

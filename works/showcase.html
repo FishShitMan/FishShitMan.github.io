@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
+    <title>作品册 | DoubleX GameStudio</title>
+    <link rel="stylesheet" href="../assets/common.css">
+    <style>
+        body { overflow: hidden; height: 100vh; cursor: auto; }
+        html,body{width:100%;height:100%}
+
+        /* 模糊遮罩 — 背景层（覆盖 canvas + glow） */
+        .blur-overlay{position:fixed;inset:0;z-index:2;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .5s}
+        .blur-overlay.on{opacity:1}
+        /* 模糊遮罩 — UI层（覆盖 header + footer + hint） */
+        .ui-blur{position:fixed;inset:0;z-index:99;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .5s}
+        .ui-blur.on{opacity:1}
+
+        /* 导航 */
+        .navbar{position:fixed;top:0;left:0;width:100%;padding:18px 50px;z-index:30;display:flex;justify-content:space-between;align-items:center}
+        .navbar a{color:var(--gray-400);text-decoration:none;font-size:14px;font-weight:500;letter-spacing:1px;text-transform:uppercase;transition:all .3s;display:flex;align-items:center;gap:8px}
+        .navbar a:hover{color:var(--white)}
+        .navbar a .ar{font-size:16px;transition:.3s}
+        .navbar a:hover .ar{transform:translateX(-5px)}
+
+        .nav-links{display:flex;list-style:none;gap:30px}
+        .nav-links a{color:var(--gray-300);font-size:13px;padding:5px 0;position:relative}
+        .nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--white);transition:width .3s}
+        .nav-links a:hover{color:var(--white)}
+        .nav-links a:hover::after{width:100%}
+        .menu-toggle{display:none;flex-direction:column;cursor:pointer;gap:6px}
+        .menu-toggle span{width:28px;height:2px;background:var(--white);transition:all .3s}
+        .menu-toggle.active span:nth-child(1){transform:rotate(45deg)translate(6px,6px)}
+        .menu-toggle.active span:nth-child(2){opacity:0}
+        .menu-toggle.active span:nth-child(3){transform:rotate(-45deg)translate(6px,-6px)}
+
+        /* 背光 */
+        .glow{position:fixed;z-index:0;left:50%;top:50%;width:500px;height:500px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 65%);pointer-events:none;transition:opacity .5s}
+        .glow.hide{opacity:0}
+
+        /* ===== 页面主标题 ===== */
+        .page-header {
+            position: fixed; top: 80px; left: 0; width: 100%;
+            z-index: 5; text-align: center; pointer-events: none;
+            animation: fadeInDown 1s ease;
+        }
+        .page-header .header-badge {
+            display: inline-block; padding: 8px 20px;
+            border: 1px solid var(--gray-500); color: var(--gray-300);
+            font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        .page-header .header-title {
+            font-size: 64px; font-weight: 900; letter-spacing: 10px;
+            text-transform: uppercase; line-height: 1.1; margin-bottom: 10px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        .page-header .header-title .stroke-text {
+            -webkit-text-stroke: 2px var(--white); color: transparent;
+        }
+        .page-header .header-title .fill-text {
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-400) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-header .header-subtitle {
+            font-size: 15px; color: var(--gray-400); letter-spacing: 5px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* 3D */
+        .scene{position:fixed;inset:0;z-index:3;perspective:1800px;display:flex;align-items:center;justify-content:center;transition:transform .5s}
+        .scene.blur{transform:scale(.88)}
+        .stage{position:relative;width:0;height:0;margin:0 auto;transform-style:preserve-3d;transform:rotateX(-15deg)rotateY(0deg);transition:transform .5s cubic-bezier(.25,.8,.25,1)}
+
+        /* 卡片 */
+        .card{position:absolute;width:220px;height:220px;left:-110px;top:-110px;border-radius:12px;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
+        .card img{width:100%;height:100%;object-fit:cover;display:block}
+        .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
+        .card.highlight{border-color:var(--white);box-shadow:0 0 30px rgba(255,255,255,.25),0 0 60px rgba(255,255,255,.1)}
+
+        /* 展开卡片（全新独立元素，不干扰 stage） */
+        .exp-card{position:fixed!important;z-index:200;width:400px;height:400px;left:6%;top:50%;border-radius:12px;border:1.5px solid var(--white);background:var(--gray-800);overflow:hidden;box-shadow:0 0 80px rgba(255,255,255,.2),0 20px 60px rgba(0,0,0,.9);animation:popIn .4s cubic-bezier(.25,.8,.25,1) forwards}
+        .exp-card img{width:100%;height:100%;object-fit:cover;display:block}
+        .exp-card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
+        @keyframes popIn{0%{transform:translateY(-50%) scale(.6)}100%{transform:translateY(-50%) scale(1)}}
+        @keyframes popOut{0%{transform:translateY(-50%) scale(1);opacity:1}100%{transform:translateY(-50%) scale(.5);opacity:0}}
+
+        /* 面板 */
+        .panel{position:fixed;right:-520px;top:50%;transform:translateY(-50%);width:460px;max-width:38vw;z-index:199;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--gray-700);border-radius:16px;padding:45px 38px;transition:right .5s cubic-bezier(.25,.8,.25,1)}
+        .panel.open{right:5%}
+        .panel .b{display:inline-block;padding:6px 16px;border:1px solid var(--gray-500);color:var(--gray-300);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
+        .panel h2{font-size:32px;font-weight:900;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
+        .panel .s{font-size:14px;color:var(--gray-400);letter-spacing:2px;margin-bottom:22px}
+        .panel .d{color:var(--gray-300);font-size:14px;line-height:1.8;margin-bottom:28px}
+        .panel .a{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border:1.5px solid var(--white);color:var(--white);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:.35s}
+        .panel .a:hover{background:var(--white);color:var(--black)}
+
+        .hint{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:201;color:var(--gray-500);font-size:12px;letter-spacing:2px;opacity:0;transition:opacity .5s;pointer-events:none}
+        .hint.v{opacity:1}
+
+        .footer{position:fixed;bottom:0;left:0;width:100%;z-index:4;text-align:center;padding:20px 50px;border-top:1px solid var(--gray-700)}
+        .footer p{color:var(--gray-500);font-size:12px;letter-spacing:1px}
+
+        @media(max-width:1024px){
+            .exp-card{width:320px;height:320px;left:3%}
+            .panel{width:340px;padding:30px 25px}
+            .panel h2{font-size:26px}
+        }
+        @media(max-width:768px){
+            .navbar{padding:15px 25px;background:rgba(0,0,0,.75)}
+            .nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:rgba(0,0,0,.98);flex-direction:column;padding:30px;gap:25px;border-bottom:1px solid var(--gray-700)}
+            .nav-links.active{display:flex}
+            .menu-toggle{display:flex}
+            .navbar a{font-size:11px}
+            .card{width:150px;height:150px;left:-75px;top:-75px}
+            .card .e{font-size:50px}
+            .exp-card{width:80vw;height:80vw;max-width:320px;max-height:320px;left:10vw;top:15%}
+            .exp-card .e{font-size:60px}
+            .panel{display:none}
+            .glow{width:300px;height:300px}
+            .footer{padding:15px 25px}
+            .page-header { top: 60px; }
+            .page-header .header-title { font-size: 34px; letter-spacing: 4px; }
+            .page-header .header-badge { font-size: 10px; padding: 5px 14px; margin-bottom: 8px; }
+            .page-header .header-subtitle { font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="glow" id="glow"></div>
+<div class="blur-overlay" id="blurO"></div>
+<div class="ui-blur" id="uiBlur"></div>
+
+<nav class="navbar">
+    <a href="../index.html"><span class="ar">&#9664;</span> 返回主页</a>
+    <ul class="nav-links" id="nl">
+        <li><a href="../index.html#about">关于</a></li>
+        <li><a href="../index.html#projects">作品</a></li>
+        <li><a href="../index.html#team">团队</a></li>
+        <li><a href="../index.html#news">动态</a></li>
+        <li><a href="../index.html#contact">联系</a></li>
+    </ul>
+    <div class="menu-toggle" id="mt"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ===== 页面主标题 ===== -->
+<header class="page-header">
+    <div class="header-badge">✦ 作品展示</div>
+    <h1 class="header-title">
+        <span class="stroke-text">OUR</span>
+        <span class="fill-text"> GAMES</span>
+    </h1>
+    <p class="header-subtitle">✦ 游戏不息 创作不止 ✦</p>
+</header>
+
+<div class="scene" id="scene"><div class="stage" id="stage"></div></div>
+
+<div class="panel" id="panel">
+    <div class="b" id="b">✦</div>
+    <h2 id="t"></h2><p class="s" id="s"></p><p class="d" id="d"></p>
+    <a class="a" id="a" href="javascript:;">了解更多</a>
+</div>
+
+<div class="hint" id="hint">✦ 点击空白处关闭 ✦</div>
+<footer class="footer"><p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p></footer>
+
+<script src="../assets/common.js"></script>
+<script>
+(function(){
+'use strict';
+var D=[
+{t:'几何',s:'像素科幻 2D 平台射击',e:'🔺',i:'images/art/GEOMETRY/《几何》宣传图_1.png',b:'✦ 像素 · 射击',d:'《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合科幻、硬核闯关与 roguelike 元素。选择角色在随机生成的关卡中战斗，探寻「几何」与「自我」的意义。',a:{u:'game-detail.html?game=geometry',t:'了解更多'}},
+{t:'养鱼大亨',s:'放置养成 · 鱼类收集',e:'🐟',i:'',b:'✦ 养成 · 模拟',d:'《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，构建属于自己的水下生态世界。',a:{u:'game-detail.html?game=fishfarm',t:'了解更多'}},
+{t:'螺旋塔',s:'卡通风格 轻度肉鸽 地牢探险',e:'🗡️',i:'',b:'✦ 开发中',d:'一款卡通风格的轻度 Roguelike 地牢探险游戏，随机地图、丰富道具、爽快战斗。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}},
+{t:'异种',s:'像素风格 动作游戏',e:'☣️',i:'',b:'✦ 开发中',d:'一款像素风格的动作角色扮演游戏，多主角多视角叙事，探索分崩离析世界中的黑暗秘密。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}}
+];
+while(D.length<12){var n=D.length+1;D.push({t:'作品 #'+n,s:'开发中...',e:'❓',i:'',b:'✦ 敬请期待',d:'一个全新的游戏项目正在构思中，未来将带来更多惊喜。敬请关注我们的最新动态！',a:{u:'javascript:;',t:'敬请期待'}});}
+
+var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,R=430,ST=360/N,ra=0,hl=-1,lc=0,ex=null;
+
+// 构建卡片
+for(var i=0;i<N;i++){var d=D[i],el=document.createElement('div');el.className='card';el.dataset.idx=i;if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;el.appendChild(m)}else{var e=document.createElement('div');e.className='e';e.textContent=d.e;el.appendChild(e)}el.style.transform='rotateY('+i*ST+'deg) translateZ('+R+'px)';S.appendChild(el)}
+
+function gHL(){var n=((ra%360)+360)%360,md=360,idx=0;for(var i=0;i<N;i++){var net=((i*ST+ra)%360+360)%360,d=Math.abs(net);if(d>180)d=360-d;if(d<md){md=d;idx=i}}return md<12?idx:-1}
+
+function doHL(cs){
+ for(var j=0;j<cs.length;j++){
+  var el=cs[j],idx=parseInt(el.dataset.idx),net=((idx*ST+ra)%360+360)%360,deg=Math.min(net,360-net),op=1-(deg/180)*.55,br=1-(deg/180)*.65,isF=(idx===hl);
+  el.style.transform='rotateY('+idx*ST+'deg) translateZ('+R+'px)'+(isF?' translateY(-25px)':'');
+  el.style.opacity=op;el.style.filter='brightness('+br+')';el.style.pointerEvents=isF?'auto':'none';
+  if(isF)el.classList.add('highlight');else el.classList.remove('highlight');
+ }
+}
+
+function rd(anim){
+ S.style.transition=anim?'transform 0.5s cubic-bezier(0.25,0.8,0.25,1)':'none';
+ S.style.transform='rotateX(-15deg) rotateY('+ra+'deg)';
+ hl=gHL();var cs=S.querySelectorAll('.card');for(var j=0;j<cs.length;j++)cs[j].classList.remove('highlight');
+ if(anim){if(window._t)clearTimeout(window._t);window._t=setTimeout(function(){doHL(cs)},130)}else doHL(cs);
+}
+
+window.addEventListener('wheel',function(e){if(lc)return;e.preventDefault();ra+=e.deltaY>0?-ST:ST;rd(true)},{passive:false});
+
+// 展开 — 完全不影响 stage 内的卡片
+function ex2(idx){
+ if(lc)return;lc=true;
+ var d=D[idx];
+ // 创建全新独立展开卡片
+ var el=document.createElement('div');el.className='exp-card';
+ if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;el.appendChild(im)}
+ else{var em=document.createElement('div');em.className='e';em.textContent=d.e;el.appendChild(em)}
+ document.body.appendChild(el);ex=el;
+
+ BO.classList.add('on');UB.classList.add('on');E.classList.add('blur');G.classList.add('hide');H.classList.add('v');
+ B.textContent=d.b;T.textContent=d.t;S2.textContent=d.s;D2.textContent=d.d;
+ if(d.a.u&&d.a.u!=='javascript:;'){A.href=d.a.u;A.target='_self';A.textContent=d.a.t;A.style.display='inline-flex'}
+ else{A.href='javascript:;';A.textContent=d.a.t||'敬请期待'}
+ P.classList.add('open');
+}
+
+function cl(){
+ if(!lc||!ex)return;
+ P.classList.remove('open');BO.classList.remove('on');UB.classList.remove('on');E.classList.remove('blur');H.classList.remove('v');G.classList.remove('hide');
+ // 退出缩小动画
+ ex.style.animation='popOut .3s cubic-bezier(.25,.8,.25,1) forwards';
+ setTimeout(function(){
+  ex.remove();ex=null;
+  lc=false;rd(false);
+ },320);
+}
+
+E.addEventListener('click',function(e){if(lc&&e.target===E)cl()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lc)cl()});
+S.addEventListener('click',function(e){if(lc)return;if(hl<0)return;var c=e.target.closest('.card');if(!c)return;if(parseInt(c.dataset.idx)===hl)ex2(hl)});
+
+// 移动端菜单
+var mt=document.getElementById('mt'),nl=document.getElementById('nl');
+if(mt&&nl){mt.addEventListener('click',function(){mt.classList.toggle('active');nl.classList.toggle('active')})}
+
+rd(false);
+})();
+</script>
+</body>
+</html>

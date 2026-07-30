@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
+    <title>历史动态 | DoubleX GameStudio</title>
+    <link rel="stylesheet" href="../assets/common.css">
+    <style>
+        /* ===== 页面 Header ===== */
+        .page-header {
+            position: relative;
+            z-index: 1;
+            min-height: 45vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 150px 50px 80px;
+        }
+
+        .page-header .header-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 1px solid var(--gray-500);
+            color: var(--gray-300);
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .page-header .header-title {
+            font-size: 72px;
+            font-weight: 900;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .page-header .header-title .stroke-text {
+            -webkit-text-stroke: 2px var(--white);
+            color: transparent;
+        }
+
+        .page-header .header-title .fill-text {
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-400) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header .header-subtitle {
+            font-size: 16px;
+            color: var(--gray-400);
+            letter-spacing: 5px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        /* ===== 导航栏返回主页 ===== */
+        .nav-back-link {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back-link:hover {
+            color: var(--white);
+        }
+
+        .nav-back-link .arrow {
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-back-link:hover .arrow {
+            transform: translateX(-5px);
+        }
+
+        /* ===== 动态时间线 ===== */
+        .timeline-section {
+            position: relative;
+            z-index: 1;
+            padding: 0 50px 120px;
+        }
+
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--gray-600);
+        }
+
+        .timeline-item {
+            padding-left: 60px;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 8px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 2px solid var(--black);
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--gray-400);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .timeline-item h3 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .timeline-item p {
+            color: var(--gray-400);
+            line-height: 1.7;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .timeline-item .update-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            letter-spacing: 1px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .timeline-item .update-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 120px 25px 60px;
+            }
+
+            .page-header .header-title {
+                font-size: 34px;
+                letter-spacing: 4px;
+            }
+
+            .timeline-section {
+                padding: 0 25px 80px;
+            }
+
+            .nav-back-link {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-header .header-title {
+                font-size: 26px;
+                letter-spacing: 2px;
+            }
+
+            .page-header .header-title .stroke-text {
+                -webkit-text-stroke: 1px var(--white);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 自定义光标 ===== -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- ===== 粒子背景 Canvas ===== -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ===== 导航栏 ===== -->
+    <nav class="navbar" id="navbar">
+        <a href="../index.html" class="nav-back-link">
+            <span class="arrow">&#9664;</span> 返回主页
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="../index.html" class="gray-link">首页</a></li>
+            <li><a href="../index.html#about" class="gray-link">关于</a></li>
+            <li><a href="../index.html#projects" class="gray-link">作品</a></li>
+            <li><a href="../index.html#news" class="gray-link">动态</a></li>
+            <li><a href="../index.html#contact" class="gray-link">联系</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+
+    <!-- ===== 页面头部 ===== -->
+    <header class="page-header">
+        <div class="header-badge">✦ 历史动态</div>
+        <h1 class="header-title">
+            <span class="stroke-text">ALL</span>
+            <span class="fill-text"> NEWS</span>
+        </h1>
+        <p class="header-subtitle">✦ 跟随我们的每一步成长 ✦</p>
+    </header>
+
+    <!-- ===== 动态时间线 ===== -->
+    <section class="timeline-section">
+        <div class="timeline">
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2026.07.17</div>
+                <h3>🐟 《养鱼大亨》v1.4 内容更新</h3>
+                <p>日常任务现在可以自动刷新啦，不再是一锤子买卖。完成任务时能看到更加醒目的特效反馈，让成就感满满。</p>
+                <p>这次还带来了大量修复和调整，鱼塘生态更加平衡，整体游玩体验更顺滑。</p>
+                <div class="update-meta"><span>✨ 内容更新</span><span>🔧 体验优化</span></div>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2026.07.16</div>
+                <h3>🐟 《养鱼大亨》v1.3 内容更新</h3>
+                <p>新增了电鳗、灯笼鱼以及神秘的远古存在的专属任务链。现在就算关闭网页，游戏进度也不会丢失，随时随地回来继续养鱼。</p>
+                <p>新玩家前 1 分钟不会遇到突发事件，前 3 分钟好运概率更高，帮助大家轻松起步！</p>
+                <div class="update-meta"><span>✨ 内容更新</span><span>🛡️ 新手友好</span><span>🐟 新鱼类</span></div>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2026.07.12</div>
+                <h3>🐟 《养鱼大亨》v1.2 内容更新</h3>
+                <p>全新超级赤潮事件来袭！鱼塘将面临前所未有的生存考验。电鳗和灯笼鱼加入鱼塘，前者能够释放电流，后者是深海中幽幽发光的捕食者，生态互动更加丰富有趣。</p>
+                <p>鱼类价格全面调整，从入门级的孔雀鱼到传说中的远古存在，成长路径更加清晰，每一步都有新的惊喜。</p>
+                <div class="update-meta"><span>🌊 超级赤潮</span><span>🐟 新鱼类</span><span>⚖️ 价格调整</span></div>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2026.06.15</div>
+                <h3>🎮 《几何》demo初步成型</h3>
+                <p>模板房间、大量武器已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2026.04.01</div>
+                <h3>⚙️ 《几何》核心玩法原型完成</h3>
+                <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制成为玩法重心。</p>
+            </div>
+
+            <div class="timeline-item reveal">
+                <div class="timeline-date">2025.07.09</div>
+                <h3>🐟 《养鱼大亨》v1.1 优化更新</h3>
+                <p>鱼群游动效果全面升级！现在鱼儿们游起来更加自然顺滑，不会再出现卡顿或者瞬移的奇怪现象。</p>
+                <p>游戏稳定性得到显著提升，修复了大量导致数据丢失或卡死的隐患。整体体验更加沉浸，只管享受养鱼的乐趣就好。</p>
+                <div class="update-meta"><span>🐠 体验优化</span><span>🔧 稳定性提升</span></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="../index.html">首页</a>
+            <a href="../index.html#about">关于</a>
+            <a href="../index.html#projects">作品</a>
+            <a href="../index.html#news">动态</a>
+            <a href="../index.html#contact">联系</a>
+        </div>
+        <p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p>
+    </footer>
+
+    <!-- ===== 回到顶部按钮 ===== -->
+    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+
+    <!-- ===== 公共脚本 ===== -->
+    <script src="../assets/common.js"></script>
+
+</body>
+</html>
