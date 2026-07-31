@@ -73,10 +73,10 @@
         .scene.blur{transform:scale(.88)}
         .stage{position:relative;width:0;height:0;margin:0 auto;transform-style:preserve-3d;transform:rotateX(-15deg)rotateY(0deg);transition:transform .5s cubic-bezier(.25,.8,.25,1)}
 
-        /* 卡片 */
-        .card{position:absolute;width:220px;height:220px;left:-110px;top:-110px;border-radius:12px;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
+        /* 卡片（尺寸由 JS 动态计算注入） */
+        .card{position:absolute;border-radius:12px;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
         .card img{width:100%;height:100%;object-fit:cover;display:block}
-        .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
+        .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
         .card.highlight{border-color:var(--white);box-shadow:0 0 30px rgba(255,255,255,.25),0 0 60px rgba(255,255,255,.1)}
 
         /* 展开卡片（全新独立元素，不干扰 stage） */
@@ -113,12 +113,20 @@
             .nav-links.active{display:flex}
             .menu-toggle{display:flex}
             .navbar a{font-size:11px}
-            .card{width:150px;height:150px;left:-75px;top:-75px}
-            .card .e{font-size:50px}
-            .exp-card{width:80vw;height:80vw;max-width:320px;max-height:320px;left:10vw;top:15%}
+            .scene{touch-action:none;-webkit-touch-callout:none}
+            /* 展开卡片：独立动画锚定 top，不随 translateY 偏移 */
+            .exp-card{width:56vw;height:56vw;max-width:240px;max-height:240px;left:0;right:0;top:105px;margin:0 auto;animation:popInM .4s cubic-bezier(.25,.8,.25,1) forwards}
             .exp-card .e{font-size:60px}
-            .panel{display:none}
-            .glow{width:300px;height:300px}
+            @keyframes popInM{0%{transform:scale(.6)}100%{transform:scale(1)}}
+            @keyframes popOutM{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}
+            /* 面板改为底部滑出 Sheet */
+            .panel{display:block;right:0;left:0;top:auto;bottom:0;width:100%;max-width:100%;transform:translateY(100%);border:1px solid var(--gray-700);border-radius:20px 20px 0 0;overflow-x:hidden;padding:25px 22px 32px;transition:transform .35s cubic-bezier(.25,.8,.25,1)}
+            .panel::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:40px;height:4px;border-radius:2px;background:var(--gray-600)}
+            .panel.open{right:0;transform:translateY(0)}
+            .panel h2{font-size:24px}
+            .panel .d{font-size:13px}
+            .panel .a{display:block;width:fit-content;margin:20px auto 0}
+            .hint{display:none}
             .footer{padding:15px 25px}
             .page-header { top: 60px; }
             .page-header .header-title { font-size: 34px; letter-spacing: 4px; }
@@ -180,17 +188,41 @@ var D=[
 ];
 while(D.length<12){var n=D.length+1;D.push({t:'作品 #'+n,s:'开发中...',e:'❓',i:'',b:'✦ 敬请期待',d:'一个全新的游戏项目正在构思中，未来将带来更多惊喜。敬请关注我们的最新动态！',a:{u:'javascript:;',t:'敬请期待'}});}
 
-var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,R=430,ST=360/N,ra=0,hl=-1,lc=0,ex=null;
+var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,ST=360/N,ra=0,hl=-1,lc=0,cc=0,SZ=220,R=430,TPX=60,tx=0,ty=0,tm=0,ex=null;
+
+// 动态布局：按视口计算卡片尺寸 / 半径 / 透视 / 背光
+function calcLayout(){
+ var vw=document.documentElement.clientWidth||window.innerWidth,vh=window.innerHeight;
+ SZ=Math.round(Math.min(Math.max(Math.min(vw*0.16,vh*0.22),85),220));
+ var mx=(vw/2-8)/2.59;           // 保证转盘最宽处不超出屏幕
+ if(SZ>mx)SZ=Math.max(70,Math.floor(mx));
+ R=Math.round(SZ*2.09);
+ E.style.perspective=Math.round(R*4.5)+'px';
+ G.style.width=G.style.height=Math.round(R*1.16)+'px';
+}
 
 // 构建卡片
-for(var i=0;i<N;i++){var d=D[i],el=document.createElement('div');el.className='card';el.dataset.idx=i;if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;el.appendChild(m)}else{var e=document.createElement('div');e.className='e';e.textContent=d.e;el.appendChild(e)}el.style.transform='rotateY('+i*ST+'deg) translateZ('+R+'px)';S.appendChild(el)}
+function buildCards(){
+ S.innerHTML='';
+ for(var i=0;i<N;i++){
+  var d=D[i],el=document.createElement('div');
+  el.className='card';el.dataset.idx=i;
+  el.style.width=SZ+'px';el.style.height=SZ+'px';
+  el.style.left=(-SZ/2)+'px';el.style.top=(-SZ/2)+'px';
+  if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;el.appendChild(m)}
+  else{var e=document.createElement('div');e.className='e';e.style.fontSize=Math.round(SZ*0.33)+'px';e.textContent=d.e;el.appendChild(e)}
+  el.style.transform='rotateY('+i*ST+'deg) translateZ('+R+'px)';
+  S.appendChild(el);
+ }
+ rd(false);
+}
 
 function gHL(){var n=((ra%360)+360)%360,md=360,idx=0;for(var i=0;i<N;i++){var net=((i*ST+ra)%360+360)%360,d=Math.abs(net);if(d>180)d=360-d;if(d<md){md=d;idx=i}}return md<12?idx:-1}
 
 function doHL(cs){
  for(var j=0;j<cs.length;j++){
   var el=cs[j],idx=parseInt(el.dataset.idx),net=((idx*ST+ra)%360+360)%360,deg=Math.min(net,360-net),op=1-(deg/180)*.55,br=1-(deg/180)*.65,isF=(idx===hl);
-  el.style.transform='rotateY('+idx*ST+'deg) translateZ('+R+'px)'+(isF?' translateY(-25px)':'');
+  el.style.transform='rotateY('+idx*ST+'deg) translateZ('+R+'px)'+(isF?' translateY('+(-Math.round(SZ*0.11))+'px)':'');
   el.style.opacity=op;el.style.filter='brightness('+br+')';el.style.pointerEvents=isF?'auto':'none';
   if(isF)el.classList.add('highlight');else el.classList.remove('highlight');
  }
@@ -203,21 +235,29 @@ function rd(anim){
  if(anim){if(window._t)clearTimeout(window._t);window._t=setTimeout(function(){doHL(cs)},130)}else doHL(cs);
 }
 
-window.addEventListener('wheel',function(e){if(lc)return;e.preventDefault();ra+=e.deltaY>0?-ST:ST;rd(true)},{passive:false});
+// 滚轮：直接步进，快速/连续滚动无缝衔接（高亮由 rd 内 130ms 定时器消抖）
+window.addEventListener('wheel',function(e){
+ if(lc)return;
+ e.preventDefault();
+ ra+=e.deltaY>0?-ST:ST;
+ rd(true);
+},{passive:false});
 
 // 展开 — 完全不影响 stage 内的卡片
 function ex2(idx){
- if(lc)return;lc=true;
+ if(lc||cc)return;lc=true;
  var d=D[idx];
  // 创建全新独立展开卡片
  var el=document.createElement('div');el.className='exp-card';
  if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;el.appendChild(im)}
  else{var em=document.createElement('div');em.className='e';em.textContent=d.e;el.appendChild(em)}
- document.body.appendChild(el);ex=el;
+  document.body.appendChild(el);ex=el;
+  // 禁用转盘卡片点击，避免遮挡"空白区"关闭热区
+  for(var j=0;j<S.children.length;j++)S.children[j].style.pointerEvents='none';
 
  BO.classList.add('on');UB.classList.add('on');E.classList.add('blur');G.classList.add('hide');H.classList.add('v');
  B.textContent=d.b;T.textContent=d.t;S2.textContent=d.s;D2.textContent=d.d;
- if(d.a.u&&d.a.u!=='javascript:;'){A.href=d.a.u;A.target='_self';A.textContent=d.a.t;A.style.display='inline-flex'}
+ if(d.a.u&&d.a.u!=='javascript:;'){A.href=d.a.u;A.target='_self';A.textContent=d.a.t}
  else{A.href='javascript:;';A.textContent=d.a.t||'敬请期待'}
  P.classList.add('open');
 }
@@ -225,23 +265,50 @@ function ex2(idx){
 function cl(){
  if(!lc||!ex)return;
  P.classList.remove('open');BO.classList.remove('on');UB.classList.remove('on');E.classList.remove('blur');H.classList.remove('v');G.classList.remove('hide');
- // 退出缩小动画
- ex.style.animation='popOut .3s cubic-bezier(.25,.8,.25,1) forwards';
+  // 退出缩小动画
+  ex.style.animation=(window.innerWidth<=768?'popOutM':'popOut')+' .3s cubic-bezier(.25,.8,.25,1) forwards';
  setTimeout(function(){
   ex.remove();ex=null;
-  lc=false;rd(false);
+  lc=false;
+  cc=true;setTimeout(function(){cc=false},300);
+  rd(false);
  },320);
 }
 
-E.addEventListener('click',function(e){if(lc&&e.target===E)cl()});
+// 关闭：点击卡片/面板之外的任意位置（含模糊遮罩区）
+document.addEventListener('click',function(e){
+ if(!lc||tm)return;
+ if(e.target.closest('.exp-card')||e.target.closest('.panel')||e.target.closest('.card'))return;
+ cl();
+});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lc)cl()});
-S.addEventListener('click',function(e){if(lc)return;if(hl<0)return;var c=e.target.closest('.card');if(!c)return;if(parseInt(c.dataset.idx)===hl)ex2(hl)});
+S.addEventListener('click',function(e){if(lc||tm)return;if(hl<0)return;var c=e.target.closest('.card');if(!c)return;if(parseInt(c.dataset.idx)===hl)ex2(hl)});
+
+// 触控支持：水平滑动旋转（滑动后抑制点击），轻点命中卡片展开
+E.addEventListener('touchstart',function(e){
+ if(lc)return;
+ var t=e.touches[0];tx=t.clientX;ty=t.clientY;tm=0;
+},{passive:true});
+E.addEventListener('touchmove',function(e){
+ if(lc)return;
+ var t=e.touches[0],dx=t.clientX-tx,dy=t.clientY-ty;
+ if(Math.abs(dx)>10||Math.abs(dy)>10){e.preventDefault();tm=1}
+ if(Math.abs(dx)>=TPX){ra+=dx>0?ST:-ST;tx=t.clientX;rd(true)}
+},{passive:false});
+
+// 视口变化（旋转/缩放）时重算布局
+var rt;
+window.addEventListener('resize',function(){
+ clearTimeout(rt);
+ rt=setTimeout(function(){calcLayout();buildCards()},200);
+});
 
 // 移动端菜单
 var mt=document.getElementById('mt'),nl=document.getElementById('nl');
 if(mt&&nl){mt.addEventListener('click',function(){mt.classList.toggle('active');nl.classList.toggle('active')})}
 
-rd(false);
+calcLayout();
+buildCards();
 })();
 </script>
 </body>
