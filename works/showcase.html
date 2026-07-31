@@ -11,10 +11,10 @@
         html,body{width:100%;height:100%}
 
         /* 模糊遮罩 — 背景层（覆盖 canvas + glow） */
-        .blur-overlay{position:fixed;inset:0;z-index:2;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .5s}
+        .blur-overlay{position:fixed;inset:0;z-index:2;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .4s}
         .blur-overlay.on{opacity:1}
         /* 模糊遮罩 — UI层（覆盖 header + footer + hint） */
-        .ui-blur{position:fixed;inset:0;z-index:99;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .5s}
+        .ui-blur{position:fixed;inset:0;z-index:99;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);background:rgba(0,0,0,0.1);opacity:0;pointer-events:none;transition:opacity .4s}
         .ui-blur.on{opacity:1}
 
         /* 导航 */
@@ -36,7 +36,7 @@
         .menu-toggle.active span:nth-child(3){transform:rotate(-45deg)translate(6px,-6px)}
 
         /* 背光 */
-        .glow{position:fixed;z-index:0;left:50%;top:50%;width:500px;height:500px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 65%);pointer-events:none;transition:opacity .5s}
+        .glow{position:fixed;z-index:0;left:50%;top:50%;width:500px;height:500px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.04) 0%,transparent 65%);pointer-events:none;transition:opacity .4s}
         .glow.hide{opacity:0}
 
         /* ===== 页面主标题 ===== */
@@ -69,25 +69,31 @@
         }
 
         /* 3D */
-        .scene{position:fixed;inset:0;z-index:3;perspective:1800px;display:flex;align-items:center;justify-content:center;transition:transform .5s}
+        .scene{position:fixed;inset:0;z-index:3;perspective:1800px;display:flex;align-items:center;justify-content:center;transition:transform .4s}
         .scene.blur{transform:scale(.88)}
         .stage{position:relative;width:0;height:0;margin:0 auto;transform-style:preserve-3d;transform:rotateX(-15deg)rotateY(0deg);transition:transform .5s cubic-bezier(.25,.8,.25,1)}
 
         /* 卡片（尺寸由 JS 动态计算注入） */
-        .card{position:absolute;border-radius:12px;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
+        .card{position:absolute;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
         .card img{width:100%;height:100%;object-fit:cover;display:block}
         .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
         .card.highlight{border-color:var(--white);box-shadow:0 0 30px rgba(255,255,255,.25),0 0 60px rgba(255,255,255,.1)}
 
         /* 展开卡片（全新独立元素，不干扰 stage） */
-        .exp-card{position:fixed!important;z-index:200;width:400px;height:400px;left:6%;top:50%;border-radius:12px;border:1.5px solid var(--white);background:var(--gray-800);overflow:hidden;box-shadow:0 0 80px rgba(255,255,255,.2),0 20px 60px rgba(0,0,0,.9);animation:popIn .4s cubic-bezier(.25,.8,.25,1) forwards}
+        .exp-card{position:fixed!important;z-index:200;width:400px;height:400px;left:6%;top:50%;border:1.5px solid var(--white);background:var(--gray-800);overflow:hidden;box-shadow:0 0 24px rgba(255,255,255,.2),0 8px 24px rgba(0,0,0,.9);transition:transform .4s ease,opacity .4s ease,box-shadow .4s ease}
         .exp-card img{width:100%;height:100%;object-fit:cover;display:block}
         .exp-card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
-        @keyframes popIn{0%{transform:translateY(-50%) scale(.6)}100%{transform:translateY(-50%) scale(1)}}
-        @keyframes popOut{0%{transform:translateY(-50%) scale(1);opacity:1}100%{transform:translateY(-50%) scale(.5);opacity:0}}
+        /* 玻璃高光：两条 45° 倾斜光束（顶部贯穿至右侧），hover 时沿对角线向左下移动 */
+        .exp-card::before,
+        .exp-card::after{content:'';position:absolute;pointer-events:none;z-index:5;transition:transform .4s ease}
+        .exp-card::before{width:280%;height:9%;top:1.5%;left:-35%;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.05) 35%,rgba(255,255,255,.20) 48%,rgba(255,255,255,.30) 50%,rgba(255,255,255,.08) 52%,transparent 100%);transform:rotate(45deg)}
+        .exp-card::after{width:200%;height:3.5%;top:12%;left:-25%;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.04) 35%,rgba(255,255,255,.18) 48%,rgba(255,255,255,.25) 50%,rgba(255,255,255,.06) 52%,transparent 100%);transform:rotate(45deg)}
+        .exp-card:hover{box-shadow:0 0 80px rgba(255,255,255,.35),0 20px 60px rgba(0,0,0,.95)}
+        .exp-card:hover::before{transform:rotate(45deg) translate(-25px,30px)}
+        .exp-card:hover::after{transform:rotate(45deg) translate(-15px,18px)}
 
         /* 面板 */
-        .panel{position:fixed;right:-520px;top:50%;transform:translateY(-50%);width:460px;max-width:38vw;z-index:199;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--gray-700);border-radius:16px;padding:45px 38px;transition:right .5s cubic-bezier(.25,.8,.25,1)}
+        .panel{position:fixed;right:-520px;top:50%;transform:translateY(-50%);width:460px;max-width:38vw;z-index:199;background:rgba(0,0,0,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--gray-700);padding:45px 38px;transition:right .4s cubic-bezier(.25,.8,.25,1)}
         .panel.open{right:5%}
         .panel .b{display:inline-block;padding:6px 16px;border:1px solid var(--gray-500);color:var(--gray-300);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:18px}
         .panel h2{font-size:32px;font-weight:900;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
@@ -96,7 +102,7 @@
         .panel .a{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border:1.5px solid var(--white);color:var(--white);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:.35s}
         .panel .a:hover{background:var(--white);color:var(--black)}
 
-        .hint{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:201;color:var(--gray-500);font-size:12px;letter-spacing:2px;opacity:0;transition:opacity .5s;pointer-events:none}
+        .hint{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:201;color:var(--gray-500);font-size:12px;letter-spacing:2px;opacity:0;transition:opacity .4s;pointer-events:none}
         .hint.v{opacity:1}
 
         .footer{position:fixed;bottom:0;left:0;width:100%;z-index:4;text-align:center;padding:20px 50px;border-top:1px solid var(--gray-700)}
@@ -109,19 +115,17 @@
         }
         @media(max-width:768px){
             .navbar{padding:15px 25px;background:rgba(0,0,0,.75)}
-            .nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:rgba(0,0,0,.98);flex-direction:column;padding:30px;gap:25px;border-bottom:1px solid var(--gray-700)}
-            .nav-links.active{display:flex}
+            .nav-links{display:flex;position:absolute;top:100%;left:0;width:100%;background:rgba(0,0,0,.98);flex-direction:column;padding:30px;gap:25px;border-bottom:1px solid var(--gray-700);visibility:hidden;opacity:0;transform:translateY(-10px);transition:opacity .3s,transform .3s,visibility 0s .3s}
+            .nav-links.active{visibility:visible;opacity:1;transform:translateY(0);transition:opacity .3s,transform .3s,visibility 0s 0s}
             .menu-toggle{display:flex}
             .navbar a{font-size:11px}
             .scene{touch-action:none;-webkit-touch-callout:none}
-            /* 展开卡片：独立动画锚定 top，不随 translateY 偏移 */
-            .exp-card{width:56vw;height:56vw;max-width:240px;max-height:240px;left:0;right:0;top:105px;margin:0 auto;animation:popInM .4s cubic-bezier(.25,.8,.25,1) forwards}
+            /* 展开卡片：锚定 top，不随 translateY 偏移 */
+            .exp-card{width:56vw;height:56vw;max-width:240px;max-height:240px;left:0;right:0;top:105px;margin:0 auto}
             .exp-card .e{font-size:60px}
-            @keyframes popInM{0%{transform:scale(.6)}100%{transform:scale(1)}}
-            @keyframes popOutM{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}
             /* 面板改为底部滑出 Sheet */
-            .panel{display:block;right:0;left:0;top:auto;bottom:0;width:100%;max-width:100%;transform:translateY(100%);border:1px solid var(--gray-700);border-radius:20px 20px 0 0;overflow-x:hidden;padding:25px 22px 32px;transition:transform .35s cubic-bezier(.25,.8,.25,1)}
-            .panel::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:40px;height:4px;border-radius:2px;background:var(--gray-600)}
+            .panel{display:block;right:0;left:0;top:auto;bottom:0;width:100%;max-width:100%;transform:translateY(100%);border:1px solid var(--gray-700);overflow-x:hidden;padding:25px 22px 32px;transition:transform .4s cubic-bezier(.25,.8,.25,1)}
+            .panel::before{content:'';position:absolute;top:8px;left:50%;transform:translateX(-50%);width:40px;height:4px;background:var(--gray-600)}
             .panel.open{right:0;transform:translateY(0)}
             .panel h2{font-size:24px}
             .panel .d{font-size:13px}
@@ -188,7 +192,7 @@ var D=[
 ];
 while(D.length<12){var n=D.length+1;D.push({t:'作品 #'+n,s:'开发中...',e:'❓',i:'',b:'✦ 敬请期待',d:'一个全新的游戏项目正在构思中，未来将带来更多惊喜。敬请关注我们的最新动态！',a:{u:'javascript:;',t:'敬请期待'}});}
 
-var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,ST=360/N,ra=0,hl=-1,lc=0,cc=0,SZ=220,R=430,TPX=60,tx=0,ty=0,tm=0,ex=null;
+var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,ST=360/N,ra=0,hl=-1,lc=0,SZ=220,R=430,TPX=60,tx=0,ty=0,tm=0,ex=null,clT=null;
 
 // 动态布局：按视口计算卡片尺寸 / 半径 / 透视 / 背光
 function calcLayout(){
@@ -245,15 +249,26 @@ window.addEventListener('wheel',function(e){
 
 // 展开 — 完全不影响 stage 内的卡片
 function ex2(idx){
- if(lc||cc)return;lc=true;
+ if(lc)return;lc=true;
  var d=D[idx];
- // 创建全新独立展开卡片
+ // 创建全新独立展开卡片（初始为缩小+透明状态）
  var el=document.createElement('div');el.className='exp-card';
+ var mo=window.innerWidth<=768;
+ el.style.transform=mo?'scale(.6)':'translateY(-50%) scale(.6)';
+ el.style.opacity='0';
  if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;el.appendChild(im)}
  else{var em=document.createElement('div');em.className='e';em.textContent=d.e;el.appendChild(em)}
-  document.body.appendChild(el);ex=el;
-  // 禁用转盘卡片点击，避免遮挡"空白区"关闭热区
-  for(var j=0;j<S.children.length;j++)S.children[j].style.pointerEvents='none';
+ document.body.appendChild(el);ex=el;
+ // 禁用转盘卡片点击，避免遮挡"空白区"关闭热区
+ for(var j=0;j<S.children.length;j++)S.children[j].style.pointerEvents='none';
+ // 双 rAF 确保初始状态提交后启动过渡，从 scale(.6)/透明平滑放大
+ requestAnimationFrame(function(){
+  requestAnimationFrame(function(){
+   el.style.transition='transform .4s cubic-bezier(.25,.8,.25,1),opacity .4s ease,box-shadow .4s ease';
+   el.style.transform=mo?'scale(1)':'translateY(-50%) scale(1)';
+   el.style.opacity='1';
+  });
+ });
 
  BO.classList.add('on');UB.classList.add('on');E.classList.add('blur');G.classList.add('hide');H.classList.add('v');
  B.textContent=d.b;T.textContent=d.t;S2.textContent=d.s;D2.textContent=d.d;
@@ -264,15 +279,20 @@ function ex2(idx){
 
 function cl(){
  if(!lc||!ex)return;
+ if(clT){clearTimeout(clT)}
  P.classList.remove('open');BO.classList.remove('on');UB.classList.remove('on');E.classList.remove('blur');H.classList.remove('v');G.classList.remove('hide');
-  // 退出缩小动画
-  ex.style.animation=(window.innerWidth<=768?'popOutM':'popOut')+' .3s cubic-bezier(.25,.8,.25,1) forwards';
- setTimeout(function(){
+ // 从当前状态（含展开过渡中途）平滑过渡到缩小+透明
+ ex.style.pointerEvents='none';
+ ex.style.transition='transform .4s ease,opacity .4s ease';
+ ex.style.transform=(window.innerWidth<=768)?'scale(.5)':'translateY(-50%) scale(.5)';
+ ex.style.opacity='0';
+ clT=setTimeout(function(){
+  if(!ex)return;
   ex.remove();ex=null;
   lc=false;
-  cc=true;setTimeout(function(){cc=false},300);
   rd(false);
- },320);
+  clT=null;
+ },400);
 }
 
 // 关闭：点击卡片/面板之外的任意位置（含模糊遮罩区）
