@@ -295,14 +295,23 @@ function cl(){
  },400);
 }
 
+// 元素解析：点击落在文本节点时取其父元素（emoji/文字在部分浏览器中 target 为 TextNode）
+function tgt(e){return e.target.nodeType===3?e.target.parentNode:e.target}
+
 // 关闭：点击卡片/面板之外的任意位置（含模糊遮罩区）
 document.addEventListener('click',function(e){
  if(!lc||tm)return;
- if(e.target.closest('.exp-card')||e.target.closest('.panel')||e.target.closest('.card'))return;
+ var t=tgt(e);
+ if(t.closest('.exp-card')||t.closest('.panel')||t.closest('.card'))return;
  cl();
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lc)cl()});
-S.addEventListener('click',function(e){if(lc||tm)return;if(hl<0)return;var c=e.target.closest('.card');if(!c)return;if(parseInt(c.dataset.idx)===hl)ex2(hl)});
+S.addEventListener('click',function(e){
+ if(lc||tm)return;
+ if(hl<0)return;
+ var c=tgt(e).closest('.card');if(!c)return;
+ if(parseInt(c.dataset.idx)===hl)ex2(hl);
+});
 
 // 触控支持：水平滑动旋转（滑动后抑制点击），轻点命中卡片展开
 E.addEventListener('touchstart',function(e){
