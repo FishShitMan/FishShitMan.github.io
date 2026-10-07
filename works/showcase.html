@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
+    <link rel="apple-touch-icon" href="../icon/apple-touch-icon.png">
     <title>作品册 | DoubleX GameStudio</title>
+    <meta name="description" content="DoubleX GameStudio 作品册：以 3D 卡片转盘浏览全部作品 —— 《几何》《养鱼大亨》《螺旋塔》《异种》。">
+    <link rel="canonical" href="https://doublex.top/works/showcase.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DoubleX GameStudio">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="作品册 | DoubleX GameStudio">
+    <meta property="og:description" content="以 3D 卡片转盘浏览全部作品：《几何》《养鱼大亨》《螺旋塔》《异种》。">
+    <meta property="og:url" content="https://doublex.top/works/showcase.html">
+    <meta property="og:image" content="https://doublex.top/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="作品册 | DoubleX GameStudio">
+    <meta name="twitter:description" content="以 3D 卡片转盘浏览全部作品：《几何》《养鱼大亨》《螺旋塔》《异种》。">
+    <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
     <link rel="stylesheet" href="../assets/common.css">
     <style>
         body { overflow: hidden; height: 100vh; cursor: auto; }
@@ -69,19 +85,25 @@
         }
 
         /* 3D */
-        .scene{position:fixed;inset:0;z-index:3;perspective:1800px;display:flex;align-items:center;justify-content:center;transition:transform .4s}
+        .scene{position:fixed;inset:0;z-index:3;perspective:1800px;display:flex;align-items:center;justify-content:center;transition:transform .4s;pointer-events:none}
         .scene.blur{transform:scale(.88)}
-        .stage{position:relative;width:0;height:0;margin:0 auto;transform-style:preserve-3d;transform:rotateX(-15deg)rotateY(0deg);transition:transform .5s cubic-bezier(.25,.8,.25,1)}
+        .stage{position:relative;width:0;height:0;margin:0 auto;transform-style:preserve-3d;transform:rotateX(-15deg)rotateY(0deg);transition:transform .5s cubic-bezier(.25,.8,.25,1);pointer-events:none}
 
-        /* 卡片（尺寸由 JS 动态计算注入） */
-        .card{position:absolute;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
-        .card img{width:100%;height:100%;object-fit:cover;display:block}
-        .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
+        /* 卡片（尺寸由 JS 动态计算注入）
+           卡片只作视觉层，浏览器命中一律关闭：Blink 在 transform-style:preserve-3d 下
+           对 3D 变换元素的命中测试不可靠（elementFromPoint 恒返回 .scene），会让点击被
+           closest('.card') 丢弃。交互改由下方 posInCard() 的矩阵判定统一负责，
+           Blink / Gecko / WebKit 行为因此一致。 */
+        .card{position:absolute;border:1.5px solid var(--gray-500);background:var(--gray-800);overflow:hidden;user-select:none;cursor:pointer;pointer-events:none;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.25,.8,.25,1),opacity .4s,border-color .3s,box-shadow .3s}
+        .card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+        .card picture{display:block;width:100%;height:100%;pointer-events:none}
+        .card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gray-800),var(--gray-700));pointer-events:none}
         .card.highlight{border-color:var(--white);box-shadow:0 0 30px rgba(255,255,255,.25),0 0 60px rgba(255,255,255,.1)}
 
         /* 展开卡片（全新独立元素，不干扰 stage） */
-        .exp-card{position:fixed!important;z-index:200;width:400px;height:400px;left:6%;top:50%;border:1.5px solid var(--white);background:var(--gray-800);overflow:hidden;box-shadow:0 0 24px rgba(255,255,255,.2),0 8px 24px rgba(0,0,0,.9);transition:transform .4s ease,opacity .4s ease,box-shadow .4s ease}
+        .exp-card{position:fixed!important;z-index:200;width:400px;height:400px;left:6%;top:50%;border:1.5px solid var(--white);background:var(--gray-800);overflow:hidden;pointer-events:auto;box-shadow:0 0 24px rgba(255,255,255,.2),0 8px 24px rgba(0,0,0,.9);transition:transform .4s ease,opacity .4s ease,box-shadow .4s ease}
         .exp-card img{width:100%;height:100%;object-fit:cover;display:block}
+        .exp-card picture{display:block;width:100%;height:100%}
         .exp-card .e{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;background:linear-gradient(135deg,var(--gray-800),var(--gray-700))}
         /* 玻璃高光：两条 45° 倾斜光束（顶部贯穿至右侧），hover 时沿对角线向左下移动 */
         .exp-card::before,
@@ -101,6 +123,9 @@
         .panel .d{color:var(--gray-300);font-size:14px;line-height:1.8;margin-bottom:28px}
         .panel .a{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border:1.5px solid var(--white);color:var(--white);font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:.35s}
         .panel .a:hover{background:var(--white);color:var(--black)}
+        /* 尚未开放的作品：把「了解更多」渲染成不可点的状态标签，消除"看着能点却点不动"的错位 */
+        .panel .a.disabled{border-color:var(--gray-600);color:var(--gray-500);cursor:not-allowed;pointer-events:none;background:transparent}
+        .panel .a.disabled:hover{background:transparent;color:var(--gray-500)}
 
         .hint{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:201;color:var(--gray-500);font-size:12px;letter-spacing:2px;opacity:0;transition:opacity .4s;pointer-events:none}
         .hint.v{opacity:1}
@@ -174,7 +199,7 @@
 <div class="panel" id="panel">
     <div class="b" id="b">✦</div>
     <h2 id="t"></h2><p class="s" id="s"></p><p class="d" id="d"></p>
-    <a class="a" id="a" href="javascript:;">了解更多</a>
+    <a class="a" id="a" href="#">了解更多</a>
 </div>
 
 <div class="hint" id="hint">✦ 点击空白处关闭 ✦</div>
@@ -185,7 +210,7 @@
 (function(){
 'use strict';
 var D=[
-{t:'几何',s:'像素科幻 2D 平台射击',e:'🔺',i:'images/art/GEOMETRY/《几何》宣传图_1.png',b:'✦ 像素 · 射击',d:'《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合科幻、硬核闯关与 roguelike 元素。选择角色在随机生成的关卡中战斗，探寻「几何」与「自我」的意义。',a:{u:'game-detail.html?game=geometry',t:'了解更多'}},
+{t:'几何',s:'像素科幻 2D 平台射击',e:'🔺',i:'images/art/GEOMETRY/《几何》宣传图_1.png',w:'images/art/GEOMETRY/《几何》宣传图_1.webp',b:'✦ 像素 · 射击',d:'《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合科幻、硬核闯关与 roguelike 元素。选择角色在随机生成的关卡中战斗，探寻「几何」与「自我」的意义。',a:{u:'game-detail.html?game=geometry',t:'了解更多'}},
 {t:'养鱼大亨',s:'放置养成 · 鱼类收集',e:'🐟',i:'',b:'✦ 养成 · 模拟',d:'《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，构建属于自己的水下生态世界。',a:{u:'game-detail.html?game=fishfarm',t:'了解更多'}},
 {t:'螺旋塔',s:'卡通风格 轻度肉鸽 地牢探险',e:'🗡️',i:'',b:'✦ 开发中',d:'一款卡通风格的轻度 Roguelike 地牢探险游戏，随机地图、丰富道具、爽快战斗。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}},
 {t:'异种',s:'像素风格 动作游戏',e:'☣️',i:'',b:'✦ 开发中',d:'一款像素风格的动作角色扮演游戏，多主角多视角叙事，探索分崩离析世界中的黑暗秘密。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}}
@@ -208,12 +233,15 @@ function calcLayout(){
 // 构建卡片
 function buildCards(){
  S.innerHTML='';
+ _cards=[];                              // 卡片已重建，让 cards() 重新采集
  for(var i=0;i<N;i++){
   var d=D[i],el=document.createElement('div');
   el.className='card';el.dataset.idx=i;
   el.style.width=SZ+'px';el.style.height=SZ+'px';
   el.style.left=(-SZ/2)+'px';el.style.top=(-SZ/2)+'px';
-  if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;el.appendChild(m)}
+  if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;m.loading='lazy';m.decoding='async';
+   if(d.w){var pc=document.createElement('picture');var sc=document.createElement('source');sc.srcset=d.w;sc.type='image/webp';pc.appendChild(sc);pc.appendChild(m);el.appendChild(pc)}
+   else{el.appendChild(m)}}
   else{var e=document.createElement('div');e.className='e';e.style.fontSize=Math.round(SZ*0.33)+'px';e.textContent=d.e;el.appendChild(e)}
   el.style.transform='rotateY('+i*ST+'deg) translateZ('+R+'px)';
   S.appendChild(el);
@@ -221,25 +249,47 @@ function buildCards(){
  rd(false);
 }
 
-function gHL(){var n=((ra%360)+360)%360,md=360,idx=0;for(var i=0;i<N;i++){var net=((i*ST+ra)%360+360)%360,d=Math.abs(net);if(d>180)d=360-d;if(d<md){md=d;idx=i}}return md<12?idx:-1}
+function gHL(){
+ var md=360,idx=0;
+ for(var i=0;i<N;i++){
+  var net=((i*ST+ra)%360+360)%360,d=Math.abs(net);
+  if(d>180)d=360-d;
+  if(d<md){md=d;idx=i}
+ }
+ // 始终返回最接近正面的卡片：原先的 `return md<12?idx:-1` 会让 23.3% 的旋转角
+ // 返回 -1，此时所有卡片都不可交互（整盘点不动），属死区缺陷，故去掉该判定。
+ return idx;
+}
+
+// 卡片列表（缓存，buildCards 时重建）
+var _cards=[];
+function cards(){if(!_cards.length){_cards=Array.prototype.slice.call(S.querySelectorAll('.card'))}return _cards}
 
 function doHL(cs){
  for(var j=0;j<cs.length;j++){
   var el=cs[j],idx=parseInt(el.dataset.idx),net=((idx*ST+ra)%360+360)%360,deg=Math.min(net,360-net),op=1-(deg/180)*.55,br=1-(deg/180)*.65,isF=(idx===hl);
   el.style.transform='rotateY('+idx*ST+'deg) translateZ('+R+'px)'+(isF?' translateY('+(-Math.round(SZ*0.11))+'px)':'');
-  el.style.opacity=op;el.style.filter='brightness('+br+')';el.style.pointerEvents=isF?'auto':'none';
+  el.style.opacity=op;el.style.filter='brightness('+br+')';
+  // 不再切换 pointerEvents：卡片命中已统一交给 decide()/posInCard() 的矩阵判定，
+  // 引擎不再参与，也就没有"指针态与高亮态不同步"的窗口
   if(isF)el.classList.add('highlight');else el.classList.remove('highlight');
  }
 }
 
 function rd(anim){
  S.style.transition=anim?'transform 0.5s cubic-bezier(0.25,0.8,0.25,1)':'none';
+ // ra 有意保持无界累加，请勿在此或别处对它取模：
+ // 取模会让 360°→0° 被 CSS transition 渲染成反向旋转，破坏无限转动手感。
  S.style.transform='rotateX(-15deg) rotateY('+ra+'deg)';
  hl=gHL();var cs=S.querySelectorAll('.card');for(var j=0;j<cs.length;j++)cs[j].classList.remove('highlight');
  if(anim){if(window._t)clearTimeout(window._t);window._t=setTimeout(function(){doHL(cs)},130)}else doHL(cs);
 }
 
 // 滚轮：直接步进，快速/连续滚动无缝衔接（高亮由 rd 内 130ms 定时器消抖）
+// 方向：deltaY>0（向下滚）-> ra+= -ST；deltaY<0（向上滚）-> ra+= +ST
+// 注意：滚轮与触控板共用这一段代码，不区分设备。
+// 注意：ra 保持无界累加，切勿取模归一到 [0,360)，否则 CSS transition 会把
+// 360°→0° 的跳变渲染成反向旋转，破坏"无限转动"。
 window.addEventListener('wheel',function(e){
  if(lc)return;
  e.preventDefault();
@@ -249,18 +299,22 @@ window.addEventListener('wheel',function(e){
 
 // 展开 — 完全不影响 stage 内的卡片
 function ex2(idx){
- if(lc)return;lc=true;
+ // 不再用 if(lc)return 拦截：关闭动画期间的点击应当能直接打开新卡片
+ if(ex){gen++;if(clT){clearTimeout(clT);clT=null}if(ex.parentNode)ex.remove();ex=null}
+ gen++;lc=1;
  var d=D[idx];
  // 创建全新独立展开卡片（初始为缩小+透明状态）
  var el=document.createElement('div');el.className='exp-card';
  var mo=window.innerWidth<=768;
  el.style.transform=mo?'scale(.6)':'translateY(-50%) scale(.6)';
  el.style.opacity='0';
- if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;el.appendChild(im)}
+ if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;
+  if(d.w){var ipc=document.createElement('picture');var isc=document.createElement('source');isc.srcset=d.w;isc.type='image/webp';ipc.appendChild(isc);ipc.appendChild(im);el.appendChild(ipc)}
+  else{el.appendChild(im)}}
  else{var em=document.createElement('div');em.className='e';em.textContent=d.e;el.appendChild(em)}
  document.body.appendChild(el);ex=el;
- // 禁用转盘卡片点击，避免遮挡"空白区"关闭热区
- for(var j=0;j<S.children.length;j++)S.children[j].style.pointerEvents='none';
+ // 卡片本身已不带浏览器命中（CSS pointer-events:none），无需再逐个关闭；
+ // "点空白处关闭"由 document 上的 decide() 统一处理
  // 双 rAF 确保初始状态提交后启动过渡，从 scale(.6)/透明平滑放大
  requestAnimationFrame(function(){
   requestAnimationFrame(function(){
@@ -272,64 +326,152 @@ function ex2(idx){
 
  BO.classList.add('on');UB.classList.add('on');E.classList.add('blur');G.classList.add('hide');H.classList.add('v');
  B.textContent=d.b;T.textContent=d.t;S2.textContent=d.s;D2.textContent=d.d;
- if(d.a.u&&d.a.u!=='javascript:;'){A.href=d.a.u;A.target='_self';A.textContent=d.a.t}
- else{A.href='javascript:;';A.textContent=d.a.t||'敬请期待'}
+ if(d.a.u&&d.a.u!=='javascript:;'){A.href=d.a.u;A.target='_self';A.textContent=d.a.t;A.classList.remove('disabled');A.removeAttribute('aria-disabled')}
+ else{A.removeAttribute('href');A.removeAttribute('target');A.classList.add('disabled');A.setAttribute('aria-disabled','true');A.textContent=(d.a.t||'敬请期待')+'（开发中）'}
  P.classList.add('open');
 }
 
+// 每次展开带一个代次标识：关闭动画进行中若又打开了新卡片，
+// 旧的 400ms 计时器回来时只会回收它自己那一片，不会误删新的。
+var gen=0;
+
 function cl(){
- if(!lc||!ex)return;
- if(clT){clearTimeout(clT)}
+ if(!ex)return;
+ if(clT){clearTimeout(clT);clT=null}
+ var dying=ex,n=gen;
+ ex=null;
+ lc=0;                                   // 立即解锁：原先要等 400ms 才解锁，
+                                         // 期间点任何卡片都会被 ex2() 的 if(lc)return 吞掉
  P.classList.remove('open');BO.classList.remove('on');UB.classList.remove('on');E.classList.remove('blur');H.classList.remove('v');G.classList.remove('hide');
  // 从当前状态（含展开过渡中途）平滑过渡到缩小+透明
- ex.style.pointerEvents='none';
- ex.style.transition='transform .4s ease,opacity .4s ease';
- ex.style.transform=(window.innerWidth<=768)?'scale(.5)':'translateY(-50%) scale(.5)';
- ex.style.opacity='0';
+ dying.style.pointerEvents='none';
+ dying.style.transition='transform .4s ease,opacity .4s ease';
+ dying.style.transform=(window.innerWidth<=768)?'scale(.5)':'translateY(-50%) scale(.5)';
+ dying.style.opacity='0';
  clT=setTimeout(function(){
-  if(!ex)return;
-  ex.remove();ex=null;
-  lc=false;
-  rd(false);
   clT=null;
+  if(dying&&dying.parentNode)dying.remove();
+  if(gen===n)rd(false);                  // 期间没有新开卡片才复位高亮
  },400);
 }
 
-// 元素解析：点击落在文本节点时取其父元素（emoji/文字在部分浏览器中 target 为 TextNode）
-function tgt(e){return e.target.nodeType===3?e.target.parentNode:e.target}
+// ===================================================================
+// 交互判定层（与 3D 视觉解耦）
+// -------------------------------------------------------------------
+// 为什么不用浏览器命中：Blink 在 transform-style:preserve-3d 下对 3D 变换元素的
+// hit-test 不可靠 —— 实测 elementFromPoint 在卡片中心恒返回 .scene，真实点击因此
+// 被 closest('.card') 丢弃，表现为"卡片点不开"。Firefox 内核正常，所以只在这个
+// 内核上复现。这里改为用 CSS 矩阵把屏幕坐标逆变换回卡片本地坐标，
+// 透视与各级变换由矩阵自动处理，三个内核走同一套数学，不再有引擎差异。
+// ===================================================================
 
-// 关闭：点击卡片/面板之外的任意位置（含模糊遮罩区）
+// 卡片是正方形，原点在中心（left/top 均为 -SZ/2），故本地坐标范围为 ±SZ/2
+function posInCard(c,x,y){
+ var m=c.getScreenCTM&&c.getScreenCTM();
+ if(m&&m.a!==undefined){
+  try{
+   var inv=m.inverse(),p=new DOMPoint(x,y).matrixTransform(inv);
+   var h=SZ/2+2;                       // 2px 容差，避免边缘抖动
+   if(Math.abs(p.x)<=h&&Math.abs(p.y)<=h)return true;
+   return false;
+  }catch(e){/* 矩阵不可逆时退回包围盒 */}
+ }
+ var r=c.getBoundingClientRect();
+ return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom;
+}
+
+// 返回当前屏幕坐标下命中的卡片索引，未命中返回 -1
+function cardAt(x,y){
+ var cl=cards(),i,c;
+ for(i=0;i<cl.length;i++){c=cl[i];if(c.style.visibility!=='hidden'&&posInCard(c,x,y))return i}
+ return -1;
+}
+
+var _pt=null;
+E.addEventListener('pointerdown',function(e){_pt={x:e.clientX,y:e.clientY}},{passive:true});
+
+// 单一判定入口：先判断点击是否落在面板/展开卡片内，再决定打开还是关闭。
+// 顺序很重要 —— 不能靠"事件被面板吃掉所以走不到这里"来推断意图，
+// 因为 .panel / .exp-card 的层级与 pointer-events 一旦调整，这个假设就会失效。
+function inChrome(x,y){
+ var r,i,all;
+ // 面板
+ r=P.getBoundingClientRect();
+ if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return true;
+ // 展开卡片（可能同时存在多个，逐个判）
+ all=document.querySelectorAll('.exp-card');
+ for(i=0;i<all.length;i++){
+  r=all[i].getBoundingClientRect();
+  if(r.width&&x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom)return true;
+ }
+ return false;
+}
+
+function decide(x,y){
+ if(lc){
+  // 展开态：点面板内部或展开卡片内部不关闭，其余一律关闭
+  if(inChrome(x,y))return false;
+  cl();
+  return true;
+ }
+ var i=cardAt(x,y);
+ if(i<0)return false;
+ if(i!==hl)return false;               // 只允许正对屏幕的卡片
+ ex2(i);
+ return true;
+}
+
 document.addEventListener('click',function(e){
- if(!lc||tm)return;
- var t=tgt(e);
- if(t.closest('.exp-card')||t.closest('.panel')||t.closest('.card'))return;
- cl();
-});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lc)cl()});
-S.addEventListener('click',function(e){
- if(lc||tm)return;
- if(hl<0)return;
- var c=tgt(e).closest('.card');if(!c)return;
- if(parseInt(c.dataset.idx)===hl)ex2(hl);
+ if(tm)return;                          // 刚刚滑动过，忽略这次合成点击
+ if(_pt&&(Math.abs(e.clientX-_pt.x)>10||Math.abs(e.clientY-_pt.y)>10))return;
+ decide(e.clientX,e.clientY);
 });
 
-// 触控支持：水平滑动旋转（滑动后抑制点击），轻点命中卡片展开
-E.addEventListener('touchstart',function(e){
+// 键盘可达性：左右/上下切换，回车或空格打开，Esc 关闭
+document.addEventListener('keydown',function(e){
+ var k=e.key;
+ if(k==='Escape'){if(lc)cl();return}
  if(lc)return;
- var t=e.touches[0];tx=t.clientX;ty=t.clientY;tm=0;
+ if(k==='ArrowRight'||k==='ArrowDown'){ra-=ST;rd(true);e.preventDefault()}
+ else if(k==='ArrowLeft'||k==='ArrowUp'){ra+=ST;rd(true);e.preventDefault()}
+ else if(k==='Enter'||k===' '){if(hl>=0)ex2(hl);e.preventDefault()}
+});
+
+// 触控支持：水平滑动旋转。注意必须挂在 document 上 —— .scene 已设 pointer-events:none，
+// 触摸事件不会再派发到它，若沿用原来的 E.addEventListener 移动端将完全无法滑动。
+// 本页 body 为 overflow:hidden，因此 preventDefault 不会妨碍页面滚动。
+document.addEventListener('touchstart',function(e){
+ if(lc)return;
+ var t=e.touches&&e.touches[0];if(!t)return;
+ tx=t.clientX;ty=t.clientY;tm=0;
 },{passive:true});
-E.addEventListener('touchmove',function(e){
+document.addEventListener('touchmove',function(e){
  if(lc)return;
- var t=e.touches[0],dx=t.clientX-tx,dy=t.clientY-ty;
- if(Math.abs(dx)>10||Math.abs(dy)>10){e.preventDefault();tm=1}
- if(Math.abs(dx)>=TPX){ra+=dx>0?ST:-ST;tx=t.clientX;rd(true)}
+ var t=e.touches&&e.touches[0];if(!t)return;
+ var dx=t.clientX-tx,dy=t.clientY-ty;
+ if(Math.abs(dx)>10||Math.abs(dy)>10){tm=1;e.preventDefault()}
+ if(Math.abs(dx)>=TPX){
+  ra+=dx>0?ST:-ST;tx=t.clientX;rd(true);
+ }
 },{passive:false});
+// tm 原先只在 touchstart 归零，手势结束后会一直保持 1，导致部分浏览器吞掉
+// 合成点击（首次点击无效）。这里在手指离开/取消时立即归零。
+function _tend(){tx=ty=0;tm=0}
+document.addEventListener('touchend',_tend,{passive:true});
+document.addEventListener('touchcancel',_tend,{passive:true});
 
-// 视口变化（旋转/缩放）时重算布局
+// 视口变化（旋转/缩放）时重算布局。
+// buildCards() 会清空 #stage 重建 12 张卡；在那之前到重建完成之间，
+// 卡片位置处于旧布局，若此刻展开会把卡片放大到错误位置，
+// 因此把面板/展开卡片收起（它们的位置依赖视口，同样需要回中）。
 var rt;
 window.addEventListener('resize',function(){
  clearTimeout(rt);
- rt=setTimeout(function(){calcLayout();buildCards()},200);
+ rt=setTimeout(function(){
+  if(lc)cl();
+  calcLayout();
+  buildCards();
+ },200);
 });
 
 // 移动端菜单

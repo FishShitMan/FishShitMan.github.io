@@ -1,0 +1,12 @@
+# DoubleX GameStudio — https://doublex.top
+# 全站可抓取；_ 前缀目录（_backups 等）由 Jekyll 自动排除，无需在此声明
+
+User-agent: *
+Allow: /
+
+# 不希望被索引的归档目录（若将来关闭 Jekyll，这份声明仍然有效）
+Disallow: /_backups/
+Disallow: /_originals/
+Disallow: /assets/fonts/font-link.txt
+
+Sitemap: https://doublex.top/sitemap.xml

@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="icon/DX_Logo_white.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon/apple-touch-icon.png">
     <title>DoubleX GameStudio | 游戏开发工作室</title>
+    <meta name="description" content="DoubleX GameStudio 是成立于 2024 年的独立游戏工作室，专注像素风格与硬核玩法：2D 平台射击《几何》、放置养成《养鱼大亨》，另有《螺旋塔》《异种》开发中。">
+    <link rel="canonical" href="https://doublex.top/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DoubleX GameStudio">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="DoubleX GameStudio | 游戏开发工作室">
+    <meta property="og:description" content="专注像素风格与硬核玩法的独立游戏工作室：《几何》《养鱼大亨》，另有《螺旋塔》《异种》开发中。">
+    <meta property="og:url" content="https://doublex.top/">
+    <meta property="og:image" content="https://doublex.top/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DoubleX GameStudio | 游戏开发工作室">
+    <meta name="twitter:description" content="专注像素风格与硬核玩法的独立游戏工作室：《几何》《养鱼大亨》，另有《螺旋塔》《异种》开发中。">
+    <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
     <link rel="stylesheet" href="assets/common.css">
     <style>
         /* ===== 字体 ===== */
@@ -332,6 +348,22 @@
             opacity: 0.3;
         }
 
+        /* 图片卡片：让 <picture> 撑满容器（.project-bg 是 flex 容器且 align-items:center，
+           若不强制拉伸，<picture> 会按内容高度收缩，导致图片上下出现黑边） */
+        .project-card .project-bg picture {
+            display: block;
+            width: 100%;
+            height: 100%;
+            align-self: stretch;
+        }
+
+        .project-card .project-bg picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .project-overlay {
             position: absolute;
             bottom: 0;
@@ -414,7 +446,7 @@
         .project-overlay .nav-link.disabled {
             border-color: var(--gray-700);
             color: var(--gray-500);
-            cursor: default;
+            cursor: not-allowed;
             pointer-events: none;
         }
 
@@ -654,6 +686,17 @@
             border-color: var(--white);
             background: rgba(255, 255, 255, 0.02);
             transform: translateY(-5px);
+        }
+
+        /* 暂无跳转内容的入口（如未开通的 Twitter / X）：保留占位但明确不可点 */
+        .contact-link.disabled {
+            border-color: var(--gray-700);
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .contact-link.disabled span {
+            color: var(--gray-500);
         }
 
         .contact-link .icon {
@@ -916,6 +959,28 @@
             }
         }
     </style>
+    <!-- 结构化数据：工作室与收录作品 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "DoubleX GameStudio",
+      "alternateName": "DoubleX",
+      "url": "https://doublex.top/",
+      "logo": "https://doublex.top/icon/DX_GameStudio_Logo_white.png",
+      "foundingDate": "2024",
+      "description": "成立于 2024 年的独立游戏开发工作室，专注像素风格与硬核玩法。",
+      "sameAs": [
+        "https://space.bilibili.com/3706973610576816",
+        "https://ifdian.net/a/dxgamestudio",
+        "https://github.com/FishShitMan"
+      ],
+      "makesOffer": [
+        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "几何", "genre": "平台射击", "gamePlatform": ["PC", "Web"], "url": "https://doublex.top/works/game-detail.html?game=geometry" } },
+        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "养鱼大亨", "genre": "放置养成", "gamePlatform": ["Web"], "url": "https://doublex.top/works/game-detail.html?game=fishfarm" } }
+      ]
+    }
+    </script>
 </head>
 <body>
 
@@ -1008,7 +1073,10 @@
         <div class="projects-grid">
             <div class="project-card reveal-scale" data-game="geometry">
                 <div class="project-bg" style="padding:0; overflow:hidden;">
-                    <img src="works/images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                    <picture>
+                        <source srcset="works/images/art/GEOMETRY/《几何》宣传图_1.webp" type="image/webp">
+                        <img src="works/images/art/GEOMETRY/《几何》宣传图_1.png" alt="《几何》宣传图" width="1920" height="1080" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">
+                    </picture>
                 </div>
                 <div class="project-overlay">
                     <h3>几何</h3>
@@ -1038,7 +1106,7 @@
                     <h3>螺旋塔</h3>
                     <p>卡通风格 轻度肉鸽 地牢探险</p>
                     <span class="tag">像素 · Rogue-like</span>
-                    <a class="nav-link disabled" href="javascript:;">即将推出</a>
+                    <span class="nav-link disabled" aria-disabled="true" title="《螺旋塔》仍在开发中，暂无详情页">即将推出</span>
                 </div>
             </div>
             <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-game="dreamweaver">
@@ -1049,7 +1117,7 @@
                     <h3>异种</h3>
                     <p>像素风格 动作游戏 多主角多视角</p>
                     <span class="tag">动作 · 角色扮演</span>
-                    <a class="nav-link disabled" href="javascript:;">即将推出</a>
+                    <span class="nav-link disabled" aria-disabled="true" title="《异种》仍在开发中，暂无详情页">即将推出</span>
                 </div>
             </div>
         </div>
@@ -1106,19 +1174,19 @@
                     <p>超级赤潮事件来袭！电鳗与灯笼鱼全新登场，鱼类价格全面调整，从入门到远古存在的成长路径更加清晰。</p>
                 </div>
                 <div class="news-item reveal-left" style="transition-delay: 0.2s;">
+                    <div class="news-date">2026.07.09</div>
+                    <h3>🐟 《养鱼大亨》v1.1 优化更新</h3>
+                    <p>鱼儿游动更加自然顺滑，游戏稳定性大幅提升，只管享受养鱼的乐趣就好。</p>
+                </div>
+                <div class="news-item reveal-left" style="transition-delay: 0.25s;">
                     <div class="news-date">2026.06.15</div>
                     <h3>🎮 《几何》demo初步成型</h3>
                     <p>模板房间、大量武器已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
                 </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.25s;">
+                <div class="news-item reveal-left" style="transition-delay: 0.3s;">
                     <div class="news-date">2026.04.01</div>
                     <h3>⚙️ 《几何》核心玩法原型确立</h3>
                     <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制成为玩法重心。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.3s;">
-                    <div class="news-date">2025.07.09</div>
-                    <h3>🐟 《养鱼大亨》v1.1 优化更新</h3>
-                    <p>鱼儿游动更加自然顺滑，游戏稳定性大幅提升，只管享受养鱼的乐趣就好。</p>
                 </div>
             </div>
         </div>
@@ -1137,10 +1205,6 @@
                 我们都期待听到你的声音！
             </p>
             <div class="contact-links reveal">
-                <a href="mailto:hello@doublexstudio.com" class="contact-link">
-                    <span class="icon">✉️</span>
-                    <span>电子邮箱</span>
-                </a>
                 <a href="https://space.bilibili.com/3706973610576816" class="contact-link" target="_blank" rel="noopener">
                     <span class="icon">▶️</span>
                     <span>Bilibili</span>
@@ -1149,23 +1213,28 @@
                     <span class="icon">❤️</span>
                     <span>爱发电</span>
                 </a>
-                <a href="javascript:;" class="contact-link">
+                <a href="https://github.com/FishShitMan" class="contact-link" target="_blank" rel="noopener">
+                    <span class="icon">💻</span>
+                    <span>GitHub</span>
+                </a>
+                <!-- Twitter / X：暂无跳转内容，先以不可点状态占位。开通后填入 https://x.com/账号 并删除 disabled 类与 aria-disabled -->
+                <a class="contact-link disabled" id="twitterLink" aria-disabled="true" title="Twitter / X 尚未开通">
                     <span class="icon">🐦</span>
                     <span>Twitter / X</span>
                 </a>
             </div>
-            <form class="contact-form reveal" onsubmit="event.preventDefault(); alert('感谢您的留言！我们会尽快回复。');">
+            <form class="contact-form reveal" id="contactForm">
                 <div class="form-group">
                     <label for="name">你的名字</label>
-                    <input type="text" id="name" placeholder="请输入你的名字..." required>
+                    <input type="text" id="name" name="name" placeholder="请输入你的名字..." required>
                 </div>
                 <div class="form-group">
-                    <label for="email">电子邮箱</label>
-                    <input type="email" id="email" placeholder="请输入你的邮箱..." required>
+                    <label for="email">你的电子邮箱</label>
+                    <input type="email" id="email" name="email" placeholder="请输入你的邮箱..." required>
                 </div>
                 <div class="form-group">
                     <label for="message">留言内容</label>
-                    <textarea id="message" placeholder="想对我们说什么？..." required></textarea>
+                    <textarea id="message" name="message" placeholder="想对我们说什么？..." required></textarea>
                 </div>
                 <button type="submit" class="form-submit">发送留言</button>
             </form>
@@ -1232,7 +1301,37 @@
         statNumbers.forEach(el => counterObserver.observe(el));
 
         // ===================================================================
-        // 2. 控制台彩蛋
+        // 2. 联系表单 —— 无后端，提交后用本机邮件客户端把内容发到工作室邮箱
+        // ===================================================================
+        (function () {
+            const form = document.getElementById('contactForm');
+            if (!form) return;
+            const button = form.querySelector('.form-submit');
+
+            // 站点为静态托管、无后端，且工作室暂无公开收件邮箱，
+            // 因此不伪造收件地址：提交时提示改用已开通的联系入口。
+            // 日后拿到真实邮箱，把下面 handler 换回 mailto 即可（表单元素已带 name 属性）。
+            const needsEmail = function () {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = '留言通道筹备中';
+                    button.style.opacity = '0.6';
+                    button.style.cursor = 'not-allowed';
+                }
+                const tip = document.createElement('p');
+                tip.style.cssText = 'margin-top:14px;font-size:13px;color:var(--gray-400);line-height:1.7;';
+                tip.textContent = '留言通道正在筹备中。目前请通过上方的 Bilibili、爱发电或 GitHub 与我们联系，感谢理解！';
+                form.appendChild(tip);
+            };
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+            });
+            needsEmail();
+        })();
+
+        // ===================================================================
+        // 3. 控制台彩蛋
         // ===================================================================
         console.log('%c DoubleX GameStudio ', 'font-size: 30px; font-weight: bold; background: #000; color: #fff; padding: 10px 20px;');
         console.log('%c 用代码编织梦想，用像素讲述故事 ', 'font-size: 14px; color: #888;');

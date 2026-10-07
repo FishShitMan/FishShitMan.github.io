@@ -12,6 +12,7 @@ const GAME_DATA = {
         desc2: '游戏强调"有得必有失"——获取强大力量时必须付出代价。玩家需要持续思考留下真正有用的力量、武器或道具，过于繁杂的搭配反而会陷入不利处境。每张地图最后都设有强大 BOSS，击败后获得独特能力与通往下一关的钥匙。',
         desc3: '整体基调融合赛博朋克、科幻与复古未来风格，低明度配色营造"被压抑的张力"，角色头部点缀高饱和纯色彰显鲜明个性。规则几何图形代表玩家一方，不规则扭曲图形为敌对阵营，形成强烈的视觉对立。',
         cover: 'images/art/GEOMETRY/《几何》宣传图_1.png',
+        coverWebp: 'images/art/GEOMETRY/《几何》宣传图_1.webp',
         meta: {
             '最新版本': 'dev0.1',
             '游戏类型': '2D 平台射击',
@@ -32,6 +33,12 @@ const GAME_DATA = {
             'images/game/GEOMETRY/《几何》游戏截图_3.jpg',
             'images/game/GEOMETRY/《几何》游戏截图_4.jpg'
         ],
+        screenshotsWebp: [
+            'images/game/GEOMETRY/《几何》游戏截图_1.webp',
+            'images/game/GEOMETRY/《几何》游戏截图_2.webp',
+            'images/game/GEOMETRY/《几何》游戏截图_3.webp',
+            'images/game/GEOMETRY/《几何》游戏截图_4.webp'
+        ],
         videoUrl: 'https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493',
         tagline: '准备好迎接几何弹幕的洗礼了吗？',
         // Hero 区域右侧跳转按钮
@@ -45,9 +52,10 @@ const GAME_DATA = {
         desc: '《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。',
         desc2: '玩家通过买卖鱼苗、等待成长、解锁新鱼种来一步步扩张鱼塘版图。大量事件随机袭来，各类特殊机制鱼让鱼塘生态充满变数与趣味，每次游玩游戏都能体验到新的乐趣。',
         desc3: '活泼可爱的各式鱼类搭配沉浸式动态鱼塘，通过努力一步步解锁新内容让收集过程充满成就感。游戏节奏轻松休闲，适合碎片化时间随时打开收鱼、卖鱼、解锁更多新内容。',
-        cover: 'images/game/FISHFARM/cover.png',
+        cover: 'images/game/FISHFARM/cover.jpg',
+        coverWebp: 'images/game/FISHFARM/cover.webp',
         meta: {
-            '最新版本': 'v1.4-web',
+            '最新版本': 'v1.5-web',
             '游戏类型': '放置养成',
             '发布平台': 'Web',
             '游戏引擎': 'HTML5 / JavaScript',
@@ -61,10 +69,16 @@ const GAME_DATA = {
             { icon: '🦴', title: '远古之鱼传说', desc: '解锁稀有远古鱼类，见证独特内容与全新特效，探寻鱼塘内暗流涌动的秘密...' }
         ],
         screenshots: [
-            'images/game/FISHFARM/screenshot_1.png',
-            'images/game/FISHFARM/screenshot_2.png',
-            'images/game/FISHFARM/screenshot_3.png',
-            'images/game/FISHFARM/screenshot_4.png'
+            'images/game/FISHFARM/screenshot_1.jpg',
+            'images/game/FISHFARM/screenshot_2.jpg',
+            'images/game/FISHFARM/screenshot_3.jpg',
+            'images/game/FISHFARM/screenshot_4.jpg'
+        ],
+        screenshotsWebp: [
+            'images/game/FISHFARM/screenshot_1.webp',
+            'images/game/FISHFARM/screenshot_2.webp',
+            'images/game/FISHFARM/screenshot_3.webp',
+            'images/game/FISHFARM/screenshot_4.webp'
         ],
         gameUrl: '../game/index.html',
         videoUrl: '',

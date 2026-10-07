@@ -4,7 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
+    <link rel="apple-touch-icon" href="../icon/apple-touch-icon.png">
     <title>作品展示 | DoubleX GameStudio</title>
+    <meta name="description" content="DoubleX GameStudio 作品展示：像素科幻平台射击《几何》、放置养成《养鱼大亨》的游戏截图与概念设计，共 12 幅作品图。">
+    <link rel="canonical" href="https://doublex.top/works/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DoubleX GameStudio">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:title" content="作品展示 | DoubleX GameStudio">
+    <meta property="og:description" content="像素科幻平台射击《几何》、放置养成《养鱼大亨》的游戏截图与概念设计。">
+    <meta property="og:url" content="https://doublex.top/works/">
+    <meta property="og:image" content="https://doublex.top/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="作品展示 | DoubleX GameStudio">
+    <meta name="twitter:description" content="像素科幻平台射击《几何》、放置养成《养鱼大亨》的游戏截图与概念设计。">
+    <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
     <link rel="stylesheet" href="../assets/common.css">
     <style>
         /* ===== 页面 Header ===== */
@@ -142,7 +158,8 @@
             position: relative;
             overflow: hidden;
             border: 1px solid var(--gray-700);
-            aspect-ratio: 4 / 3;
+            /* 16:9 —— 与截图原始比例一致，避免 4:3 裁掉约 28% 画面 */
+            aspect-ratio: 16 / 9;
             cursor: pointer;
             transition: all 0.4s ease;
         }
@@ -152,15 +169,26 @@
             transform: translateY(-6px);
         }
 
+        /* 图片容器：绝对定位铺满卡片，作为图片缩放与遮罩的定位基准 */
         .gallery-item .item-image {
+            position: absolute;
+            inset: 0;
+            background: var(--gray-800);
+        }
+
+        .gallery-item .item-image > picture,
+        .gallery-item .item-image > img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .gallery-item .item-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: all 0.5s ease;
-            background: var(--gray-800);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
+            transition: transform 0.5s ease;
         }
 
         .gallery-item .item-image .placeholder-icon {
@@ -168,7 +196,7 @@
             opacity: 0.4;
         }
 
-        .gallery-item:hover .item-image {
+        .gallery-item:hover .item-image img {
             transform: scale(1.05);
         }
 
@@ -347,6 +375,12 @@
                 width: 40px;
                 height: 40px;
             }
+
+            /* 小屏灯箱不要固定最小尺寸，避免超出视口 */
+            .lightbox .item-image {
+                min-width: 0 !important;
+                min-height: 0 !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -410,7 +444,8 @@
         <button class="filter-btn active" data-filter="all">全部</button>
         <button class="filter-btn" data-filter="game">游戏截图</button>
         <button class="filter-btn" data-filter="art">概念设计</button>
-        <button class="filter-btn" data-filter="ui">UI / 界面</button>
+        <!-- UI / 界面分类暂无内容：隐藏按钮，避免点出空列表（作品补齐后去掉 hidden 即可） -->
+        <button class="filter-btn" data-filter="ui" hidden>UI / 界面</button>
     </div>
 
     <!-- ===== 作品画廊 ===== -->
@@ -419,8 +454,11 @@
 
             <!-- #01 游戏截图 - 几何 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_1.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_1.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》游戏截图_1.jpg" alt="《几何》游戏截图：极简弹幕" width="1536" height="864" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -432,8 +470,11 @@
 
             <!-- #02 概念设计 - 几何宣传图 -->
             <div class="gallery-item reveal-up" data-category="art" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="几何宣传图" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/art/GEOMETRY/《几何》宣传图_1.webp" type="image/webp">
+                        <img src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="《几何》官方宣传海报" width="1920" height="1080" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">概念设计</span>
@@ -445,8 +486,11 @@
 
             <!-- #03 游戏截图 - 几何 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_2.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_2.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》游戏截图_2.jpg" alt="《几何》游戏截图：色彩风暴" width="1536" height="864" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -458,8 +502,11 @@
 
             <!-- #04 概念设计 - 几何宣传图2 -->
             <div class="gallery-item reveal-up" data-category="art" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/art/GEOMETRY/《几何》宣传图_2.png" alt="几何宣传图2" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/art/GEOMETRY/《几何》宣传图_2.webp" type="image/webp">
+                        <img src="images/art/GEOMETRY/《几何》宣传图_2.png" alt="《几何》概念海报" width="1600" height="900" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">概念设计</span>
@@ -471,8 +518,11 @@
 
             <!-- #05 游戏截图 - 几何 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_3.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_3.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》游戏截图_3.jpg" alt="《几何》游戏截图：竞速模式" width="1536" height="864" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -484,8 +534,11 @@
 
             <!-- #06 游戏截图 - 几何 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_4.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_4.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》游戏截图_4.jpg" alt="《几何》游戏截图：无尽挑战" width="1536" height="864" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -497,8 +550,11 @@
 
             <!-- #07 测试关卡 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》测试关卡_1.png" alt="几何测试关卡" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》测试关卡_1.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》测试关卡_1.png" alt="《几何》开发中的测试关卡" width="1600" height="900" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -510,8 +566,11 @@
 
             <!-- #08 游戏截图 - 几何 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/GEOMETRY/《几何》游戏截图_5.jpg" alt="几何" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_5.webp" type="image/webp">
+                        <img src="images/game/GEOMETRY/《几何》游戏截图_5.jpg" alt="《几何》BOSS 战" width="1536" height="864" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -523,8 +582,11 @@
 
             <!-- #09 养鱼大亨截图 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/FISHFARM/screenshot_1.png" alt="养鱼大亨" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/FISHFARM/screenshot_1.webp" type="image/webp">
+                        <img src="images/game/FISHFARM/screenshot_1.jpg" alt="《养鱼大亨》鱼塘概览" width="1536" height="833" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -536,8 +598,11 @@
 
             <!-- #10 养鱼大亨截图 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/FISHFARM/screenshot_2.png" alt="养鱼大亨" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/FISHFARM/screenshot_2.webp" type="image/webp">
+                        <img src="images/game/FISHFARM/screenshot_2.jpg" alt="《养鱼大亨》鱼类收集" width="1536" height="829" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -549,8 +614,11 @@
 
             <!-- #11 养鱼大亨截图 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/FISHFARM/screenshot_3.png" alt="养鱼大亨" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/FISHFARM/screenshot_3.webp" type="image/webp">
+                        <img src="images/game/FISHFARM/screenshot_3.jpg" alt="《养鱼大亨》事件系统" width="1536" height="829" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -562,8 +630,11 @@
 
             <!-- #12 养鱼大亨截图 -->
             <div class="gallery-item reveal-up" data-category="game" data-url="">
-                <div class="item-image" style="padding:0; overflow:hidden;">
-                    <img src="images/game/FISHFARM/screenshot_4.png" alt="养鱼大亨" style="width:100%; height:100%; object-fit:cover;">
+                <div class="item-image">
+                    <picture>
+                        <source srcset="images/game/FISHFARM/screenshot_4.webp" type="image/webp">
+                        <img src="images/game/FISHFARM/screenshot_4.jpg" alt="《养鱼大亨》远古传说" width="1536" height="838" loading="lazy" decoding="async">
+                    </picture>
                 </div>
                 <div class="item-overlay">
                     <span class="item-category">游戏截图</span>
@@ -614,19 +685,20 @@
         // ===================================================================
         // 1. 作品画廊数据
         // ===================================================================
+        // image = 回退格式（JPEG/PNG），webp = 现代格式；灯箱用 <picture> 组合输出
         const galleryItems = [
-            { category: 'game', title: '几何 - 极简弹幕', desc: '极简几何美学 × 极致弹幕挑战', image: 'images/game/GEOMETRY/《几何》游戏截图_1.jpg' },
-            { category: 'art', title: '几何 - 宣传图', desc: '几何游戏官方宣传海报概念设计', image: 'images/art/GEOMETRY/《几何》宣传图_1.png' },
-            { category: 'game', title: '几何 - 色彩风暴', desc: '五彩斑斓的几何弹幕，视觉与操作的双重考验', image: 'images/game/GEOMETRY/《几何》游戏截图_2.jpg' },
-            { category: 'art', title: '几何 - 概念海报', desc: '几何风格概念海报，展现游戏核心玩法', image: 'images/art/GEOMETRY/《几何》宣传图_2.png' },
-            { category: 'game', title: '几何 - 竞速模式', desc: '高速弹幕穿插躲避，考验极限反应速度', image: 'images/game/GEOMETRY/《几何》游戏截图_3.jpg' },
-            { category: 'game', title: '几何 - 无尽挑战', desc: '层层递进的几何迷宫，挑战你的操作极限', image: 'images/game/GEOMETRY/《几何》游戏截图_4.jpg' },
-            { category: 'game', title: '几何 - 测试关卡', desc: '开发中的测试关卡，打磨每一处细节', image: 'images/game/GEOMETRY/《几何》测试关卡_1.png' },
-            { category: 'game', title: '几何 - BOSS 战', desc: '终极几何BOSS战，极致弹幕盛宴', image: 'images/game/GEOMETRY/《几何》游戏截图_5.jpg' },
-            { category: 'game', title: '养鱼大亨 - 鱼塘概览', desc: '数十种鱼类在鱼塘中自由游弋', image: 'images/game/FISHFARM/screenshot_1.png' },
-            { category: 'game', title: '养鱼大亨 - 鱼类收集', desc: '阶梯式解锁各类稀有鱼类', image: 'images/game/FISHFARM/screenshot_2.png' },
-            { category: 'game', title: '养鱼大亨 - 事件系统', desc: '赤潮与超级赤潮考验养鱼智慧', image: 'images/game/FISHFARM/screenshot_3.png' },
-            { category: 'game', title: '养鱼大亨 - 远古传说', desc: '探寻鱼塘深处的远古存在', image: 'images/game/FISHFARM/screenshot_4.png' }
+            { category: 'game', title: '几何 - 极简弹幕', desc: '极简几何美学 × 极致弹幕挑战', image: 'images/game/GEOMETRY/《几何》游戏截图_1.jpg', webp: 'images/game/GEOMETRY/《几何》游戏截图_1.webp' },
+            { category: 'art', title: '几何 - 宣传图', desc: '几何游戏官方宣传海报概念设计', image: 'images/art/GEOMETRY/《几何》宣传图_1.png', webp: 'images/art/GEOMETRY/《几何》宣传图_1.webp' },
+            { category: 'game', title: '几何 - 色彩风暴', desc: '五彩斑斓的几何弹幕，视觉与操作的双重考验', image: 'images/game/GEOMETRY/《几何》游戏截图_2.jpg', webp: 'images/game/GEOMETRY/《几何》游戏截图_2.webp' },
+            { category: 'art', title: '几何 - 概念海报', desc: '几何风格概念海报，展现游戏核心玩法', image: 'images/art/GEOMETRY/《几何》宣传图_2.png', webp: 'images/art/GEOMETRY/《几何》宣传图_2.webp' },
+            { category: 'game', title: '几何 - 竞速模式', desc: '高速弹幕穿插躲避，考验极限反应速度', image: 'images/game/GEOMETRY/《几何》游戏截图_3.jpg', webp: 'images/game/GEOMETRY/《几何》游戏截图_3.webp' },
+            { category: 'game', title: '几何 - 无尽挑战', desc: '层层递进的几何迷宫，挑战你的操作极限', image: 'images/game/GEOMETRY/《几何》游戏截图_4.jpg', webp: 'images/game/GEOMETRY/《几何》游戏截图_4.webp' },
+            { category: 'game', title: '几何 - 测试关卡', desc: '开发中的测试关卡，打磨每一处细节', image: 'images/game/GEOMETRY/《几何》测试关卡_1.png', webp: 'images/game/GEOMETRY/《几何》测试关卡_1.webp' },
+            { category: 'game', title: '几何 - BOSS 战', desc: '终极几何BOSS战，极致弹幕盛宴', image: 'images/game/GEOMETRY/《几何》游戏截图_5.jpg', webp: 'images/game/GEOMETRY/《几何》游戏截图_5.webp' },
+            { category: 'game', title: '养鱼大亨 - 鱼塘概览', desc: '数十种鱼类在鱼塘中自由游弋', image: 'images/game/FISHFARM/screenshot_1.jpg', webp: 'images/game/FISHFARM/screenshot_1.webp' },
+            { category: 'game', title: '养鱼大亨 - 鱼类收集', desc: '阶梯式解锁各类稀有鱼类', image: 'images/game/FISHFARM/screenshot_2.jpg', webp: 'images/game/FISHFARM/screenshot_2.webp' },
+            { category: 'game', title: '养鱼大亨 - 事件系统', desc: '赤潮与超级赤潮考验养鱼智慧', image: 'images/game/FISHFARM/screenshot_3.jpg', webp: 'images/game/FISHFARM/screenshot_3.webp' },
+            { category: 'game', title: '养鱼大亨 - 远古传说', desc: '探寻鱼塘深处的远古存在', image: 'images/game/FISHFARM/screenshot_4.jpg', webp: 'images/game/FISHFARM/screenshot_4.webp' }
         ];
 
         // ===================================================================
@@ -666,7 +738,9 @@
                 const item = galleryItems[index];
                 if (!item) return;
 
-                lightboxImage.innerHTML = `<img src="${item.image}" alt="${item.title}" style="max-width:100%; max-height:80vh; display:block; border:1px solid var(--gray-600); background:var(--gray-800);">`;
+                // 用 <picture> 输出，浏览器不支持 WebP 时自动回退到 JPEG/PNG
+                const source = item.webp ? `<source srcset="${item.webp}" type="image/webp">` : '';
+                lightboxImage.innerHTML = `<picture>${source}<img src="${item.image}" alt="${item.title}" style="max-width:100%; max-height:80vh; display:block; border:1px solid var(--gray-600); background:var(--gray-800);"></picture>`;
                 lightboxTitle.textContent = item.title;
                 lightboxDesc.textContent = item.desc;
                 lightbox.classList.add('open');
