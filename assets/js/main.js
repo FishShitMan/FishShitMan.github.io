@@ -49,9 +49,18 @@
         let particles = [];
         let mouse = { x: null, y: null, radius: 150 };
 
+        /* 按设备像素比放大画布后备存储：高分屏下粒子边缘才不糊。
+           CSS 尺寸由样式表控制，这里只调分辨率。 */
+        let viewW = window.innerWidth, viewH = window.innerHeight;
+
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            viewW = window.innerWidth;
+            viewH = window.innerHeight;
+            canvas.width = Math.round(viewW * dpr);
+            canvas.height = Math.round(viewH * dpr);
+            // ctx 已按 dpr 缩放，因此后续所有绘制与坐标都用逻辑像素（viewW/viewH）
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
 
         resizeCanvas();
@@ -63,8 +72,8 @@
             }
 
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
+                this.x = Math.random() * viewW;
+                this.y = Math.random() * viewH;
                 this.size = Math.random() * 2 + 0.5;
                 this.baseSize = this.size;
                 this.speedX = (Math.random() - 0.5) * 0.5;
@@ -72,9 +81,12 @@
                 this.opacity = Math.random() * 0.5 + 0.1;
             }
 
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+            /* dt = 距上一帧的时间，以 60Hz 的一帧（16.667ms）为 1。
+               位移必须乘 dt，否则速度会随设备刷新率变化：
+               120Hz 设备上粒子会跑两倍快。 */
+            update(dt) {
+                this.x += this.speedX * dt;
+                this.y += this.speedY * dt;
 
                 if (mouse.x !== null) {
                     const dx = this.x - mouse.x;
@@ -84,13 +96,13 @@
                         const force = (mouse.radius - dist) / mouse.radius;
                         const dirX = dx / dist;
                         const dirY = dy / dist;
-                        this.x += dirX * force * 3;
-                        this.y += dirY * force * 3;
+                        this.x += dirX * force * 3 * dt;
+                        this.y += dirY * force * 3 * dt;
                     }
                 }
 
-                if (this.x < 0 || this.x > canvas.width ||
-                    this.y < 0 || this.y > canvas.height) {
+                if (this.x < 0 || this.x > viewW ||
+                    this.y < 0 || this.y > viewH) {
                     this.reset();
                 }
             }
@@ -104,7 +116,7 @@
         }
 
         function initParticles() {
-            const count = Math.min(Math.floor((canvas.width * canvas.height) / 8000), 150);
+            const count = Math.min(Math.floor((viewW * viewH) / 8000), 150);
             particles = [];
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
@@ -144,11 +156,21 @@
             }
         }
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 以 60Hz 一帧为基准单位；上限 50ms 防止切后台回来时粒子瞬移
+        const FRAME_MS = 1000 / 60;
+        const MAX_DT_MS = 50;
+        let lastFrameTs = 0;
+
+        function animateParticles(ts) {
+            if (!lastFrameTs) lastFrameTs = ts || 0;
+            const elapsed = (ts || 0) - lastFrameTs;
+            lastFrameTs = ts || 0;
+            const dt = Math.min(elapsed, MAX_DT_MS) / FRAME_MS;
+
+            ctx.clearRect(0, 0, viewW, viewH);
 
             particles.forEach(p => {
-                p.update();
+                p.update(dt);
                 p.draw();
             });
 
@@ -180,16 +202,51 @@
         let ringX = 0, ringY = 0;
         let mouseX = 0, mouseY = 0;
 
+        const IDLE_MS = 5000;      // 无操作 5 秒后淡出
+        const FADE_MS = 500;       // 淡入淡出时长，与 CSS 保持一致
+        let appeared = false;      // 是否已经拿到过真实鼠标位置
+        let idleTimer = null;
+
+        function setIdle(on) {
+            if (on) { cursorDot.classList.add('is-visible'); cursorRing.classList.add('is-visible'); }
+            else { cursorDot.classList.remove('is-visible'); cursorRing.classList.remove('is-visible'); }
+        }
+
+        function scheduleIdleFade() {
+            if (idleTimer) clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => setIdle(false), IDLE_MS);
+        }
+
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
+
+            if (!appeared) {
+                /* 首次拿到真实位置：先把圆环瞬移到鼠标处再淡入，
+                   否则它会从 (0,0) 左上角一路飞过来 */
+                appeared = true;
+                ringX = mouseX;
+                ringY = mouseY;
+            }
+
             cursorDot.style.left = mouseX + 'px';
             cursorDot.style.top = mouseY + 'px';
+
+            setIdle(true);
+            scheduleIdleFade();
         });
 
-        function animateCursor() {
-            ringX += (mouseX - ringX) * 0.35;
-            ringY += (mouseY - ringY) * 0.35;
+        /* 帧率无关的缓动：原先每帧固定收敛 0.35，高刷屏上会明显更"黏"。
+           k = 1 - (1 - 0.35)^dt，dt 以 60Hz 一帧为单位。 */
+        let lastCursorTs = 0;
+        function animateCursor(ts) {
+            if (!lastCursorTs) lastCursorTs = ts || 0;
+            const elapsed = (ts || 0) - lastCursorTs;
+            lastCursorTs = ts || 0;
+            const dt = Math.min(elapsed, 50) / (1000 / 60);
+            const k = 1 - Math.pow(1 - 0.35, dt);
+            ringX += (mouseX - ringX) * k;
+            ringY += (mouseY - ringY) * k;
             cursorRing.style.left = ringX + 'px';
             cursorRing.style.top = ringY + 'px';
             requestAnimationFrame(animateCursor);
@@ -197,13 +254,31 @@
 
         animateCursor();
 
-        document.querySelectorAll('a, button, .project-card, .team-card, .contact-link, .stat-item, .gallery-item, .feature-card').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursorRing.classList.add('active');
-            });
-            el.addEventListener('mouseleave', () => {
-                cursorRing.classList.remove('active');
-            });
+        /* 悬停放大改用事件委派：
+           原先在加载时用 querySelectorAll 逐个绑定，而画廊卡片、详情页按钮
+           （查看大图 / 游戏详情等）都是随后由 loader 异步注入的 —— 那时绑定
+           早已执行完毕，这些元素因此永远拿不到 .active。
+           委派到 document 后，静态与动态元素一律生效。 */
+        /* 可交互元素选择器：悬停时放大光标环。
+           用裸标签 a / button 覆盖全部链接与按钮 —— 包括 loader 异步注入的
+           游戏详情、查看大图、团队卡等，因此无需再逐个类名列举。 */
+        const HOVER_SEL = 'a, button, .project-card, .team-card-link, .team-card, '
+            + '.contact-link, .stat-item, .gallery-item, .feature-card, .btn, .nav-link';
+
+        document.addEventListener('mouseover', (e) => {
+            const t = e.target;
+            if (t && t.closest && t.closest(HOVER_SEL)) { cursorRing.classList.add('active'); }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            const t = e.target;
+            if (!t || !t.closest) { return; }
+            const from = t.closest(HOVER_SEL);
+            if (!from) { return; }
+            const to = e.relatedTarget;
+            // 仍在同一个可交互元素内部移动时不移除，避免子元素间抖动
+            if (to && to.closest && to.closest(HOVER_SEL) === from) { return; }
+            cursorRing.classList.remove('active');
         });
 
         document.addEventListener('click', (e) => {

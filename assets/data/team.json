@@ -1,0 +1,18 @@
+{
+  "members": [
+    {
+      "name": "PencilboX",
+      "role": "主程",
+      "desc": "全栈游戏开发者，6年游戏开发经验，热爱技术与创新。",
+      "avatar": "🧑‍💻",
+      "link": "https://github.com/toybox250"
+    },
+    {
+      "name": "X",
+      "role": "主美 · 概念设计",
+      "desc": "资深游戏美术师，擅长风格化视觉与氛围营造。",
+      "avatar": "🎨",
+      "link": "https://github.com/FishShitMan"
+    }
+  ]
+}

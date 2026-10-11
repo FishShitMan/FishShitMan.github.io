@@ -99,7 +99,7 @@
   // ---------------------------------------------------------------- 数据
   var DX = window.DX = {
     ready: false, failed: false, onReady: null,
-    data: { news: [], games: {}, gallery: null, showcase: null, siteslots: null, media: null },
+    data: { news: [], games: {}, gallery: null, showcase: null, siteslots: null, media: null, team: null },
     version: '', buildDate: '', slots: SLOT_DEFAULT_COUNT,
     render: {},
     media: media,                          // 页面脚本用：把逻辑键解析为实际 URL
@@ -164,6 +164,7 @@
       if (m.showcase) { jobs.push(one(DATA_DIR + m.showcase)); }
       if (m.siteslots) { jobs.push(one(DATA_DIR + m.siteslots)); }
       (m.media || []).forEach(function (f) { jobs.push(one(DATA_DIR + f)); });
+      if (m.team) { jobs.push(one(DATA_DIR + m.team)); }
 
       return Promise.all(jobs).then(function (res) {
         res.forEach(function (x) {
@@ -364,12 +365,39 @@
     return out;
   };
 
+  /* ---- 核心团队：整张卡片即链接 ---- */
+  DX.render.team = function () {
+    var data = DX.data.team;
+    var members = (data && data.members) || [];
+    if (!members.length) { return; }          // 无数据时保留 HTML 内置卡片
+    var html = '';
+    members.forEach(function (m, i) {
+      var href = m.link || '';
+      var delay = i ? ' style="transition-delay: ' + (0.05 * i).toFixed(2) + 's;"' : '';
+      // reveal 落在 <a> 上，.team-card 作为内层视觉载体，两者 transform 不互相覆盖
+      html += '<a class="team-card-link reveal"' + delay
+        + (href
+          ? ' href="' + esc(href) + '" target="_blank" rel="noopener noreferrer"'
+            + ' aria-label="' + esc(m.name + ' 的个人主页') + '"'
+          : '')
+        + '>'
+        + '<div class="team-card">'
+        + '<div class="team-avatar">' + esc(m.avatar || '✦') + '</div>'
+        + '<h3>' + esc(m.name || '') + '</h3>'
+        + '<div class="role">' + esc(m.role || '') + '</div>'
+        + '<p>' + esc(m.desc || '') + '</p>'
+        + '</div></a>';
+    });
+    setHTML('#teamGrid', html);
+  };
+
   /* ---- 所有页面共用的渲染入口 ---- */
   DX.renderAll = function () {
     DX.render.news();
     DX.render.newsFull();
     DX.render.cards();
     DX.render.gallery();
+    DX.render.team();
   };
   // ---------------------------------------------------------------- 启动
   function boot() {

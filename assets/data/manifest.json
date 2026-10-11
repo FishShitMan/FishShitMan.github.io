@@ -1,6 +1,6 @@
 {
   "site": {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "buildDate": "2026-10-12",
     "note": "站点版本，仅内部查看，不在页面任何位置展示"
   },
@@ -32,5 +32,6 @@
   "siteslots": "siteslots.json",
   "media": [
     "media.json"
-  ]
+  ],
+  "team": "team.json"
 }

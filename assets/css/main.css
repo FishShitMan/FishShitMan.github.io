@@ -47,6 +47,9 @@ body {
                 0 0 50px rgba(255, 255, 255, 0.7),
                 0 0 80px rgba(255, 255, 255, 0.4);
     transform: translate(-50%, -50%);
+    /* 默认隐藏；首次拿到真实鼠标位置后由脚本加 .is-visible 淡入 */
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .cursor-ring {
@@ -60,7 +63,14 @@ body {
     transform: translate(-50%, -50%);
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5),
                 inset 0 0 15px rgba(255, 255, 255, 0.08);
-    transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease, opacity 0.5s ease;
+    opacity: 0;
+}
+
+/* 淡入状态：脚本在拿到真实鼠标位置后添加 */
+.cursor-dot.is-visible,
+.cursor-ring.is-visible {
+    opacity: 1;
 }
 
 .cursor-ring.active {
@@ -226,7 +236,7 @@ body {
 }
 
 /* ===== 回到顶部按钮 ===== */
-.back-to-top {
+   /* ===== 程序化三角形 =====    原先用 ◀ ▲ ▼ 字符，Safari（iOS / macOS）会把它们渲染成 emoji。    改为纯 CSS 边框绘制，不依赖字体，任何内核下形状一致。 */   .tri {     display: inline-block;     width: 0;     height: 0;     vertical-align: middle;     border-style: solid;   }   .tri-left {     border-width: 5px 8px 5px 0;     border-color: transparent currentColor transparent transparent;   }   .tri-right {     border-width: 5px 0 5px 8px;     border-color: transparent transparent transparent currentColor;   }   .tri-up {     border-width: 0 5px 8px 5px;     border-color: transparent transparent currentColor transparent;   }   .tri-down {     border-width: 8px 5px 0 5px;     border-color: currentColor transparent transparent transparent;   } .back-to-top {
     position: fixed;
     bottom: 40px;
     right: 40px;

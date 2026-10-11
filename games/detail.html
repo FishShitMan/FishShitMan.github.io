@@ -82,6 +82,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            /* banner 超宽（6400x1800）：默认居中会裁掉两侧，靠右取景保住主体 */
+            object-position: right center;
             background: var(--gray-800);
         }
 
@@ -499,8 +501,9 @@
                 padding: 0 25px 80px;
             }
             .detail-hero {
-                height: 40vh;
-                min-height: 300px;
+                /* banner 比例约 3.56:1，40vh 的竖高框会裁掉大量画面，改矮 */
+                height: 30vh;
+                min-height: 220px;
             }
             .detail-hero .hero-info {
                 padding: 0 25px;
@@ -597,7 +600,7 @@
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <a href="../index.html" class="nav-back-link">
-            <span class="arrow">&#9664;</span> 返回主页
+            <span class="arrow tri tri-left" aria-hidden="true"></span> 返回主页
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="../index.html" class="gray-link">首页</a></li>
@@ -686,7 +689,7 @@
     </footer>
 
     <!-- ===== 回到顶部按钮 ===== -->
-    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+    <button class="back-to-top" id="backToTop" title="回到顶部"><span class="tri tri-up" aria-hidden="true"></span></button>
 
     <!-- ===== 公共脚本 ===== -->
     <script src="../assets/js/main.js"></script>

@@ -117,8 +117,9 @@
         .filter-btn {
             padding: 10px 28px;
             background: transparent;
-            border: 1px solid var(--gray-600);
-            color: var(--gray-400);
+            /* 未选中态：透明底 + 白边白字（对齐全局 .btn-outline）*/
+            border: 1px solid var(--white);
+            color: var(--white);
             font-size: 13px;
             font-weight: 500;
             letter-spacing: 2px;
@@ -128,9 +129,11 @@
             font-family: inherit;
         }
 
+        /* 悬停：反转为纯白填充 + 文字反色（与 .btn-outline:hover 同向）*/
         .filter-btn:hover {
-            border-color: var(--gray-300);
-            color: var(--gray-200);
+            background: var(--white);
+            border-color: var(--white);
+            color: var(--black);
         }
 
         .filter-btn.active {
@@ -336,6 +339,7 @@
             margin-top: 6px;
         }
 
+        /* 静止态：透明底 + 白 X，与全局 .btn-outline 一致 */
         .lightbox .lightbox-close {
             position: absolute;
             top: 30px;
@@ -343,7 +347,7 @@
             width: 50px;
             height: 50px;
             background: transparent;
-            border: 2px solid var(--gray-500);
+            border: 2px solid var(--white);
             color: var(--white);
             font-size: 24px;
             cursor: pointer;
@@ -354,15 +358,18 @@
             z-index: 20001;
         }
 
+        /* hover：反转为纯色填充 + 图标反色（与 .btn-outline:hover 同向） */
         .lightbox .lightbox-close:hover {
+            background: var(--white);
             border-color: var(--white);
-            background: rgba(255,255,255,0.1);
+            color: var(--black);
         }
 
         .lightbox .lightbox-close .close-icon {
-            font-size: 28px;
-            font-weight: 300;
+            font-size: 26px;
+            font-weight: 600;
             line-height: 1;
+            color: inherit;
         }
 
         /* ===== 响应式 ===== */
@@ -443,7 +450,7 @@
     <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <a href="../index.html" class="nav-back-link">
-            <span class="arrow">&#9664;</span> 返回主页
+            <span class="arrow tri tri-left" aria-hidden="true"></span> 返回主页
         </a>
         <ul class="nav-links" id="navLinks">
             <li><a href="../index.html" class="gray-link">首页</a></li>
@@ -632,7 +639,7 @@
     </footer>
 
     <!-- ===== 回到顶部按钮 ===== -->
-    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+    <button class="back-to-top" id="backToTop" title="回到顶部"><span class="tri tri-up" aria-hidden="true"></span></button>
 
     <!-- ===== 公共脚本 ===== -->
     <script src="../assets/js/loader.js"></script>
@@ -719,7 +726,7 @@
             configurable: true,
             get: function () {
                 return galleryData.map(function (it) {
-                    return { title: it.gameTitle, desc: it.desc, image: it.url, webp: null };
+                    return { title: it.title || it.gameTitle, desc: it.desc, image: it.url, webp: null };
                 });
             }
         });

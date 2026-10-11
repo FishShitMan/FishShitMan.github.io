@@ -49,8 +49,9 @@
         .hero-badge {
             display: inline-block;
             padding: 8px 20px;
-            border: 1px solid var(--gray-500);
-            color: var(--gray-300);
+            /* 静止态：透明底 + 白边白字（对齐全局 .btn-outline）*/
+            border: 1px solid var(--white);
+            color: var(--white);
             font-size: 12px;
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -126,6 +127,10 @@
         }
 
         .btn {
+            /* inline-block + nowrap：否则中文标签会在字与字之间折行
+               （例如“游戏画廊”被拆成“游戏画/廊”）*/
+            display: inline-block;
+            white-space: nowrap;
             padding: 15px 40px;
             font-size: 14px;
             font-weight: 600;
@@ -185,7 +190,7 @@
             mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 100%);
         }
 
-        .scroll-arrow {
+           /* ===== 程序化三角形 =====    原先用 ◀ ▲ ▼ 字符，Safari（iOS / macOS）会把它们渲染成 emoji。    改为纯 CSS 边框绘制，不依赖字体，任何内核下形状一致。 */   .tri {     display: inline-block;     width: 0;     height: 0;     vertical-align: middle;     border-style: solid;   }   .tri-left {     border-width: 5px 8px 5px 0;     border-color: transparent currentColor transparent transparent;   }   .tri-right {     border-width: 5px 0 5px 8px;     border-color: transparent transparent transparent currentColor;   }   .tri-up {     border-width: 0 5px 8px 5px;     border-color: transparent transparent currentColor transparent;   }   .tri-down {     border-width: 8px 5px 0 5px;     border-color: currentColor transparent transparent transparent;   } .scroll-arrow {
             font-size: 14px;
             color: var(--gray-400);
             opacity: 0.2;
@@ -303,6 +308,15 @@
             background: var(--black);
         }
 
+        /* 按钮区：横向并排，空间不足时整块换行（不再从字间折断）*/
+        .projects-more {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -413,8 +427,9 @@
             align-items: center;
             gap: 6px;
             padding: 4px 12px;
-            border: 1px solid var(--gray-500);
-            color: var(--gray-300);
+            /* 静止态：透明底 + 白边白字（对齐全局 .btn-outline）*/
+            border: 1px solid var(--white);
+            color: var(--white);
             font-size: 10px;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -431,19 +446,19 @@
             height: 0;
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
-            border-left: 8px solid var(--gray-300);
+            border-left: 8px solid var(--white);
             transition: border-left-color 0.35s ease;
         }
 
+        /* 悬停：反转为纯白填充 + 文字反色（与 .btn-outline:hover 同向）*/
         .project-overlay .nav-link:hover {
             border-color: var(--white);
-            color: var(--white);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+            background: var(--white);
+            color: var(--black);
         }
 
         .project-overlay .nav-link:hover::after {
-            border-left-color: var(--white);
+            border-left-color: var(--black);
         }
 
         .project-overlay .nav-link.disabled {
@@ -482,6 +497,19 @@
             margin: 0 auto;
         }
 
+        /* 整张成员卡片即链接：外层 <a> 承载 reveal 动画，内层 .team-card 负责视觉与
+           hover 抬升。两者 transform 分工不同，避免互相覆盖。 */
+        .team-card-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .team-card-link:focus-visible {
+            outline: 2px solid var(--white);
+            outline-offset: 4px;
+        }
+
         .team-card {
             text-align: center;
             padding: 40px 20px;
@@ -509,11 +537,11 @@
             transition: transform 0.4s ease;
         }
 
-        .team-card:hover::before {
+        .team-card-link:hover .team-card::before {
             transform: scaleX(1);
         }
 
-        .team-card:hover {
+        .team-card-link:hover .team-card {
             border-color: var(--gray-400);
             transform: translateY(-10px);
         }
@@ -531,7 +559,7 @@
             transition: all 0.4s ease;
         }
 
-        .team-card:hover .team-avatar {
+        .team-card-link:hover .team-avatar {
             border-color: var(--white);
         }
 
@@ -903,6 +931,18 @@
             }
         }
 
+        /* 窄屏：两按钮并排约需 307px，视口不足时改为上下各占一行，
+           避免出现半截换行造成的视觉破裂 */
+        @media (max-width: 480px) {
+            .projects-more {
+                flex-direction: column;
+                /* 按内容宽度居中并沿用 .btn 默认尺寸（与「更多动态」一致）；
+                   拉伸对齐会把边框撑成整行宽，过宽 */
+                align-items: center;
+                gap: 12px;
+            }
+        }
+
         @media (max-width: 480px) {
             .hero {
                 padding-left: 16px;
@@ -963,6 +1003,15 @@
                 padding: 15px 10px;
                 flex: 0 0 auto;
             }
+        }
+
+        /* ===== 移动端：时间轴占据左侧，文字被推得过右；补右侧安全区平衡重心 ===== */
+        @media (max-width: 768px) {
+            .news-timeline-wrap { padding-right: 18px; }
+            .news-timeline { padding-right: 4px; }
+            .news-timeline::before { left: 7px; }
+            .news-item { padding-left: 30px; }
+            .news-item::before { left: 1px; }
         }
     </style>
     <!-- 结构化数据：工作室与收录作品 -->
@@ -1029,9 +1078,9 @@
         <div class="scroll-indicator">
             <span>下滑浏览</span>
             <div class="scroll-arrows">
-                <div class="scroll-arrow">▼</div>
-                <div class="scroll-arrow">▼</div>
-                <div class="scroll-arrow">▼</div>
+                <div class="scroll-arrow tri tri-down" aria-hidden="true"></div>
+                <div class="scroll-arrow tri tri-down" aria-hidden="true"></div>
+                <div class="scroll-arrow tri tri-down" aria-hidden="true"></div>
             </div>
         </div>
     </section>
@@ -1116,8 +1165,8 @@
                 </div>
             </div>
         </div>
-<div class="projects-more reveal" style="text-align: center; margin-top: 50px;">
-            <a href="pages/showcase.html" class="btn btn-outline" style="margin-right: 15px;">更多作品</a>
+<div class="projects-more reveal" style="margin-top: 50px;">
+            <a href="pages/showcase.html" class="btn btn-outline">更多作品</a>
             <a href="pages/gallery.html" class="btn btn-outline">游戏画廊</a>
         </div>
     </section>
@@ -1126,19 +1175,25 @@
     <section class="team" id="team">
         <h2 class="section-title reveal">核心团队</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">MEET OUR TEAM</p>
-        <div class="team-grid">
-            <div class="team-card reveal">
-                <div class="team-avatar">🧑‍💻</div>
-                <h3>PencilboX</h3>
-                <div class="role">主程</div>
-                <p>全栈游戏开发者，6年游戏开发经验，热爱技术与创新。</p>
-            </div>
-            <div class="team-card reveal" style="transition-delay: 0.15s;">
-                <div class="team-avatar">🎨</div>
-                <h3>X</h3>
-                <div class="role">主美 · 概念设计</div>
-                <p>资深游戏美术师，擅长风格化视觉与氛围营造。</p>
-            </div>
+        <div class="team-grid" id="teamGrid">
+            <!-- 成员数据来自 assets/data/team.json（由 assets/js/loader.js 渲染）。
+                 下面是 HTML 内置默认内容：数据不可用时卡片与链接照常可用。 -->
+            <a class="team-card-link reveal" href="https://github.com/toybox250" target="_blank" rel="noopener noreferrer" aria-label="PencilboX 的个人主页">
+                <div class="team-card">
+                    <div class="team-avatar">🧑‍💻</div>
+                    <h3>PencilboX</h3>
+                    <div class="role">主程</div>
+                    <p>全栈游戏开发者，6年游戏开发经验，热爱技术与创新。</p>
+                </div>
+            </a>
+            <a class="team-card-link reveal" style="transition-delay: 0.05s;" href="https://github.com/FishShitMan" target="_blank" rel="noopener noreferrer" aria-label="X 的个人主页">
+                <div class="team-card">
+                    <div class="team-avatar">🎨</div>
+                    <h3>X</h3>
+                    <div class="role">主美 · 概念设计</div>
+                    <p>资深游戏美术师，擅长风格化视觉与氛围营造。</p>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -1223,7 +1278,7 @@
     </footer>
 
     <!-- ===== 回到顶部按钮 ===== -->
-    <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
+    <button class="back-to-top" id="backToTop" title="回到顶部"><span class="tri tri-up" aria-hidden="true"></span></button>
 
     <!-- ===== 公共脚本 ===== -->
     <script src="assets/js/loader.js"></script>
