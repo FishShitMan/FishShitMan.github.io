@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="icon/DX_Logo_white.png" type="image/png">
-    <link rel="apple-touch-icon" href="icon/apple-touch-icon.png">
+    <link rel="icon" href="assets/icons/favicon-32.png" type="image/png">
+    <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
     <title>DoubleX GameStudio | 游戏开发工作室</title>
     <meta name="description" content="DoubleX GameStudio 是成立于 2024 年的独立游戏工作室，专注像素风格与硬核玩法：2D 平台射击《几何》、放置养成《养鱼大亨》，另有《螺旋塔》《异种》开发中。">
     <link rel="canonical" href="https://doublex.top/">
@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="DoubleX GameStudio | 游戏开发工作室">
     <meta name="twitter:description" content="专注像素风格与硬核玩法的独立游戏工作室：《几何》《养鱼大亨》，另有《螺旋塔》《异种》开发中。">
     <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
-    <link rel="stylesheet" href="assets/common.css">
+    <link rel="stylesheet" href="assets/css/main.css">
     <style>
         /* ===== 字体 ===== */
         @font-face {
@@ -563,6 +563,9 @@
             position: relative;
         }
 
+        /* 动态列表底部渐隐。列表不足 MIN_SCROLL 条时由 loader 加 .is-short 关闭，
+           否则会遮住最后一条内容。 */
+        .news-timeline-wrap.is-short::after { display: none; }
         .news-timeline-wrap::after {
             content: '';
             position: absolute;
@@ -967,7 +970,7 @@
       "name": "DoubleX GameStudio",
       "alternateName": "DoubleX",
       "url": "https://doublex.top/",
-      "logo": "https://doublex.top/icon/DX_GameStudio_Logo_white.png",
+      "logo": "https://doublex.top/assets/icons/logo-white.png",
       "foundingDate": "2024",
       "description": "成立于 2024 年的独立游戏开发工作室，专注像素风格与硬核玩法。",
       "sameAs": [
@@ -976,8 +979,8 @@
         "https://github.com/FishShitMan"
       ],
       "makesOffer": [
-        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "几何", "genre": "平台射击", "gamePlatform": ["PC", "Web"], "url": "https://doublex.top/works/game-detail.html?game=geometry" } },
-        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "养鱼大亨", "genre": "放置养成", "gamePlatform": ["Web"], "url": "https://doublex.top/works/game-detail.html?game=fishfarm" } }
+        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "几何", "genre": "平台射击", "gamePlatform": ["PC", "Web"], "url": "https://doublex.top/games/detail.html?game=geometry" } },
+        { "@type": "Offer", "itemOffered": { "@type": "VideoGame", "name": "养鱼大亨", "genre": "放置养成", "gamePlatform": ["Web"], "url": "https://doublex.top/games/detail.html?game=fishfarm" } }
       ]
     }
     </script>
@@ -1070,60 +1073,49 @@
     <section class="projects" id="projects">
         <h2 class="section-title reveal">我们的作品</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">FEATURED PROJECTS</p>
-        <div class="projects-grid">
-            <div class="project-card reveal-scale" data-game="geometry">
-                <div class="project-bg" style="padding:0; overflow:hidden;">
-                    <picture>
-                        <source srcset="works/images/art/GEOMETRY/《几何》宣传图_1.webp" type="image/webp">
-                        <img src="works/images/art/GEOMETRY/《几何》宣传图_1.png" alt="《几何》宣传图" width="1920" height="1080" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">
-                    </picture>
-                </div>
+        <div class="projects-grid" id="projectsGrid">
+            <!-- 卡片内容来自 assets/data/siteslots.json（由 assets/js/loader.js 渲染）。
+                 下面是 HTML 内置默认内容：数据不可用时页面照常显示，不会空白。 -->
+            <div class="project-card reveal-scale">
+                <div class="project-bg"><span class="icon">✦</span></div>
                 <div class="project-overlay">
-                    <h3>几何</h3>
-                    <p>像素科幻 2D 平台射击</p>
-                    <span class="tag">像素 · 平台射击</span>
-                    <a class="nav-link" href="works/game-detail.html?game=geometry">游戏详情</a>
+                    <h3>待开发项目</h3>
+                    <p>这是一个等待开发中的游戏项目哦</p>
+                    <span class="tag">暂无 · 暂无</span>
+                    <span class="nav-link disabled" aria-disabled="true">即将推出</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.1s;" data-game="fishfarm">
-                <div class="project-bg" style="position:relative; overflow:hidden;">
-                    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center;">
-                        <span class="icon">🐟</span>
-                    </div>
-                </div>
+            <div class="project-card reveal-scale" style="transition-delay: 0.1s;">
+                <div class="project-bg"><span class="icon">✦</span></div>
                 <div class="project-overlay">
-                    <h3>养鱼大亨</h3>
-                    <p>放置养成 · 鱼类收集模拟</p>
-                    <span class="tag">养成 · 模拟</span>
-                    <a class="nav-link" href="works/game-detail.html?game=fishfarm">游戏详情</a>
+                    <h3>待开发项目</h3>
+                    <p>这是一个等待开发中的游戏项目哦</p>
+                    <span class="tag">暂无 · 暂无</span>
+                    <span class="nav-link disabled" aria-disabled="true">即将推出</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.2s;" data-game="lost-dynasty">
-                <div class="project-bg">
-                    <span class="icon">🗡️</span>
-                </div>
+            <div class="project-card reveal-scale" style="transition-delay: 0.2s;">
+                <div class="project-bg"><span class="icon">✦</span></div>
                 <div class="project-overlay">
-                    <h3>螺旋塔</h3>
-                    <p>卡通风格 轻度肉鸽 地牢探险</p>
-                    <span class="tag">像素 · Rogue-like</span>
-                    <span class="nav-link disabled" aria-disabled="true" title="《螺旋塔》仍在开发中，暂无详情页">即将推出</span>
+                    <h3>待开发项目</h3>
+                    <p>这是一个等待开发中的游戏项目哦</p>
+                    <span class="tag">暂无 · 暂无</span>
+                    <span class="nav-link disabled" aria-disabled="true">即将推出</span>
                 </div>
             </div>
-            <div class="project-card reveal-scale" style="transition-delay: 0.3s;" data-game="dreamweaver">
-                <div class="project-bg">
-                    <span class="icon">☣️</span>
-                </div>
+            <div class="project-card reveal-scale" style="transition-delay: 0.3s;">
+                <div class="project-bg"><span class="icon">✦</span></div>
                 <div class="project-overlay">
-                    <h3>异种</h3>
-                    <p>像素风格 动作游戏 多主角多视角</p>
-                    <span class="tag">动作 · 角色扮演</span>
-                    <span class="nav-link disabled" aria-disabled="true" title="《异种》仍在开发中，暂无详情页">即将推出</span>
+                    <h3>待开发项目</h3>
+                    <p>这是一个等待开发中的游戏项目哦</p>
+                    <span class="tag">暂无 · 暂无</span>
+                    <span class="nav-link disabled" aria-disabled="true">即将推出</span>
                 </div>
             </div>
         </div>
-        <div class="projects-more reveal" style="text-align: center; margin-top: 50px;">
-            <a href="works/showcase.html" class="btn btn-outline" style="margin-right: 15px;">更多作品</a>
-            <a href="works/index.html" class="btn btn-outline">游戏画廊</a>
+<div class="projects-more reveal" style="text-align: center; margin-top: 50px;">
+            <a href="pages/showcase.html" class="btn btn-outline" style="margin-right: 15px;">更多作品</a>
+            <a href="pages/gallery.html" class="btn btn-outline">游戏画廊</a>
         </div>
     </section>
 
@@ -1152,53 +1144,27 @@
         <h2 class="section-title reveal">最新动态</h2>
         <p class="section-subtitle reveal" style="transition-delay: 0.1s;">LATEST NEWS</p>
         <div class="news-timeline-wrap">
-            <div class="news-timeline">
+            <div class="news-timeline" id="newsList">
+                <!-- 动态内容来自 assets/data/news/*.json（由 assets/js/loader.js 渲染）。
+                     下面是 HTML 内置默认条目：数据不可用时页面照常显示。 -->
                 <div class="news-item reveal-left">
-                    <div class="news-date">2026.08.10</div>
-                    <h3>🐟 《养鱼大亨》v1.5 内容更新</h3>
-                    <p>大亨之路全新升级，里程碑更加丰富，成长路径更加清晰。修复了大量影响游戏体验的问题，消耗品操作与鱼塘生态互动更加稳定流畅。</p>
+                    <div class="news-date">—</div>
+                    <h3>🎮 更多动态即将公布</h3>
+                    <p>开发进展正在整理中，敬请期待。</p>
                 </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.05s;">
-                    <div class="news-date">2026.07.17</div>
-                    <h3>🐟 《养鱼大亨》v1.4 内容更新</h3>
-                    <p>日常任务可以自动刷新，完成任务时能看到更加醒目的特效反馈，鱼塘生态更加平衡，整体体验更顺滑。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.1s;">
-                    <div class="news-date">2026.07.16</div>
-                    <h3>🐟 《养鱼大亨》v1.3 内容更新</h3>
-                    <p>新增大量专属任务，关闭网页后进度也不会丢失。新玩家前 1 分钟不会遇到突发情况，前 3 分钟好运更多，轻松起步。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.15s;">
-                    <div class="news-date">2026.07.12</div>
-                    <h3>🐟 《养鱼大亨》v1.2 内容更新</h3>
-                    <p>超级赤潮事件来袭！电鳗与灯笼鱼全新登场，鱼类价格全面调整，从入门到远古存在的成长路径更加清晰。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.2s;">
-                    <div class="news-date">2026.07.09</div>
-                    <h3>🐟 《养鱼大亨》v1.1 优化更新</h3>
-                    <p>鱼儿游动更加自然顺滑，游戏稳定性大幅提升，只管享受养鱼的乐趣就好。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.25s;">
-                    <div class="news-date">2026.06.15</div>
-                    <h3>🎮 《几何》demo初步成型</h3>
-                    <p>模板房间、大量武器已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
-                </div>
-                <div class="news-item reveal-left" style="transition-delay: 0.3s;">
-                    <div class="news-date">2026.04.01</div>
-                    <h3>⚙️ 《几何》核心玩法原型确立</h3>
-                    <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制成为玩法重心。</p>
-                </div>
+
             </div>
         </div>
+
         <div class="news-more reveal" style="text-align: center; margin-top: 30px;">
-            <a href="works/news.html" class="btn btn-outline">更多动态</a>
+            <a href="pages/news.html" class="btn btn-outline">更多动态</a>
         </div>
     </section>
 
     <!-- ===== CONTACT 区域 ===== -->
     <section class="contact" id="contact">
         <h2 class="section-title reveal">联系我们</h2>
-        <p class="section-subtitle reveal" style="transition-delay: 0.1s;">GET IN TOUCH</p>
+        <p class="section-subtitle reveal" style="transition-delay: 0.30s;">GET IN TOUCH</p>
         <div class="contact-container">
             <p class="reveal">
                 无论你是想合作、提供建议，还是单纯想聊聊游戏，<br>
@@ -1257,7 +1223,8 @@
     <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
 
     <!-- ===== 公共脚本 ===== -->
-    <script src="assets/common.js"></script>
+    <script src="assets/js/loader.js"></script>
+    <script src="assets/js/main.js"></script>
 
     <!-- ===== 页面独有脚本 ===== -->
     <script>

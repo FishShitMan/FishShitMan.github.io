@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
-    <link rel="apple-touch-icon" href="../icon/apple-touch-icon.png">
+    <link rel="icon" href="../assets/icons/favicon-32.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
     <title>作品册 | DoubleX GameStudio</title>
     <meta name="description" content="DoubleX GameStudio 作品册：以 3D 卡片转盘浏览全部作品 —— 《几何》《养鱼大亨》《螺旋塔》《异种》。">
-    <link rel="canonical" href="https://doublex.top/works/showcase.html">
+    <link rel="canonical" href="https://doublex.top/pages/showcase.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="DoubleX GameStudio">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:title" content="作品册 | DoubleX GameStudio">
     <meta property="og:description" content="以 3D 卡片转盘浏览全部作品：《几何》《养鱼大亨》《螺旋塔》《异种》。">
-    <meta property="og:url" content="https://doublex.top/works/showcase.html">
+    <meta property="og:url" content="https://doublex.top/pages/showcase.html">
     <meta property="og:image" content="https://doublex.top/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="作品册 | DoubleX GameStudio">
     <meta name="twitter:description" content="以 3D 卡片转盘浏览全部作品：《几何》《养鱼大亨》《螺旋塔》《异种》。">
     <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
-    <link rel="stylesheet" href="../assets/common.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
         body { overflow: hidden; height: 100vh; cursor: auto; }
         html,body{width:100%;height:100%}
@@ -205,16 +205,14 @@
 <div class="hint" id="hint">✦ 点击空白处关闭 ✦</div>
 <footer class="footer"><p>&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏</p></footer>
 
-<script src="../assets/common.js"></script>
+<script src="../assets/js/loader.js"></script>
+<script src="../assets/js/main.js"></script>
 <script>
 (function(){
 'use strict';
-var D=[
-{t:'几何',s:'像素科幻 2D 平台射击',e:'🔺',i:'images/art/GEOMETRY/《几何》宣传图_1.png',w:'images/art/GEOMETRY/《几何》宣传图_1.webp',b:'✦ 像素 · 射击',d:'《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合科幻、硬核闯关与 roguelike 元素。选择角色在随机生成的关卡中战斗，探寻「几何」与「自我」的意义。',a:{u:'game-detail.html?game=geometry',t:'了解更多'}},
-{t:'养鱼大亨',s:'放置养成 · 鱼类收集',e:'🐟',i:'',b:'✦ 养成 · 模拟',d:'《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，构建属于自己的水下生态世界。',a:{u:'game-detail.html?game=fishfarm',t:'了解更多'}},
-{t:'螺旋塔',s:'卡通风格 轻度肉鸽 地牢探险',e:'🗡️',i:'',b:'✦ 开发中',d:'一款卡通风格的轻度 Roguelike 地牢探险游戏，随机地图、丰富道具、爽快战斗。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}},
-{t:'异种',s:'像素风格 动作游戏',e:'☣️',i:'',b:'✦ 开发中',d:'一款像素风格的动作角色扮演游戏，多主角多视角叙事，探索分崩离析世界中的黑暗秘密。目前正在开发中，敬请期待！',a:{u:'javascript:;',t:'敬请期待'}}
-];
+// 卡片内容来自 ../assets/data/showcase.json（由 ../assets/js/loader.js 渲染）。
+// 数据未到达时 D 为空，下面的补位循环会生成 HTML 内置的“敬请期待”占位卡。
+var D=(window.DX&&window.DX.buildCarousel)?window.DX.buildCarousel():[];
 while(D.length<12){var n=D.length+1;D.push({t:'作品 #'+n,s:'开发中...',e:'❓',i:'',b:'✦ 敬请期待',d:'一个全新的游戏项目正在构思中，未来将带来更多惊喜。敬请关注我们的最新动态！',a:{u:'javascript:;',t:'敬请期待'}});}
 
 var S=document.getElementById('stage'),E=document.getElementById('scene'),G=document.getElementById('glow'),BO=document.getElementById('blurO'),UB=document.getElementById('uiBlur'),P=document.getElementById('panel'),H=document.getElementById('hint'),B=document.getElementById('b'),T=document.getElementById('t'),S2=document.getElementById('s'),D2=document.getElementById('d'),A=document.getElementById('a'),N=12,ST=360/N,ra=0,hl=-1,lc=0,SZ=220,R=430,TPX=60,tx=0,ty=0,tm=0,ex=null,clT=null;
@@ -239,15 +237,19 @@ function buildCards(){
   el.className='card';el.dataset.idx=i;
   el.style.width=SZ+'px';el.style.height=SZ+'px';
   el.style.left=(-SZ/2)+'px';el.style.top=(-SZ/2)+'px';
+  // 有图用图，无图用图标；两者都没有时兜底一个 ✦，避免出现空白卡片
   if(d.i){var m=document.createElement('img');m.src=d.i;m.alt=d.t;m.loading='lazy';m.decoding='async';
    if(d.w){var pc=document.createElement('picture');var sc=document.createElement('source');sc.srcset=d.w;sc.type='image/webp';pc.appendChild(sc);pc.appendChild(m);el.appendChild(pc)}
    else{el.appendChild(m)}}
-  else{var e=document.createElement('div');e.className='e';e.style.fontSize=Math.round(SZ*0.33)+'px';e.textContent=d.e;el.appendChild(e)}
+  else{var e=document.createElement('div');e.className='e';e.style.fontSize=Math.round(SZ*0.33)+'px';e.textContent=d.e||'✦';el.appendChild(e)}
   el.style.transform='rotateY('+i*ST+'deg) translateZ('+R+'px)';
   S.appendChild(el);
  }
  rd(false);
 }
+
+DX.onReady(function(){D=DX.buildCarousel();buildCards();if(DX.applyVisible)DX.applyVisible();});
+
 
 function gHL(){
  var md=360,idx=0;
@@ -311,7 +313,7 @@ function ex2(idx){
  if(d.i){var im=document.createElement('img');im.src=d.i;im.alt=d.t;
   if(d.w){var ipc=document.createElement('picture');var isc=document.createElement('source');isc.srcset=d.w;isc.type='image/webp';ipc.appendChild(isc);ipc.appendChild(im);el.appendChild(ipc)}
   else{el.appendChild(im)}}
- else{var em=document.createElement('div');em.className='e';em.textContent=d.e;el.appendChild(em)}
+ else{var em=document.createElement('div');em.className='e';em.textContent=d.e||'✦';el.appendChild(em)}
  document.body.appendChild(el);ex=el;
  // 卡片本身已不带浏览器命中（CSS pointer-events:none），无需再逐个关闭；
  // "点空白处关闭"由 document 上的 decide() 统一处理

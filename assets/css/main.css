@@ -426,3 +426,30 @@ body {
         min-height: 100dvh;
     }
 }
+
+/* ===== 画廊空槽位（数据缺失或槽位未填时的默认外观） ===== */
+.item-image.item-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--gray-800);
+    border: 1px dashed var(--gray-600);
+    color: var(--gray-500);
+    font-size: 28px;
+}
+
+/* ===== 详情页空状态（数据缺失时的默认外观） ===== */
+.screenshot-item.screenshot-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--gray-800);
+    border: 1px dashed var(--gray-600);
+    color: var(--gray-500);
+    font-size: 14px;
+    letter-spacing: 2px;
+}

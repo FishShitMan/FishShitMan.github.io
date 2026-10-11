@@ -1,0 +1,148 @@
+{
+  "items": [
+    {
+      "category": "game",
+      "url": "https://www.bilibili.com/video/BV19So8BSETa/?share_source=copy_web&vd_source=2e09082c61f352444b3830b05da03493",
+      "media": "geometry/screenshot-1.jpg",
+      "webp": "geometry/screenshot-1.webp",
+      "alt": "《几何》游戏截图：极简弹幕",
+      "label": "游戏截图",
+      "title": "几何 - 极简弹幕",
+      "desc": "极简几何美学 × 极致弹幕挑战",
+      "width": 1536,
+      "height": 864
+    },
+    {
+      "category": "art",
+      "url": "",
+      "media": "geometry/poster-1.png",
+      "webp": "geometry/poster-1.webp",
+      "alt": "《几何》官方宣传海报",
+      "label": "概念设计",
+      "title": "几何 - 宣传图",
+      "desc": "几何游戏官方宣传海报概念设计",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "geometry/screenshot-2.jpg",
+      "webp": "geometry/screenshot-2.webp",
+      "alt": "《几何》游戏截图：色彩风暴",
+      "label": "游戏截图",
+      "title": "几何 - 色彩风暴",
+      "desc": "五彩斑斓的几何弹幕，视觉与操作的双重考验",
+      "width": 1536,
+      "height": 864
+    },
+    {
+      "category": "art",
+      "url": "",
+      "media": "geometry/poster-2.png",
+      "webp": "geometry/poster-2.webp",
+      "alt": "《几何》概念海报",
+      "label": "概念设计",
+      "title": "几何 - 概念海报",
+      "desc": "几何风格概念海报，展现游戏核心玩法",
+      "width": 1600,
+      "height": 900
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "geometry/screenshot-3.jpg",
+      "webp": "geometry/screenshot-3.webp",
+      "alt": "《几何》游戏截图：竞速模式",
+      "label": "游戏截图",
+      "title": "几何 - 竞速模式",
+      "desc": "高速弹幕穿插躲避，考验极限反应速度",
+      "width": 1536,
+      "height": 864
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "geometry/screenshot-4.jpg",
+      "webp": "geometry/screenshot-4.webp",
+      "alt": "《几何》游戏截图：无尽挑战",
+      "label": "游戏截图",
+      "title": "几何 - 无尽挑战",
+      "desc": "层层递进的几何迷宫，挑战你的操作极限",
+      "width": 1536,
+      "height": 864
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "geometry/testlevel-1.png",
+      "webp": "geometry/testlevel-1.webp",
+      "alt": "《几何》开发中的测试关卡",
+      "label": "游戏截图",
+      "title": "几何 - 测试关卡",
+      "desc": "开发中的测试关卡，打磨每一处细节",
+      "width": 1919,
+      "height": 1079
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "geometry/screenshot-5.jpg",
+      "webp": "geometry/screenshot-5.webp",
+      "alt": "《几何》BOSS 战",
+      "label": "游戏截图",
+      "title": "几何 - BOSS 战",
+      "desc": "终极几何BOSS战，极致弹幕盛宴",
+      "width": 1536,
+      "height": 864
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "fishfarm/screenshot-1.jpg",
+      "webp": "fishfarm/screenshot-1.webp",
+      "alt": "《养鱼大亨》鱼塘概览",
+      "label": "游戏截图",
+      "title": "养鱼大亨 - 鱼塘概览",
+      "desc": "数十种鱼类在鱼塘中自由游弋",
+      "width": 1536,
+      "height": 833
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "fishfarm/screenshot-2.jpg",
+      "webp": "fishfarm/screenshot-2.webp",
+      "alt": "《养鱼大亨》鱼类收集",
+      "label": "游戏截图",
+      "title": "养鱼大亨 - 鱼类收集",
+      "desc": "阶梯式解锁各类稀有鱼类",
+      "width": 1536,
+      "height": 829
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "fishfarm/screenshot-3.jpg",
+      "webp": "fishfarm/screenshot-3.webp",
+      "alt": "《养鱼大亨》事件系统",
+      "label": "游戏截图",
+      "title": "养鱼大亨 - 事件系统",
+      "desc": "赤潮与超级赤潮考验养鱼智慧",
+      "width": 1536,
+      "height": 829
+    },
+    {
+      "category": "game",
+      "url": "",
+      "media": "fishfarm/screenshot-4.jpg",
+      "webp": "fishfarm/screenshot-4.webp",
+      "alt": "《养鱼大亨》远古传说",
+      "label": "游戏截图",
+      "title": "养鱼大亨 - 远古传说",
+      "desc": "探寻鱼塘深处的远古存在",
+      "width": 1536,
+      "height": 838
+    }
+  ]
+}

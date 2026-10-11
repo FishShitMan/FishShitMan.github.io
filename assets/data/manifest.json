@@ -1,0 +1,33 @@
+{
+  "site": {
+    "version": "1.1.0",
+    "buildDate": "2026-10-11",
+    "note": "站点版本，仅内部查看，不在页面任何位置展示"
+  },
+  "slots": {
+    "cards": 4,
+    "carousel": 12,
+    "gallery": 12,
+    "newsOnHome": 5
+  },
+  "news": [
+    "2026-10-08-v1.6a.json",
+    "2026-10-08-v1.6.json",
+    "2026-08-11-v1.5c.json",
+    "2026-08-11-v1.5b.json",
+    "2026-08-10-v1.5.json",
+    "2026-07-17-v1.4.json",
+    "2026-07-16-v1.3.json",
+    "2026-07-12-v1.2.json",
+    "2026-07-09-v1.1.json",
+    "2026-06-15-geometry-demo.json",
+    "2026-04-01-geometry-prototype.json"
+  ],
+  "games": [
+    "geometry.json",
+    "fishfarm.json"
+  ],
+  "gallery": "gallery.json",
+  "showcase": "showcase.json",
+  "siteslots": "siteslots.json"
+}

@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
-    <link rel="apple-touch-icon" href="../icon/apple-touch-icon.png">
+    <link rel="icon" href="../assets/icons/favicon-32.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
     <title id="pageTitle">游戏详情 | DoubleX GameStudio</title>
     <meta name="description" id="pageDesc" content="DoubleX GameStudio 游戏详情页面">
-    <link rel="canonical" id="pageCanonical" href="https://doublex.top/works/game-detail.html">
+    <link rel="canonical" id="pageCanonical" href="https://doublex.top/games/detail.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="DoubleX GameStudio">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:title" id="ogTitle" content="游戏详情 | DoubleX GameStudio">
     <meta property="og:description" id="ogDesc" content="DoubleX GameStudio 游戏详情页面">
-    <meta property="og:url" id="ogUrl" content="https://doublex.top/works/game-detail.html">
+    <meta property="og:url" id="ogUrl" content="https://doublex.top/games/detail.html">
     <meta property="og:image" id="ogImage" content="https://doublex.top/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
     <meta name="twitter:title" id="twTitle" content="游戏详情 | DoubleX GameStudio">
     <meta name="twitter:description" id="twDesc" content="DoubleX GameStudio 游戏详情页面">
     <meta name="twitter:image" id="twImage" content="https://doublex.top/og-image.jpg">
-    <link rel="stylesheet" href="../assets/common.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
         /* ===== 导航栏返回主页 ===== */
         .nav-back-link {
@@ -521,10 +521,10 @@
             var gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
             var titleMap = { geometry: '几何 - 像素科幻弹幕射击', fishfarm: '养鱼大亨 - 放置养成鱼类收集' };
             var descMap = { geometry: '《几何》极简几何美学×极致弹幕挑战 — DoubleX GameStudio', fishfarm: '《养鱼大亨》鱼类收集养成放置模拟游戏 — DoubleX GameStudio' };
-            var imgMap = { geometry: 'https://doublex.top/works/images/art/GEOMETRY/《几何》宣传图_1.png', fishfarm: 'https://doublex.top/works/images/game/FISHFARM/cover.jpg' };
+            var imgMap = { geometry: 'https://doublex.top/media/geometry/poster-1.png', fishfarm: 'https://doublex.top/media/fishfarm/cover.jpg' };
             var title = (titleMap[gameKey] || '几何') + ' | DoubleX GameStudio';
             var desc = descMap[gameKey] || 'DoubleX GameStudio 游戏详情页面';
-            var url = 'https://doublex.top/works/game-detail.html?game=' + encodeURIComponent(gameKey);
+            var url = 'https://doublex.top/games/detail.html?game=' + encodeURIComponent(gameKey);
             var img = imgMap[gameKey] || 'https://doublex.top/og-image.jpg';
             document.title = title;
             var set = function(id, value) {
@@ -544,7 +544,7 @@
         })();
     </script>
     <!-- 游戏数据 -->
-    <script src="games-data.js"></script>
+    <script src="../assets/js/loader.js"></script>
     <!-- 结构化数据（JS 会按 game 参数更新，利于搜索引擎理解作品信息） -->
     <script type="application/ld+json" id="gameLd">
     {
@@ -559,8 +559,8 @@
       "inLanguage": "zh-CN",
       "author": { "@type": "Organization", "name": "DoubleX GameStudio", "url": "https://doublex.top/" },
       "publisher": { "@type": "Organization", "name": "DoubleX GameStudio", "url": "https://doublex.top/" },
-      "url": "https://doublex.top/works/game-detail.html?game=geometry",
-      "image": "https://doublex.top/works/images/art/GEOMETRY/《几何》宣传图_1.png"
+      "url": "https://doublex.top/games/detail.html?game=geometry",
+      "image": "https://doublex.top/media/geometry/poster-1.png"
     }
     </script>
 </head>
@@ -594,19 +594,20 @@
 
     <!-- ===== Hero 封面横幅 ===== -->
     <section class="detail-hero" id="gameHero">
+        <!-- 默认内容：数据不可用时显示“即将推出”状态，不会空白。
+             <source> 由页面脚本按作品重建（几何为 PNG 封面、养鱼大亨为 WebP 优选）。 -->
         <picture id="heroCoverWrap">
-            <source srcset="images/art/GEOMETRY/《几何》宣传图_1.webp" type="image/webp">
-            <img class="hero-cover" src="images/art/GEOMETRY/《几何》宣传图_1.png" alt="《几何》封面" id="heroCover" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <img class="hero-cover" src="../media/geometry/poster-1.png" alt="即将推出的作品" id="heroCover" width="1920" height="1080" fetchpriority="high" decoding="async">
         </picture>
         <div class="hero-gradient"></div>
         <div class="hero-info">
-            <span class="game-badge" id="gameBadge">✦ 弹幕 · 几何</span>
+            <span class="game-badge" id="gameBadge">✦ 敬请期待</span>
             <div class="hero-title-row">
-                <h1 id="gameTitle">几何</h1>
+                <h1 id="gameTitle">即将推出的作品</h1>
             </div>
             <div class="hero-subtitle-row">
-                <p class="subtitle" id="gameSubtitle">极简几何美学 × 极致弹幕挑战</p>
-                <a class="hero-action-btn disabled" id="heroActionBtn" aria-disabled="true" title="《养鱼大亨》可直接试玩，《几何》视频见下方">观看视频</a>
+                <p class="subtitle" id="gameSubtitle">敬请期待</p>
+                <a class="hero-action-btn disabled" id="heroActionBtn" aria-disabled="true" title="该作品仍在开发中">即将推出</a>
             </div>
         </div>
     </section>
@@ -618,31 +619,45 @@
         <div class="info-grid">
             <div class="info-left">
                 <h2>关于游戏</h2>
-                <p>《几何》是一款以像素风格为美术基础的 2D 平台射击游戏，融合了科幻、硬核、横板闯关、射击与 roguelike 等元素。玩家可选择众多角色中的其一进行控制，在由模板房间随机组合而成的关卡中杀出一条血路，探寻"几何"与"自我"之间相连的意义。</p>
-                <p>游戏强调"有得必有失"——获取强大力量时必须付出代价。每张地图最后都设有强大 BOSS，击败后获得独特能力与通往下一关的钥匙。</p>
-                <p>《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。</p>
+                <p>耐心是种美德……</p>
+                <p>美好的事物即将来临，敬请期待。</p>
             </div>
             <div>
                 <ul class="meta-list">
-                    <li><span class="meta-label">游戏类型</span><span class="meta-value">2D 平台射击 / 放置养成</span></li>
-                    <li><span class="meta-label">游戏引擎</span><span class="meta-value">Godot Engine / HTML5</span></li>
+                    <li><span class="meta-label">最新版本</span><span class="meta-value">暂无</span></li>
+                    <li><span class="meta-label">游戏类型</span><span class="meta-value">暂无</span></li>
+                    <li><span class="meta-label">发布平台</span><span class="meta-value">暂无</span></li>
+                    <li><span class="meta-label">游戏引擎</span><span class="meta-value">暂无</span></li>
+                    <li><span class="meta-label">游戏玩法</span><span class="meta-value">暂无</span></li>
+                    <li><span class="meta-label">语言支持</span><span class="meta-value">暂无</span></li>
                     <li><span class="meta-label">开发团队</span><span class="meta-value">DoubleX GameStudio</span></li>
                 </ul>
+            </div>
+        </div>
+        <div class="features-section" id="featuresFallback">
+            <h2>游戏特色</h2>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">✦</div><h3>即将公布</h3><p>该作品的特色内容正在整理中。</p></div>
+                <div class="feature-card"><div class="feature-icon">✦</div><h3>即将公布</h3><p>该作品的特色内容正在整理中。</p></div>
+                <div class="feature-card"><div class="feature-icon">✦</div><h3>即将公布</h3><p>该作品的特色内容正在整理中。</p></div>
+                <div class="feature-card"><div class="feature-icon">✦</div><h3>即将公布</h3><p>该作品的特色内容正在整理中。</p></div>
             </div>
         </div>
         <div class="screenshots-section">
             <h2>游戏截图</h2>
             <div class="screenshots-grid">
+                <!-- 默认内容：数据不可用时显示空状态提示 -->
+                <div class="screenshot-item screenshot-empty"><span>截图即将公开</span></div>
                 <div class="screenshot-item">
                     <picture>
-                        <source srcset="images/game/GEOMETRY/《几何》游戏截图_1.webp" type="image/webp">
-                        <img src="images/game/GEOMETRY/《几何》游戏截图_1.jpg" alt="《几何》游戏截图 1" loading="lazy" decoding="async" width="1536" height="864">
+                        <source srcset="../media/geometry/screenshot-1.webp" type="image/webp">
+                        <img src="../media/geometry/screenshot-1.jpg" alt="《几何》游戏截图 1" loading="lazy" decoding="async" width="1536" height="864">
                     </picture>
                 </div>
                 <div class="screenshot-item">
                     <picture>
-                        <source srcset="images/game/FISHFARM/screenshot_1.webp" type="image/webp">
-                        <img src="images/game/FISHFARM/screenshot_1.jpg" alt="《养鱼大亨》游戏截图 1" loading="lazy" decoding="async" width="1536" height="833">
+                        <source srcset="../media/fishfarm/screenshot-1.webp" type="image/webp">
+                        <img src="../media/fishfarm/screenshot-1.jpg" alt="《养鱼大亨》游戏截图 1" loading="lazy" decoding="async" width="1536" height="833">
                     </picture>
                 </div>
             </div>
@@ -665,28 +680,28 @@
     <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
 
     <!-- ===== 公共脚本 ===== -->
-    <script src="../assets/common.js"></script>
+    <script src="../assets/js/main.js"></script>
 
     <!-- ===== 页面独有脚本 ===== -->
     <script>
+        window.DX.onReady(function () {
         // ===================================================================
         // 游戏详情 - 动态渲染
         // ===================================================================
         (function() {
+            // 数据由 assets/js/loader.js 从 ../assets/data/games/<key>.json 读取。
+            // 数据不可用时保留 HTML 内置的默认内容（“耐心是种美德……”等），不白屏。
             const gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
-            const data = GAME_DATA[gameKey];
-            if (!data) {
-                document.getElementById('detailContent').innerHTML = '<div style="text-align:center;padding:100px 0;color:var(--gray-400)"><h2>游戏数据未找到</h2><p style="margin-top:20px">请返回作品页面选择游戏。</p></div>';
-                return;
-            }
+            const data = window.DX.data.games[gameKey];
+            if (!data) { return; }
 
             // 更新 Hero（同时替换 <source>，让 WebP 走现代格式、其余走回退图）
             const heroCover = document.getElementById('heroCover');
-            heroCover.src = data.cover;
+            heroCover.src = window.DX.media(data.cover);
             heroCover.alt = data.title + '封面';
             const heroSource = document.querySelector('#heroCoverWrap source');
             if (heroSource) {
-                if (data.coverWebp) { heroSource.srcset = data.coverWebp; } else { heroSource.remove(); }
+                if (data.coverWebp) { heroSource.srcset = window.DX.media(data.coverWebp); } else { heroSource.remove(); }
             }
             document.getElementById('gameBadge').textContent = data.badge;
             document.getElementById('gameTitle').textContent = data.title;
@@ -758,12 +773,13 @@
                 const ssSection = document.createElement('div');
                 ssSection.className = 'screenshots-section';
                 let ssHTML = '<h2 class="reveal">游戏截图</h2><div class="screenshots-grid">';
-                const ssWebp = data.screenshotsWebp || [];
                 data.screenshots.forEach((ss, i) => {
-                    const source = ssWebp[i] ? '<source srcset="' + ssWebp[i] + '" type="image/webp">' : '';
+                    const source = ss.webp ? '<source srcset="' + window.DX.media(ss.webp) + '" type="image/webp">' : '';
                     ssHTML += '<div class="screenshot-item reveal" style="transition-delay: ' + (0.1 * (i + 1)) + 's;">'
                         + '<picture>' + source
-                        + '<img src="' + ss + '" alt="' + data.title + '游戏截图 ' + (i + 1) + '" loading="lazy" decoding="async" width="1536" height="864">'
+                        + '<img src="' + window.DX.media(ss.media) + '" alt="' + data.title + '游戏截图 ' + (i + 1)
+                        + '" loading="lazy" decoding="async"'
+                        + (ss.width ? ' width="' + ss.width + '" height="' + ss.height + '"' : '') + '>'
                         + '</picture></div>';
                 });
                 ssHTML += '</div>';
@@ -771,17 +787,19 @@
                 content.appendChild(ssSection);
             }
 
-            // CTA 区域 — 从 data.action 获取主按钮内容
-            const ctaSection = document.createElement('div');
-            ctaSection.className = 'cta-section reveal';
-            let ctaHTML = '<p>' + data.tagline + '</p>';
-            if (data.action && data.action.type !== 'coming') {
-                const isExternal = data.action.type === 'video';
-                ctaHTML += '<a href="' + data.action.url + '" class="btn btn-primary" ' + (isExternal ? 'target="_blank" rel="noopener"' : '') + '>' + data.action.text + '</a>';
+            // CTA 区域 — 仅在该游戏配置了 tagline 时渲染，否则保留 HTML 内置 CTA
+            if (data.tagline) {
+                const ctaSection = document.createElement('div');
+                ctaSection.className = 'cta-section reveal';
+                let ctaHTML = '<p>' + data.tagline + '</p>';
+                if (data.action && data.action.type !== 'coming') {
+                    const isExternal = data.action.type === 'video';
+                    ctaHTML += '<a href="' + data.action.url + '" class="btn btn-primary" ' + (isExternal ? 'target="_blank" rel="noopener"' : '') + '>' + data.action.text + '</a>';
+                }
+                ctaHTML += '<a href="../pages/gallery.html" class="btn btn-outline">浏览画廊</a>';
+                ctaSection.innerHTML = ctaHTML;
+                content.appendChild(ctaSection);
             }
-            ctaHTML += '<a href="index.html" class="btn btn-outline">浏览画廊</a>';
-            ctaSection.innerHTML = ctaHTML;
-            content.appendChild(ctaSection);
 
             // 结构化数据：按当前游戏更新
             try {
@@ -793,15 +811,18 @@
                     json.description = data.desc;
                     json.genre = [data.meta['游戏玩法'] || data.meta['游戏类型'] || '游戏'];
                     json.gamePlatform = data.meta['发布平台'] ? data.meta['发布平台'].split(' / ') : ['PC'];
-                    json.url = 'https://doublex.top/works/game-detail.html?game=' + encodeURIComponent(data.key);
-                    json.image = 'https://doublex.top/works/' + encodeURIComponent(data.cover).replace(/%2F/g, '/');
+                    json.url = 'https://doublex.top/games/detail.html?game=' + encodeURIComponent(data.key);
+                    json.image = new URL(window.DX.media(data.cover), 'https://doublex.top/games/detail.html').href;
                     ld.textContent = JSON.stringify(json);
                 }
             } catch (e) { /* 结构化数据失败不应影响页面 */ }
 
             // 标记加载完成
             content.classList.add('loaded');
+            // 渲染出的节点带 .reveal* 类（CSS 里是 opacity:0），必须补上 .visible
+            if (window.DX && window.DX.applyVisible) { window.DX.applyVisible(); }
         })();
+        });
     </script>
 
 </body>

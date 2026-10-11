@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../icon/DX_Logo_white.png" type="image/png">
-    <link rel="apple-touch-icon" href="../icon/apple-touch-icon.png">
+    <link rel="icon" href="../assets/icons/favicon-32.png" type="image/png">
+    <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png">
     <title>历史动态 | DoubleX GameStudio</title>
-    <meta name="description" content="DoubleX GameStudio 开发动态：记录《养鱼大亨》v1.1–v1.5 版本更新与《几何》从核心玩法原型到 demo 成型的完整开发历程。">
-    <link rel="canonical" href="https://doublex.top/works/news.html">
+    <meta name="description" content="DoubleX GameStudio 开发动态：记录《养鱼大亨》v1.1–v1.6a 版本更新与《几何》从核心玩法原型到 demo 成型的完整开发历程。">
+    <link rel="canonical" href="https://doublex.top/pages/news.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="DoubleX GameStudio">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:title" content="历史动态 | DoubleX GameStudio">
     <meta property="og:description" content="记录《养鱼大亨》版本更新与《几何》从原型到 demo 的完整开发历程。">
-    <meta property="og:url" content="https://doublex.top/works/news.html">
+    <meta property="og:url" content="https://doublex.top/pages/news.html">
     <meta property="og:image" content="https://doublex.top/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="历史动态 | DoubleX GameStudio">
     <meta name="twitter:description" content="记录《养鱼大亨》版本更新与《几何》从原型到 demo 的完整开发历程。">
     <meta name="twitter:image" content="https://doublex.top/og-image.jpg">
-    <link rel="stylesheet" href="../assets/common.css">
+    <link rel="stylesheet" href="../assets/css/main.css">
     <style>
         /* ===== 页面 Header ===== */
         .page-header {
@@ -255,58 +255,13 @@
 
     <!-- ===== 动态时间线 ===== -->
     <section class="timeline-section">
-        <div class="timeline">
-
+        <div class="timeline" id="newsTimeline">
+            <!-- 动态内容来自 ../assets/data/news/*.json（由 ../assets/js/loader.js 渲染）。
+                 下面是 HTML 内置默认条目：数据不可用时页面照常显示。 -->
             <div class="timeline-item reveal">
-                <div class="timeline-date">2026.08.10</div>
-                <h3>🐟 《养鱼大亨》v1.5 内容更新</h3>
-                <p>大亨之路任务系统全面重做，里程碑扩展至更加丰富的阶段，从新玩家到资深养殖者的成长路径更加清晰。任务领取时加入流畅的过渡特效，视觉反馈更加醒目。</p>
-                <p>本次更新修复了大量影响游戏体验的问题，消耗品操作更加精准智能，鱼塘事件触发机制更加合理，鱼类成长与外观解锁条件更加明确。整体稳定性与流畅度显著提升。</p>
-                <div class="update-meta"><span>✨ 内容更新</span><span>🔧 体验优化</span><span>💰 事件优化</span></div>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.07.17</div>
-                <h3>🐟 《养鱼大亨》v1.4 内容更新</h3>
-                <p>日常任务现在可以自动刷新啦，不再是一锤子买卖。完成任务时能看到更加醒目的特效反馈，让成就感满满。</p>
-                <p>这次还带来了大量修复和调整，鱼塘生态更加平衡，整体游玩体验更顺滑。</p>
-                <div class="update-meta"><span>✨ 内容更新</span><span>🔧 体验优化</span></div>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.07.16</div>
-                <h3>🐟 《养鱼大亨》v1.3 内容更新</h3>
-                <p>新增了电鳗、灯笼鱼以及神秘的远古存在的专属任务链。现在就算关闭网页，游戏进度也不会丢失，随时随地回来继续养鱼。</p>
-                <p>新玩家前 1 分钟不会遇到突发事件，前 3 分钟好运概率更高，帮助大家轻松起步！</p>
-                <div class="update-meta"><span>✨ 内容更新</span><span>🛡️ 新手友好</span><span>🐟 新鱼类</span></div>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.07.12</div>
-                <h3>🐟 《养鱼大亨》v1.2 内容更新</h3>
-                <p>全新超级赤潮事件来袭！鱼塘将面临前所未有的生存考验。电鳗和灯笼鱼加入鱼塘，前者能够释放电流，后者是深海中幽幽发光的捕食者，生态互动更加丰富有趣。</p>
-                <p>鱼类价格全面调整，从入门级的孔雀鱼到传说中的远古存在，成长路径更加清晰，每一步都有新的惊喜。</p>
-                <div class="update-meta"><span>🌊 超级赤潮</span><span>🐟 新鱼类</span><span>⚖️ 价格调整</span></div>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.07.09</div>
-                <h3>🐟 《养鱼大亨》v1.1 优化更新</h3>
-                <p>鱼群游动效果全面升级！现在鱼儿们游起来更加自然顺滑，不会再出现卡顿或者瞬移的奇怪现象。</p>
-                <p>游戏稳定性得到显著提升，修复了大量导致数据丢失或卡死的隐患。整体体验更加沉浸，只管享受养鱼的乐趣就好。</p>
-                <div class="update-meta"><span>🐠 体验优化</span><span>🔧 稳定性提升</span></div>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.06.15</div>
-                <h3>🎮 《几何》demo初步成型</h3>
-                <p>模板房间、大量武器已开发完成，通过通道连接形成独立完整的关卡地图，每次游玩都将获得全新体验。</p>
-            </div>
-
-            <div class="timeline-item reveal">
-                <div class="timeline-date">2026.04.01</div>
-                <h3>⚙️ 《几何》核心玩法原型完成</h3>
-                <p>以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，"有得必有失"核心机制成为玩法重心。</p>
+                <div class="timeline-date">—</div>
+                <h3>🎮 更多动态即将公布</h3>
+                <p>开发进展正在整理中，敬请期待。</p>
             </div>
 
         </div>
@@ -328,7 +283,8 @@
     <button class="back-to-top" id="backToTop" title="回到顶部">&#9650;</button>
 
     <!-- ===== 公共脚本 ===== -->
-    <script src="../assets/common.js"></script>
+    <script src="../assets/js/loader.js"></script>
+    <script src="../assets/js/main.js"></script>
 
 </body>
 </html>

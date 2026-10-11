@@ -1,0 +1,11 @@
+{
+  "date": "2026.04.01",
+  "order": 1,
+  "title": "⚙️ 《几何》核心玩法原型完成",
+  "tags": [],
+  "summary": "以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，\"有得必有失\"核心机制成为玩法重心。",
+  "body": [
+    "以 Godot Engine 驱动的 2D 横板平台射击玩法原型通过内部测试，\"有得必有失\"核心机制成为玩法重心。",
+    "&copy; 2026 DoubleX GameStudio. All rights reserved. | 用热爱创造游戏"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "key": "fishfarm",
+  "title": "养鱼大亨",
+  "subtitle": "放置养成 × 鱼类收集",
+  "badge": "✦ 养成 · 模拟",
+  "desc": "《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。",
+  "desc2": "玩家通过买卖鱼苗、等待成长、解锁新鱼种来一步步扩张鱼塘版图。大量事件随机袭来，各类特殊机制鱼让鱼塘生态充满变数与趣味，每次游玩游戏都能体验到新的乐趣。",
+  "desc3": "活泼可爱的各式鱼类搭配沉浸式动态鱼塘，通过努力一步步解锁新内容让收集过程充满成就感。游戏节奏轻松休闲，适合碎片化时间随时打开收鱼、卖鱼、解锁更多新内容。",
+  "cover": "fishfarm/cover.jpg",
+  "coverWebp": "fishfarm/cover.webp",
+  "meta": {
+    "最新版本": "v1.5-web",
+    "游戏类型": "放置养成",
+    "发布平台": "Web",
+    "游戏引擎": "HTML5 / JavaScript",
+    "游戏玩法": "鱼类收集 · 事件养成",
+    "语言支持": "中文"
+  },
+  "features": [
+    {
+      "icon": "🐟",
+      "title": "大量鱼类收集",
+      "desc": "大量珍奇可爱小鱼，等你收集解锁，培养独特种群与物种对抗，随心游玩！"
+    },
+    {
+      "icon": "🌊",
+      "title": "迎接随机事件",
+      "desc": "普通游戏过于乏味？随机事件带你体验独特乐趣，运筹帷幄成为养鱼大亨！"
+    },
+    {
+      "icon": "⚡",
+      "title": "特殊鱼类机制",
+      "desc": "物种对抗还是和谐相处？霸道大鱼捕食弱小邻居？动态生态互动真实有趣！"
+    },
+    {
+      "icon": "🦴",
+      "title": "远古之鱼传说",
+      "desc": "解锁稀有远古鱼类，见证独特内容与全新特效，探寻鱼塘内暗流涌动的秘密..."
+    }
+  ],
+  "screenshots": [
+    {
+      "media": "fishfarm/screenshot-1.jpg",
+      "webp": "fishfarm/screenshot-1.webp",
+      "width": 1536,
+      "height": 833
+    },
+    {
+      "media": "fishfarm/screenshot-2.jpg",
+      "webp": "fishfarm/screenshot-2.webp",
+      "width": 1536,
+      "height": 829
+    },
+    {
+      "media": "fishfarm/screenshot-3.jpg",
+      "webp": "fishfarm/screenshot-3.webp",
+      "width": 1536,
+      "height": 829
+    },
+    {
+      "media": "fishfarm/screenshot-4.jpg",
+      "webp": "fishfarm/screenshot-4.webp",
+      "width": 1536,
+      "height": 838
+    }
+  ],
+  "action": {
+    "type": "play",
+    "url": "fishfarm/index.html",
+    "text": "立即试玩"
+  }
+}
