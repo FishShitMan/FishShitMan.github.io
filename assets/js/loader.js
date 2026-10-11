@@ -8,8 +8,9 @@
  *     因此脚本 404、JSON 语法错、网络中断、JS 被禁用这四种情况下，
  *     页面依然显示完整可用的默认内容，不会白屏。
  *  2. 数据文件之间彼此独立：某一个读取失败只影响它自己对应的内容。
- *  3. 数据文件里不写任何路径，只写逻辑键（如 "geometry/poster-1"），
- *     由本脚本按页面深度补上 media/ 前缀。以后调整目录结构无需改数据。
+ *  3. 数据文件里不写具体图片文件名。图片由 assets/data/media.json 清单驱动，
+ *     每张图按「游戏 / 类别 / 文件名」组装，类别固定为 cover · banner · gallery。
+ *     往 media/<游戏>/<类别>/ 里丢图片后重新生成清单即可，页面代码无需改动。
  *  4. 需要滚动显现动画的元素，必须在本脚本渲染完成后再加载 main.js，
  *     否则 IntersectionObserver 观察不到新生成的节点。
  *
@@ -33,6 +34,10 @@
 
   function url(label) { return new URL(ROOT + label, ORIGIN).href; }
   function media(k) { return k ? ROOT + 'media/' + k : ''; }
+  /* 以「游戏/类别/文件名」组装媒体键；类别与文件名任一为空则返回空 */
+  function mkey(game, kind, file) {
+    return (game && kind && file) ? game + '/' + kind + '/' + file : '';
+  }
   function local(u) { return u ? new URL(u, ORIGIN).href : ''; }
 
   var DATA_DIR = 'assets/data/';           // 数据目录（相对站点根）
@@ -78,8 +83,7 @@
     return '<div class="screenshot-item">' + body + '</div>';
   }
 
-  /* 逻辑键补扩展名：数据里可能已带扩展名（如 fishfarm/cover.jpg），
-     也可能不带（如 geometry/poster-1 + coverExt=".png"），这里统一处理。 */
+  /* 逻辑键补扩展名（清单已带扩展名，这里仅作兜底：键缺扩展名时按 kind 补） */
   function withExt(key, ext) {
     if (!key) { return ''; }
     if (!ext) { return key; }
@@ -95,12 +99,31 @@
   // ---------------------------------------------------------------- 数据
   var DX = window.DX = {
     ready: false, failed: false, onReady: null,
-    data: { news: [], games: {}, gallery: null, showcase: null, siteslots: null },
+    data: { news: [], games: {}, gallery: null, showcase: null, siteslots: null, media: null },
     version: '', buildDate: '', slots: SLOT_DEFAULT_COUNT,
     render: {},
     media: media,                          // 页面脚本用：把逻辑键解析为实际 URL
     url: url,
-    applyVisible: function () { applyVisible(); }   // 页面脚本重建内容后调用
+    applyVisible: function () { applyVisible(); },  // 页面脚本重建内容后调用
+    mkey: mkey,                            // 组装媒体键
+    /* 取某游戏某类别的图片清单（按清单顺序） */
+    mediaList: function (game, kind) {
+      var m = DX.data.media;
+      if (!m || !m[game] || !m[game][kind]) { return []; }
+      return m[game][kind].slice();
+    },
+    /* 取该类别的第一张（封面/banner 用）；无则返回空对象 */
+    firstOf: function (game, kind) {
+      var l = DX.mediaList(game, kind);
+      return l.length ? l[0] : null;
+    },
+    /* 取某张图的逐图文案（标题/描述）。文案存放在 media.json 的 captions，
+       键为「游戏/类别/文件名」；缺失时返回空对象，由调用方决定回退值。 */
+    caption: function (game, kind, file) {
+      var m = DX.data.media;
+      var c = m && m.captions;
+      return (c && c[game + '/' + kind + '/' + file]) || {};
+    }
   };
   var _readyCbs = [];
   DX.onReady = function (fn) {
@@ -140,6 +163,7 @@
       if (m.gallery) { jobs.push(one(DATA_DIR + m.gallery)); }
       if (m.showcase) { jobs.push(one(DATA_DIR + m.showcase)); }
       if (m.siteslots) { jobs.push(one(DATA_DIR + m.siteslots)); }
+      (m.media || []).forEach(function (f) { jobs.push(one(DATA_DIR + f)); });
 
       return Promise.all(jobs).then(function (res) {
         res.forEach(function (x) {
@@ -241,22 +265,24 @@
     for (var i = 0; i < n; i++) {
       var s = slots[i] || {};
       var g = s.game ? DX.data.games[s.game] : null;
+      var gameKey = s.game || '';
       var title = (g && g.title) || s.title || EMPTY.cardTitle;
       var subtitle = (g && g.subtitle) || s.subtitle || EMPTY.cardSubtitle;
       var tag = (g && g.badge) || s.tag || EMPTY.cardTag;
-      var icon = s.icon || (g && g.icon) || '';
-      var mediaKey = s.media || withExt(g && g.cover, g && g.coverExt);
-      var webpKey = s.webp || withExt(g && g.coverWebp, g && g.coverWebpExt);
+      /* 封面取自该游戏的 cover 文件夹；文件夹为空则回落到 emoji */
+      var cov = gameKey ? DX.firstOf(gameKey, 'cover') : null;
+      var emoji = (g && g.emoji) || s.icon || '✦';
       var bg;
-      if (s.iconOnly && icon) {
-        /* 该槽位有意只用图标（如首页《养鱼大亨》用 🐟），不套用游戏封面 */
-        bg = '<div class="project-bg"><span class="icon">' + esc(icon) + '</span></div>';
-      } else if (mediaKey) {
+      if (cov) {
         bg = '<div class="project-bg" style="padding:0; overflow:hidden;">'
-          + pic(mediaKey, webpKey, title + ' 宣传图', ' width="1920" height="1080" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;"')
+          + '<img src="' + esc(media(mkey(gameKey, 'cover', cov.file))) + '" alt="' + esc(title) + ' 封面"'
+          + dimAttrs(cov.width, cov.height, 1920, 1080)
+          + ' loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover;">'
           + '</div>';
-      } else if (icon) {
-        bg = '<div class="project-bg"><span class="icon">' + esc(icon) + '</span></div>';
+      } else if (s.iconOnly && emoji) {
+        bg = '<div class="project-bg"><span class="icon">' + esc(emoji) + '</span></div>';
+      } else if (emoji) {
+        bg = '<div class="project-bg"><span class="icon">' + esc(emoji) + '</span></div>';
       } else {
         bg = '<div class="project-bg"><span class="icon">✦</span></div>';
       }
@@ -275,33 +301,40 @@
   };
 
   /* ---- 游戏画廊 ---- */
-  DX.render.gallery = function () {
-    var data = DX.data.gallery;
-    var items = (data && data.items) || [];
-    var n = DX.slots.gallery || SLOT_DEFAULT_COUNT.gallery;
-    var html = '';
-    for (var i = 0; i < n; i++) {
-      var it = items[i];
-      if (!it || !it.media) {
-        html += '<div class="gallery-item reveal-up" data-category="all" data-url="">'
-          + '<div class="item-image item-empty"><span>?</span></div>'
-          + '<div class="item-overlay"><span class="item-category">敬请期待</span>'
-          + '<h3>作品 #' + (i + 1) + '</h3>'
-          + '<p class="item-desc">更多作品即将公开</p>'
-          + '<span class="view-btn" data-index="' + i + '">查看大图</span></div></div>';
-        continue;
-      }
-      html += '<div class="gallery-item reveal-up" data-category="' + esc(it.category) + '"'
-        + ' data-url="' + esc(it.url || '') + '" data-index="' + i + '">'
-        + '<div class="item-image">'
-        + pic(it.media, it.webp, it.alt || it.title,
-          dimAttrs(it.width, it.height, 1536, 864) + ' loading="lazy" decoding="async"')
-        + '</div><div class="item-overlay"><span class="item-category">' + esc(it.label) + '</span>'
-        + '<h3>' + esc(it.title) + '</h3><p class="item-desc">' + esc(it.desc) + '</p>'
-        + '<span class="view-btn" data-index="' + i + '">查看大图</span></div></div>';
-    }
-    setHTML('#galleryGrid', html);
+  /* 画廊数据：只整理出条目清单，DOM 由具体页面自行渲染
+     （这样画廊的版式改动不会波及全站共用的本文件） */
+  DX.buildGallery = function () {
+    var gm = DX.data.gallery || {};
+    var games = gm.games || [];
+    /* 参与画廊的类别：gallery（游戏截图）+ cover（宣传图）。
+       banner 是详情页主视觉，不进画廊。 */
+    var KINDS = ['cover', 'gallery'];
+    var items = [];
+    games.forEach(function (key) {
+      var g = DX.data.games[key] || {};
+      var gameTitle = g.title || key;
+      KINDS.forEach(function (kind) {
+        DX.mediaList(key, kind).forEach(function (f) {
+          var cap = DX.caption(key, kind, f.file);
+          items.push({
+            game: key,
+            kind: kind,
+            gameTitle: gameTitle,
+            file: f,
+            url: media(mkey(key, kind, f.file)),
+            alt: cap.title || (gameTitle + ' ' + f.file),
+            title: cap.title || (gameTitle + ' ' + f.file),
+            desc: cap.desc || ''
+          });
+        });
+      });
+    });
+    DX.galleryItems = items;
+    return items;
   };
+
+  /* 兼容：renderAll 仍会调用，但不再产出 DOM */
+  DX.render.gallery = function () { DX.buildGallery(); };
 
   /* ---- 作品转盘数据（转盘的 3D / 点击 / 滚动逻辑不改，只换数据来源） ---- */
   DX.buildCarousel = function () {
@@ -311,15 +344,16 @@
     var out = [];
     for (var i = 0; i < n; i++) {
       var s = slots[i] || {};
-      var g = s.game ? DX.data.games[s.game] : null;
-      var mk = s.iconOnly ? '' : (s.media || withExt(g && g.cover, g && g.coverExt));
-      var wk = s.iconOnly ? '' : (s.webp || withExt(g && g.coverWebp, g && g.coverWebpExt));
+      var gameKey = s.game || '';
+      var g = gameKey ? DX.data.games[gameKey] : null;
+      /* 转盘卡片图取自 cover 文件夹；为空则用 emoji（与首页卡片规则一致） */
+      var cov = gameKey ? DX.firstOf(gameKey, 'cover') : null;
       out.push({
         t: (g && g.title) || s.title || ('作品 #' + (i + 1)),
         s: (g && g.subtitle) || s.subtitle || '敬请期待',
-        e: s.icon || '✦',
-        i: media(mk),
-        w: media(wk),
+        e: (g && g.emoji) || s.icon || '✦',
+        i: cov ? media(mkey(gameKey, 'cover', cov.file)) : '',
+        w: '',
         b: (g && g.badge) || s.badge || '✦ 开发中',
         d: (g && g.desc) || s.desc || EMPTY.cardSubtitle,
         a: s.link

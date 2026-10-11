@@ -61,6 +61,23 @@
             margin-bottom: 60px;
         }
 
+        /* hero 封面：数据就绪后再淡入，避免先闪出默认图 */
+        .detail-hero .hero-cover { opacity: 0; transition: opacity 0.35s ease; }
+
+        /* banner 素材缺失时的 emoji 占位 */
+        .detail-hero .hero-emoji {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            font-size: 140px;
+            opacity: 0.5;
+        }
+
+        .screenshots-more { text-align: center; margin-top: 30px; }
+        .detail-hero .hero-cover.hero-loaded { opacity: 1; }
+
         .detail-hero .hero-cover {
             width: 100%;
             height: 100%;
@@ -521,11 +538,15 @@
             var gameKey = new URLSearchParams(window.location.search).get('game') || 'geometry';
             var titleMap = { geometry: '几何 - 像素科幻弹幕射击', fishfarm: '养鱼大亨 - 放置养成鱼类收集' };
             var descMap = { geometry: '《几何》极简几何美学×极致弹幕挑战 — DoubleX GameStudio', fishfarm: '《养鱼大亨》鱼类收集养成放置模拟游戏 — DoubleX GameStudio' };
-            var imgMap = { geometry: 'https://doublex.top/media/geometry/poster-1.png', fishfarm: 'https://doublex.top/media/fishfarm/cover.jpg' };
+            var imgMap = {};   // og:image 由下方按 media.json 清单动态决定
             var title = (titleMap[gameKey] || '几何') + ' | DoubleX GameStudio';
             var desc = descMap[gameKey] || 'DoubleX GameStudio 游戏详情页面';
             var url = 'https://doublex.top/games/detail.html?game=' + encodeURIComponent(gameKey);
-            var img = imgMap[gameKey] || 'https://doublex.top/og-image.jpg';
+            var _bn = window.DX.firstOf(gameKey, 'banner');
+            var img = _bn
+                ? new URL(window.DX.media(window.DX.mkey(gameKey, 'banner', _bn.file)),
+                          'https://doublex.top/games/detail.html').href
+                : 'https://doublex.top/og-image.jpg';
             document.title = title;
             var set = function(id, value) {
                 var el = document.getElementById(id);
@@ -560,7 +581,7 @@
       "author": { "@type": "Organization", "name": "DoubleX GameStudio", "url": "https://doublex.top/" },
       "publisher": { "@type": "Organization", "name": "DoubleX GameStudio", "url": "https://doublex.top/" },
       "url": "https://doublex.top/games/detail.html?game=geometry",
-      "image": "https://doublex.top/media/geometry/poster-1.png"
+      "image": "https://doublex.top/og-image.jpg"
     }
     </script>
 </head>
@@ -597,7 +618,7 @@
         <!-- 默认内容：数据不可用时显示“即将推出”状态，不会空白。
              <source> 由页面脚本按作品重建（几何为 PNG 封面、养鱼大亨为 WebP 优选）。 -->
         <picture id="heroCoverWrap">
-            <img class="hero-cover" src="../media/geometry/poster-1.png" alt="即将推出的作品" id="heroCover" width="1920" height="1080" fetchpriority="high" decoding="async">
+            <img class="hero-cover" alt="即将推出的作品" id="heroCover" width="1920" height="1080" fetchpriority="high" decoding="async">
         </picture>
         <div class="hero-gradient"></div>
         <div class="hero-info">
@@ -646,20 +667,8 @@
         <div class="screenshots-section">
             <h2>游戏截图</h2>
             <div class="screenshots-grid">
-                <!-- 默认内容：数据不可用时显示空状态提示 -->
+                <!-- 默认内容：数据不可用时显示空状态提示；数据就绪后由脚本重建 -->
                 <div class="screenshot-item screenshot-empty"><span>截图即将公开</span></div>
-                <div class="screenshot-item">
-                    <picture>
-                        <source srcset="../media/geometry/screenshot-1.webp" type="image/webp">
-                        <img src="../media/geometry/screenshot-1.jpg" alt="《几何》游戏截图 1" loading="lazy" decoding="async" width="1536" height="864">
-                    </picture>
-                </div>
-                <div class="screenshot-item">
-                    <picture>
-                        <source srcset="../media/fishfarm/screenshot-1.webp" type="image/webp">
-                        <img src="../media/fishfarm/screenshot-1.jpg" alt="《养鱼大亨》游戏截图 1" loading="lazy" decoding="async" width="1536" height="833">
-                    </picture>
-                </div>
             </div>
         </div>
     </div>
@@ -695,14 +704,29 @@
             const data = window.DX.data.games[gameKey];
             if (!data) { return; }
 
-            // 更新 Hero（同时替换 <source>，让 WebP 走现代格式、其余走回退图）
+            // 更新 Hero：大图取自 media/<游戏>/banner/（文件夹为空则回落到 emoji 占位）
+            // 先预加载，加载完再写入并淡入 —— 避免先闪出默认图、也避免格式随机切换
             const heroCover = document.getElementById('heroCover');
-            heroCover.src = window.DX.media(data.cover);
-            heroCover.alt = data.title + '封面';
-            const heroSource = document.querySelector('#heroCoverWrap source');
-            if (heroSource) {
-                if (data.coverWebp) { heroSource.srcset = window.DX.media(data.coverWebp); } else { heroSource.remove(); }
+            const banner = window.DX.firstOf(gameKey, 'banner');
+            if (banner) {
+                const bannerUrl = window.DX.media(window.DX.mkey(gameKey, 'banner', banner.file));
+                const pre = new Image();
+                pre.onload = function () {
+                    heroCover.src = bannerUrl;
+                    heroCover.alt = data.title + ' 主视觉';
+                    heroCover.classList.add('hero-loaded');
+                };
+                pre.onerror = function () { heroCover.classList.add('hero-loaded'); };
+                pre.src = bannerUrl;
+            } else {
+                // 该作品没有 banner 素材：改用 emoji 占位
+                const wrap = document.getElementById('heroCoverWrap');
+                if (wrap) {
+                    wrap.innerHTML = '<div class="hero-emoji">' + (data.emoji || '✦') + '</div>';
+                }
             }
+            const heroSource = document.querySelector('#heroCoverWrap source');
+            if (heroSource) { heroSource.remove(); }
             document.getElementById('gameBadge').textContent = data.badge;
             document.getElementById('gameTitle').textContent = data.title;
             document.getElementById('gameSubtitle').textContent = data.subtitle;
@@ -768,24 +792,32 @@
                 content.appendChild(featuresSection);
             }
 
-            // 游戏截图（<picture>：WebP 优先，其余浏览器回退到 JPEG/PNG）
-            if (data.screenshots && data.screenshots.length) {
-                const ssSection = document.createElement('div');
-                ssSection.className = 'screenshots-section';
-                let ssHTML = '<h2 class="reveal">游戏截图</h2><div class="screenshots-grid">';
-                data.screenshots.forEach((ss, i) => {
-                    const source = ss.webp ? '<source srcset="' + window.DX.media(ss.webp) + '" type="image/webp">' : '';
+            // 游戏截图：取自 media/<游戏>/gallery/ 的前 4 张，其余引导至画廊页
+            const SHOW_N = 4;
+            const shots = window.DX.mediaList(gameKey, 'gallery').slice(0, SHOW_N);
+            const ssSection = document.createElement('div');
+            ssSection.className = 'screenshots-section';
+            let ssHTML = '<h2 class="reveal">游戏截图</h2><div class="screenshots-grid">';
+            if (shots.length) {
+                shots.forEach((sh, i) => {
                     ssHTML += '<div class="screenshot-item reveal" style="transition-delay: ' + (0.1 * (i + 1)) + 's;">'
-                        + '<picture>' + source
-                        + '<img src="' + window.DX.media(ss.media) + '" alt="' + data.title + '游戏截图 ' + (i + 1)
-                        + '" loading="lazy" decoding="async"'
-                        + (ss.width ? ' width="' + ss.width + '" height="' + ss.height + '"' : '') + '>'
-                        + '</picture></div>';
+                        + '<img src="' + window.DX.media(window.DX.mkey(gameKey, 'gallery', sh.file)) + '"'
+                        + ' alt="' + data.title + ' 截图 ' + (i + 1) + '" loading="lazy" decoding="async"'
+                        + (sh.width ? ' width="' + sh.width + '" height="' + sh.height + '"' : '') + '>'
+                        + '</div>';
                 });
-                ssHTML += '</div>';
-                ssSection.innerHTML = ssHTML;
-                content.appendChild(ssSection);
+            } else {
+                ssHTML += '<div class="screenshot-item screenshot-empty"><span>截图即将公开</span></div>';
             }
+            ssHTML += '</div>';
+            // 还有更多图时给出前往画廊的入口
+            const total = window.DX.mediaList(gameKey, 'gallery').length;
+            if (total > SHOW_N) {
+                ssHTML += '<p class="screenshots-more reveal"><a href="../pages/gallery.html" class="btn btn-outline">'
+                    + '查看全部 ' + total + ' 张 · 前往画廊</a></p>';
+            }
+            ssSection.innerHTML = ssHTML;
+            content.appendChild(ssSection);
 
             // CTA 区域 — 仅在该游戏配置了 tagline 时渲染，否则保留 HTML 内置 CTA
             if (data.tagline) {
@@ -812,7 +844,10 @@
                     json.genre = [data.meta['游戏玩法'] || data.meta['游戏类型'] || '游戏'];
                     json.gamePlatform = data.meta['发布平台'] ? data.meta['发布平台'].split(' / ') : ['PC'];
                     json.url = 'https://doublex.top/games/detail.html?game=' + encodeURIComponent(data.key);
-                    json.image = new URL(window.DX.media(data.cover), 'https://doublex.top/games/detail.html').href;
+                    var _b = window.DX.firstOf(data.key, 'banner');
+                    json.image = _b
+                        ? new URL(window.DX.media(window.DX.mkey(data.key, 'banner', _b.file)), 'https://doublex.top/games/detail.html').href
+                        : 'https://doublex.top/og-image.jpg';
                     ld.textContent = JSON.stringify(json);
                 }
             } catch (e) { /* 结构化数据失败不应影响页面 */ }

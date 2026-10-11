@@ -236,6 +236,36 @@
             line-height: 1.5;
         }
 
+        /* ===== 卡片版式：描述在上；下方一行是「游戏名 + 右侧查看大图」 ===== */
+        .item-overlay .item-desc {
+            margin: 0 0 10px;
+            align-self: flex-start;
+            max-width: 100%;
+        }
+
+        .item-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .item-foot h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 700;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-foot .view-btn {
+            flex: 0 0 auto;
+            margin-top: 0;
+        }
+
         .item-overlay .view-btn {
             display: inline-block;
             margin-top: 15px;
@@ -440,12 +470,9 @@
     </header>
 
     <!-- ===== 分类筛选栏 ===== -->
-    <div class="filter-bar">
+    <div class="filter-bar" id="filterBar">
+        <!-- 筛选项由脚本依 ../assets/data/gallery.json 的 games 生成（全部 + 各游戏） -->
         <button class="filter-btn active" data-filter="all">全部</button>
-        <button class="filter-btn" data-filter="game">游戏截图</button>
-        <button class="filter-btn" data-filter="art">概念设计</button>
-        <!-- UI / 界面分类暂无内容：隐藏按钮，避免点出空列表（作品补齐后去掉 hidden 即可） -->
-        <button class="filter-btn" data-filter="ui" hidden>UI / 界面</button>
     </div>
 
     <!-- ===== 作品画廊 ===== -->
@@ -456,109 +483,121 @@
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="0">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #1</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="0">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #1</h3>
+                        <span class="view-btn" data-index="0">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="1">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #2</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="1">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #2</h3>
+                        <span class="view-btn" data-index="1">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="2">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #3</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="2">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #3</h3>
+                        <span class="view-btn" data-index="2">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="3">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #4</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="3">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #4</h3>
+                        <span class="view-btn" data-index="3">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="4">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #5</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="4">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #5</h3>
+                        <span class="view-btn" data-index="4">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="5">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #6</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="5">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #6</h3>
+                        <span class="view-btn" data-index="5">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="6">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #7</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="6">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #7</h3>
+                        <span class="view-btn" data-index="6">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="7">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #8</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="7">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #8</h3>
+                        <span class="view-btn" data-index="7">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="8">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #9</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="8">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #9</h3>
+                        <span class="view-btn" data-index="8">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="9">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #10</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="9">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #10</h3>
+                        <span class="view-btn" data-index="9">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="10">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #11</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="10">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #11</h3>
+                        <span class="view-btn" data-index="10">查看大图</span>
+                    </div>
                 </div>
             </div>
             <div class="gallery-item reveal-up" data-category="all" data-url="" data-index="11">
                 <div class="item-image item-empty"><span>✦</span></div>
                 <div class="item-overlay">
-                    <span class="item-category">敬请期待</span>
-                    <h3>作品 #12</h3>
                     <p class="item-desc">更多作品即将公开</p>
-                    <span class="view-btn" data-index="11">查看大图</span>
+                    <div class="item-foot">
+                        <h3>作品 #12</h3>
+                        <span class="view-btn" data-index="11">查看大图</span>
+                    </div>
                 </div>
             </div>
 
@@ -602,19 +641,86 @@
     <!-- ===== 页面独有脚本 ===== -->
     <script>
         // ===================================================================
-        // 1. 作品画廊数据
+        // 1. 作品画廊：数据与渲染（本页自持，不改动全站共用的 loader.js）
         // ===================================================================
-        // image = 回退格式（JPEG/PNG），webp = 现代格式；灯箱用 <picture> 组合输出
-        // 画廊内容来自 ../assets/data/gallery.json（由 ../assets/js/loader.js 渲染）。
-        // 用 getter 取当前数据：数据到达时自动生效，无需改动这里的渲染顺序。
+        // 条目来自 DX.buildGallery()：依 media/<游戏>/gallery/ 文件夹内容生成。
+        // 版式：描述在上；下方一行是「游戏名 + 右侧查看大图」。
+        let galleryData = [];
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            if (!grid) return;
+            const min = (window.DX.slots && window.DX.slots.gallery) || 12;
+            const n = Math.max(min, galleryData.length);
+            let html = '';
+            for (let i = 0; i < n; i++) {
+                const it = galleryData[i];
+                if (!it) {
+                    html += '<div class="gallery-item reveal-up" data-category="all" data-url="" data-index="' + i + '">'
+                        + '<div class="item-image item-empty"><span>✦</span></div>'
+                        + '<div class="item-overlay">'
+                        + '<p class="item-desc">更多作品即将公开</p>'
+                        + '<div class="item-foot"><h3>作品 #' + (i + 1) + '</h3>'
+                        + '<span class="view-btn" data-index="' + i + '">查看大图</span></div>'
+                        + '</div></div>';
+                    continue;
+                }
+                const dim = (it.file.width ? ' width="' + it.file.width + '" height="' + it.file.height + '"' : '');
+                html += '<div class="gallery-item reveal-up" data-category="' + esc(it.game) + '"'
+                    + ' data-url="" data-index="' + i + '">'
+                    + '<div class="item-image"><img src="' + esc(it.url) + '" alt="' + esc(it.alt) + '"'
+                    + dim + ' loading="lazy" decoding="async"></div>'
+                    + '<div class="item-overlay">'
+                    + '<p class="item-desc">' + esc(it.desc) + '</p>'
+                    + '<div class="item-foot"><h3>' + esc(it.title || it.gameTitle) + '</h3>'
+                    + '<span class="view-btn" data-index="' + i + '">查看大图</span></div>'
+                    + '</div></div>';
+            }
+            grid.innerHTML = html;
+            window.DX.applyVisible();
+        }
+
+        // 筛选项：全部 + 各游戏（依 gallery.json 的 games）
+        function renderFilters() {
+            const bar = document.getElementById('filterBar');
+            if (!bar) return;
+            const gm = (window.DX.data.gallery) || {};
+            const games = gm.games || [];
+            let html = '<button class="filter-btn active" data-filter="all">全部</button>';
+            games.forEach(function (key) {
+                const g = window.DX.data.games[key] || {};
+                html += '<button class="filter-btn" data-filter="' + esc(key) + '">'
+                    + esc(g.title || key) + '</button>';
+            });
+            bar.innerHTML = html;
+        }
+
+        function bindFilters() {
+            const btns = document.querySelectorAll('#filterBar .filter-btn');
+            btns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    btns.forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    const f = btn.dataset.filter;
+                    document.querySelectorAll('.gallery-item').forEach(function (item) {
+                        item.style.display = (f === 'all' || item.dataset.category === f) ? 'block' : 'none';
+                    });
+                });
+            });
+        }
+
+        // 灯箱读取当前条目
         Object.defineProperty(window, 'galleryItems', {
             configurable: true,
             get: function () {
-                const g = (window.DX && window.DX.data.gallery) || null;
-                return (g && g.items) ? g.items.map(function (it) {
-                    return { category: it.category, title: it.title, desc: it.desc,
-                             image: window.DX.media(it.media), webp: it.webp ? window.DX.media(it.webp) : null };
-                }) : [];
+                return galleryData.map(function (it) {
+                    return { title: it.gameTitle, desc: it.desc, image: it.url, webp: null };
+                });
             }
         });
 
@@ -624,23 +730,11 @@
         // 筛选与灯箱必须等 loader 渲染完成后再绑定，
         // 否则绑定的是 HTML 内置的默认卡片，数据到达后被整体替换会丢失监听。
         window.DX.onReady(function () {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const galleryItemsEl = document.querySelectorAll('.gallery-item');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const filter = btn.dataset.filter;
-                galleryItemsEl.forEach(item => {
-                    if (filter === 'all' || item.dataset.category === filter) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        });
+        // 先取数据、再渲染卡片与筛选项，最后绑定交互
+        galleryData = window.DX.buildGallery();
+        renderGallery();
+        renderFilters();
+        bindFilters();
 
         // ===================================================================
         // 3. 灯箱系统

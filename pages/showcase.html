@@ -278,8 +278,17 @@ function doHL(cs){
  }
 }
 
+// 最近一次「有动画」的旋转启动时间。用于避免关闭卡片的收尾计时器把
+// 正在进行中的旋转过渡撤掉（那会让转盘瞬间跳到目标角度，即"丢帧"）。
+var lastRdAnim=0, RD_SETTLE=600;   // 600ms = 500ms 过渡 + 130ms 高亮消抖
+
 function rd(anim){
- S.style.transition=anim?'transform 0.5s cubic-bezier(0.25,0.8,0.25,1)':'none';
+ if(anim)lastRdAnim=Date.now();
+ // 动画进行中不强行把过渡置 none：否则会剥夺正在跑的过渡，转盘直达目标
+ var busy=Date.now()-lastRdAnim<RD_SETTLE;
+ if(anim){S.style.transition='transform 0.5s cubic-bezier(0.25,0.8,0.25,1)'}
+ else if(!busy){S.style.transition='none'}
+ // 其余情况（busy 且 anim=false）保持当前过渡值不动，让在跑的动画自然走完
  // ra 有意保持无界累加，请勿在此或别处对它取模：
  // 取模会让 360°→0° 被 CSS transition 渲染成反向旋转，破坏无限转动手感。
  S.style.transform='rotateX(-15deg) rotateY('+ra+'deg)';
@@ -353,7 +362,10 @@ function cl(){
  clT=setTimeout(function(){
   clT=null;
   if(dying&&dying.parentNode)dying.remove();
-  if(gen===n)rd(false);                  // 期间没有新开卡片才复位高亮
+  // 期间没有新开卡片、且没有正在进行的旋转动画时才复位高亮。
+  // 若不判断旋转：用户在关闭瞬间滑动转盘，这里的 rd(false) 会把
+  // transition 置回 none，正在跑的旋转过渡被剥夺，转盘瞬移到目标角度。
+  if(gen===n&&Date.now()-lastRdAnim>=RD_SETTLE)rd(false);
  },400);
 }
 

@@ -4,53 +4,41 @@
       "game": "geometry",
       "slot": "geometry",
       "icon": "",
-      "media": "geometry/poster-1.png",
-      "webp": "geometry/poster-1.webp",
       "title": "几何",
       "subtitle": "像素科幻 2D 平台射击",
       "tag": "像素 · 平台射击",
       "link": "games/detail.html?game=geometry",
-      "linkText": "游戏详情",
-      "iconOnly": false
+      "linkText": "游戏详情"
     },
     {
       "game": "fishfarm",
       "slot": "fishfarm",
       "icon": "🐟",
-      "media": "",
-      "webp": null,
       "title": "养鱼大亨",
       "subtitle": "放置养成 · 鱼类收集模拟",
       "tag": "养成 · 模拟",
       "link": "games/detail.html?game=fishfarm",
-      "linkText": "游戏详情",
-      "iconOnly": true
+      "linkText": "游戏详情"
     },
     {
       "game": null,
       "slot": "lost-dynasty",
       "icon": "🗡️",
-      "media": "",
-      "webp": null,
       "title": "螺旋塔",
       "subtitle": "卡通风格 轻度肉鸽 地牢探险",
       "tag": "像素 · Rogue-like",
       "link": null,
-      "linkText": "即将推出",
-      "iconOnly": true
+      "linkText": "即将推出"
     },
     {
       "game": null,
       "slot": "dreamweaver",
       "icon": "☣️",
-      "media": "",
-      "webp": null,
       "title": "异种",
       "subtitle": "像素风格 动作游戏 多主角多视角",
       "tag": "动作 · 角色扮演",
       "link": null,
-      "linkText": "即将推出",
-      "iconOnly": true
+      "linkText": "即将推出"
     }
   ]
 }

@@ -348,16 +348,19 @@
             opacity: 0.3;
         }
 
-        /* 图片卡片：让 <picture> 撑满容器（.project-bg 是 flex 容器且 align-items:center，
-           若不强制拉伸，<picture> 会按内容高度收缩，导致图片上下出现黑边） */
-        .project-card .project-bg picture {
+        /* 图片卡片：让图片撑满容器（.project-bg 是 flex 容器且 align-items:center，
+           若不强制拉伸，容器会按内容高度收缩，导致图片上下出现黑边）。
+           同时覆盖两种写法：带 <picture> 的，以及加载器直接注入的裸 <img>。 */
+        .project-card .project-bg picture,
+        .project-card .project-bg > img {
             display: block;
             width: 100%;
             height: 100%;
             align-self: stretch;
         }
 
-        .project-card .project-bg picture img {
+        .project-card .project-bg picture img,
+        .project-card .project-bg > img {
             width: 100%;
             height: 100%;
             object-fit: cover;

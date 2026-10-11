@@ -6,8 +6,6 @@
   "desc": "《养鱼大亨》是一款以鱼类收集养成为核心的放置模拟游戏。数十种鱼类从孔雀鱼到远古存在呈阶梯式解锁，玩家在鱼塘中收集、养育各类奇鱼，构建属于自己的水下生态世界。",
   "desc2": "玩家通过买卖鱼苗、等待成长、解锁新鱼种来一步步扩张鱼塘版图。大量事件随机袭来，各类特殊机制鱼让鱼塘生态充满变数与趣味，每次游玩游戏都能体验到新的乐趣。",
   "desc3": "活泼可爱的各式鱼类搭配沉浸式动态鱼塘，通过努力一步步解锁新内容让收集过程充满成就感。游戏节奏轻松休闲，适合碎片化时间随时打开收鱼、卖鱼、解锁更多新内容。",
-  "cover": "fishfarm/cover.jpg",
-  "coverWebp": "fishfarm/cover.webp",
   "meta": {
     "最新版本": "v1.5-web",
     "游戏类型": "放置养成",
@@ -38,35 +36,12 @@
       "desc": "解锁稀有远古鱼类，见证独特内容与全新特效，探寻鱼塘内暗流涌动的秘密..."
     }
   ],
-  "screenshots": [
-    {
-      "media": "fishfarm/screenshot-1.jpg",
-      "webp": "fishfarm/screenshot-1.webp",
-      "width": 1536,
-      "height": 833
-    },
-    {
-      "media": "fishfarm/screenshot-2.jpg",
-      "webp": "fishfarm/screenshot-2.webp",
-      "width": 1536,
-      "height": 829
-    },
-    {
-      "media": "fishfarm/screenshot-3.jpg",
-      "webp": "fishfarm/screenshot-3.webp",
-      "width": 1536,
-      "height": 829
-    },
-    {
-      "media": "fishfarm/screenshot-4.jpg",
-      "webp": "fishfarm/screenshot-4.webp",
-      "width": 1536,
-      "height": 838
-    }
-  ],
+  "screenshots": [],
   "action": {
     "type": "play",
     "url": "fishfarm/index.html",
     "text": "立即试玩"
-  }
+  },
+  "emoji": "🐟",
+  "tagline": "来鱼塘养成你的水下世界！"
 }

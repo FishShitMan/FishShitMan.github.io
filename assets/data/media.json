@@ -1,0 +1,153 @@
+{
+  "geometry": {
+    "cover": [
+      {
+        "file": "0001.png",
+        "width": 5760,
+        "height": 3240,
+        "bytes": 254297
+      },
+      {
+        "file": "0002.png",
+        "width": 3200,
+        "height": 1800,
+        "bytes": 75057
+      }
+    ],
+    "banner": [
+      {
+        "file": "0001.png",
+        "width": 6400,
+        "height": 1800,
+        "bytes": 143031
+      }
+    ],
+    "gallery": [
+      {
+        "file": "0001.png",
+        "width": 2451,
+        "height": 1349,
+        "bytes": 826121
+      },
+      {
+        "file": "0002.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 90908
+      },
+      {
+        "file": "0003.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 167908
+      },
+      {
+        "file": "0004.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 231915
+      },
+      {
+        "file": "0005.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 274143
+      },
+      {
+        "file": "0006.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 174455
+      }
+    ]
+  },
+  "fishfarm": {
+    "cover": [],
+    "banner": [
+      {
+        "file": "0001.jpg",
+        "width": 1920,
+        "height": 1080,
+        "bytes": 167216,
+        "fallback": "原 cover.jpg"
+      }
+    ],
+    "gallery": [
+      {
+        "file": "0001.png",
+        "width": 2496,
+        "height": 1353,
+        "bytes": 1786907
+      },
+      {
+        "file": "0002.png",
+        "width": 2502,
+        "height": 1350,
+        "bytes": 1420194
+      },
+      {
+        "file": "0003.png",
+        "width": 2502,
+        "height": 1350,
+        "bytes": 1319875
+      },
+      {
+        "file": "0004.png",
+        "width": 2490,
+        "height": 1359,
+        "bytes": 1863953
+      }
+    ]
+  },
+  "_captions_note": "captions 按「游戏/类别/文件名」存放逐图标题与描述；只作用于画廊展示",
+  "captions": {
+    "geometry/gallery/0001.png": {
+      "title": "几何 - 测试关卡",
+      "desc": "开发中的测试关卡，打磨每一处细节"
+    },
+    "geometry/gallery/0002.jpg": {
+      "title": "几何 - 极简弹幕",
+      "desc": "极简几何美学 × 极致弹幕挑战"
+    },
+    "geometry/gallery/0003.jpg": {
+      "title": "几何 - 色彩风暴",
+      "desc": "五彩斑斓的几何弹幕，视觉与操作的双重考验"
+    },
+    "geometry/gallery/0004.jpg": {
+      "title": "几何 - 竞速模式",
+      "desc": "高速弹幕穿插躲避，考验极限反应速度"
+    },
+    "geometry/gallery/0005.jpg": {
+      "title": "几何 - 无尽挑战",
+      "desc": "层层递进的几何迷宫，挑战你的操作极限"
+    },
+    "geometry/gallery/0006.jpg": {
+      "title": "几何 - BOSS 战",
+      "desc": "终极几何BOSS战，极致弹幕盛宴"
+    },
+    "geometry/cover/0001.png": {
+      "title": "几何 - 宣传图",
+      "desc": "几何游戏官方宣传海报概念设计"
+    },
+    "geometry/cover/0002.png": {
+      "title": "几何 - 概念海报",
+      "desc": "几何风格概念海报，展现游戏核心玩法"
+    },
+    "fishfarm/gallery/0001.png": {
+      "title": "养鱼大亨 - 鱼塘概览",
+      "desc": "数十种鱼类在鱼塘中自由游弋"
+    },
+    "fishfarm/gallery/0002.png": {
+      "title": "养鱼大亨 - 鱼类收集",
+      "desc": "阶梯式解锁各类稀有鱼类"
+    },
+    "fishfarm/gallery/0003.png": {
+      "title": "养鱼大亨 - 事件系统",
+      "desc": "赤潮与超级赤潮考验养鱼智慧"
+    },
+    "fishfarm/gallery/0004.png": {
+      "title": "养鱼大亨 - 远古传说",
+      "desc": "探寻鱼塘深处的远古存在"
+    }
+  }
+}
