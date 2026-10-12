@@ -261,6 +261,7 @@ body {
 .quest-item.completed .title { color: #6ee898; }
 .quest-item.special-completed { border-color: rgba(255,160,40,0.7); background: rgba(40,30,10,0.5); animation: orangePulse 1.2s ease-in-out infinite; }
 .quest-item.special-completed .title { color: #ffb040; }
+.quest-item.earn-permanent { border-color: rgba(255,160,40,0.45); background: rgba(40,30,10,0.35); }
 
 .upgrade-item .icon, .theme-item .icon { font-size: 1.3em; width: 28px; text-align: center; }
 .upgrade-item .level { font-size: 0.7em; color: #7ec8f8; font-weight: 600; }
@@ -304,6 +305,9 @@ body {
 .main-menu-subtitle { font-size: 1em; color: #7aa4c8; z-index: 1; margin-top: -24px; margin-bottom: 16px; letter-spacing: 1px; }
 .main-menu-btn { width: 240px; padding: 16px 0; border-radius: 14px; border: 2px solid rgba(100,180,220,0.35); cursor: pointer; font-size: 1.1em; font-weight: 700; font-family: inherit; transition: all 0.3s; z-index: 1; text-align: center; background: linear-gradient(135deg, rgba(20,44,70,0.8), rgba(10,28,48,0.9)); color: #c8ddf0; box-shadow: 0 4px 16px rgba(0,0,0,0.3); margin-bottom: 6px; }
 .main-menu-btn:hover { background: linear-gradient(135deg, rgba(40,90,140,0.7), rgba(20,55,100,0.8)); border-color: rgba(120,200,250,0.55); color: #fff; transform: translateY(-2px); box-shadow: 0 6px 24px rgba(60,140,210,0.25); }
+/* 主菜单按钮的声音反馈：入场浮起 / 按下回弹（与音效同步） */
+.main-menu-btn.menu-in { transform: translateY(-2px) scale(1.035); border-color: rgba(140,215,255,0.75); box-shadow: 0 8px 28px rgba(70,160,230,0.35); }
+.main-menu-btn.menu-down { transform: translateY(1px) scale(0.975); box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
 .main-menu-btn.primary { background: linear-gradient(135deg, #4da8da, #2b7cb8); color: #fff; border-color: rgba(80,180,230,0.5); box-shadow: 0 4px 20px rgba(50,150,220,0.35); }
 .main-menu-btn.primary:hover { background: linear-gradient(135deg, #5db8ea, #3b8cc8); box-shadow: 0 6px 28px rgba(50,160,230,0.5); }
 .main-menu-btn.exit { background: linear-gradient(135deg, rgba(60,20,20,0.6), rgba(30,10,10,0.7)); border-color: rgba(200,60,60,0.3); color: #e8a0a0; font-size: 0.9em; margin-top: 12px; }
@@ -327,6 +331,21 @@ body {
 .settings-item:hover { background: rgba(100,180,220,0.15); color: #fff; }
 .settings-item .settings-desc { font-size: 0.75em; color: #6a90b8; font-weight: normal; }
 .settings-item:hover .settings-desc { color: #8ab4d8; }
+/* 音量调节滑条 */
+.settings-audio { border-top: 1px solid rgba(70,150,210,0.18); margin-top: 6px; padding: 9px 14px 4px; }
+.settings-audio .audio-title { display: flex; align-items: center; gap: 6px; font-size: 0.8em; font-weight: 600; color: #7ec8f8; margin-bottom: 2px; }
+.settings-audio .audio-title .audio-all { margin-left: auto; cursor: pointer; font-size: 0.95em; padding: 1px 5px; border-radius: 6px; color: #8ab4d8; }
+.settings-audio .audio-all:hover { background: rgba(100,180,220,0.18); color: #fff; }
+.settings-audio .audio-hint { font-size: 0.62em; color: #4a6a8a; margin-bottom: 7px; }
+.settings-slider { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+.settings-slider .slider-label { font-size: 0.72em; color: #a8c8e0; width: 58px; flex-shrink: 0; }
+.settings-slider .slider-mute { cursor: pointer; font-size: 0.85em; width: 20px; text-align: center; flex-shrink: 0; border-radius: 5px; }
+.settings-slider .slider-mute:hover { background: rgba(100,180,220,0.18); }
+.settings-slider input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #2b7cb8, #4da8da); outline: none; cursor: pointer; }
+.settings-slider input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #cfe8fa; border: 2px solid #4da8da; cursor: pointer; box-shadow: 0 0 6px rgba(80,180,240,0.5); }
+.settings-slider input[type=range]::-moz-range-thumb { width: 10px; height: 10px; border-radius: 50%; background: #cfe8fa; border: 2px solid #4da8da; cursor: pointer; }
+.settings-slider input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #2b7cb8, #4da8da); }
+.settings-slider .slider-value { font-size: 0.68em; color: #8ab4d8; width: 34px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
 
 .info-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); background: linear-gradient(160deg, rgba(14,34,58,0.98), rgba(8,20,38,0.98)); border: 2px solid rgba(80,160,220,0.4); border-radius: 16px; padding: 20px; z-index: 200; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
 .info-popup.active { display: block; }
@@ -439,9 +458,31 @@ body {
 <div class="overflow-banner" id="overflowBanner"><div class="overflow-title">⚠️ 鱼塘爆满！</div><div class="overflow-info">减少鱼数量以降低瘟疫爆发风险</div></div>
 <div class="game-over-overlay" id="gameOverOverlay"><div class="game-over-title">游戏结束</div><button class="game-over-btn" onclick="resetGame()">🔄 重新开始</button></div>
 
-<div class="version-tag">v1.5c</div>
+<div class="version-tag">v1.6a</div>
 <div class="settings-btn" id="settingsBtn" onclick="toggleSettings()" title="设置">⚙️</div>
 <div class="settings-popup" id="settingsPopup">
+  <div class="settings-audio">
+    <div class="audio-title">🔊 音量<span class="audio-all" id="volAllMute" onclick="toggleVolMuteAll(event)" title="一键全部静音 / 恢复">🔇</span></div>
+    <div class="audio-hint">拖动滑条实时生效，设置自动保存</div>
+    <div class="settings-slider">
+      <span class="slider-label">🎵 音乐</span>
+      <span class="slider-mute" id="volmusicMute" onclick="toggleVolMute('music', event)" title="点击静音">🔊</span>
+      <input type="range" id="volmusic" min="0" max="100" step="1" value="50" oninput="onVolInput('music', this)">
+      <span class="slider-value" id="volmusicVal">50%</span>
+    </div>
+    <div class="settings-slider">
+      <span class="slider-label">🔔 音效</span>
+      <span class="slider-mute" id="volsfxMute" onclick="toggleVolMute('sfx', event)" title="点击静音">🔊</span>
+      <input type="range" id="volsfx" min="0" max="100" step="1" value="80" oninput="onVolInput('sfx', this)">
+      <span class="slider-value" id="volsfxVal">80%</span>
+    </div>
+    <div class="settings-slider">
+      <span class="slider-label">🌊 环境音</span>
+      <span class="slider-mute" id="volambMute" onclick="toggleVolMute('amb', event)" title="点击静音">🔊</span>
+      <input type="range" id="volamb" min="0" max="100" step="1" value="55" oninput="onVolInput('amb', this)">
+      <span class="slider-value" id="volambVal">55%</span>
+    </div>
+  </div>
   <div class="settings-item" onclick="resetGame()">🔄 重置鱼塘<span class="settings-desc">还原至初始状态</span></div>
   <div class="settings-item" onclick="clearAllFish()">🗑️ 清空鱼塘<span class="settings-desc">清理所有鱼</span></div>
 </div>
@@ -507,11 +548,19 @@ const SPECIAL_CONSUMABLES = [
   { id:'red_tide', name:'人工赤潮', icon:'🔴', cost:500000, desc:'立刻触发赤潮事件（有事件时不生效）', type:'event' },
   { id:'rainbow_glow', name:'人工虹光', icon:'🌈', cost:1000000, desc:'立刻触斑斓虹光事件（有事件时不生效）', type:'event' }
 ];
+// ========== 基础设施价格表（v1.6a 平衡调整）==========
+// 鱼塘：下标 = 目标等级，TANK_COST[L] = 升到 Lv L 的费用
+const TANK_COST = [0,0,1000,2500,8000,25000,120000,350000,900000,1000000,1150000];
+// 其余三项：下标 = 当前等级，ARR[L] = 由 Lv L 升到 Lv L+1 的费用（与 getCost(lv) 的调用约定一致）
+const FILT_COST = [1000,2000,4000,7000,12000,18000,26000,36000];                // 0→1 … 7→8
+const FEED_COST = [500,1000,2600,6000,25000,63000,200000,210000,220000,225000]; // 0→1 … 9→10
+const TEMP_COST = [1500,3000,6000,14000,40000,90000];                           // 0→1 … 5→6
+
 const UPGRADES = [
-  { id:'tankLevel', name:'扩建鱼塘', icon:'🏗️', desc:'增加养殖容量上限', effect:'容量 +4', getCost:lv => Math.floor(50*Math.pow(1.6,lv-1)), getLv:s => s.infrastructure.tankLevel, max:10, baseCap:8, capPerLv:4 },
-  { id:'filterLevel', name:'净水系统', icon:'💧', desc:'改善水质，抑制病菌', effect:'瘟疫概率-10%/级', getCost:lv => Math.floor(80*Math.pow(1.55,lv)), getLv:s => s.infrastructure.filterLevel, max:8 },
-  { id:'feederLevel', name:'自动喂食器', icon:'🍥', desc:'定时投喂，加速生长', effect:'速度 +10%/级', getCost:lv => Math.floor(60*Math.pow(1.5,lv)), getLv:s => s.infrastructure.feederLevel, max:10, speedB:0.10 },
-  { id:'tempControl', name:'温控设备', icon:'🌡️', desc:'减少鱼苗死亡率', effect:'降低死亡率', getCost:lv => Math.floor(250*Math.pow(1.6,lv)), getLv:s => s.infrastructure.tempControl, max:6, mortR:0.15 }
+  { id:'tankLevel', name:'扩建鱼塘', icon:'🏗️', desc:'增加养殖容量上限', effect:'容量 +4', getCost:lv => TANK_COST[lv] || 0, getLv:s => s.infrastructure.tankLevel, max:10, baseCap:8, capPerLv:4 },
+  { id:'filterLevel', name:'净水系统', icon:'💧', desc:'改善水质，抑制病菌', effect:'瘟疫概率-10%/级', getCost:lv => FILT_COST[lv] || 0, getLv:s => s.infrastructure.filterLevel, max:8 },
+  { id:'feederLevel', name:'自动喂食器', icon:'🍥', desc:'定时投喂，加速生长', effect:'速度 +10%/级', getCost:lv => FEED_COST[lv] || 0, getLv:s => s.infrastructure.feederLevel, max:10, speedB:0.10 },
+  { id:'tempControl', name:'温控设备', icon:'🌡️', desc:'减少鱼苗死亡率', effect:'降低死亡率', getCost:lv => TEMP_COST[lv] || 0, getLv:s => s.infrastructure.tempControl, max:6, mortR:0.15 }
 ];
 const THEMES = [
   { id:'default', name:'清澈水域', icon:'💧', cost:0, desc:'默认鱼塘，清爽自然', owned:true },
@@ -555,7 +604,7 @@ function hardCap() { return Math.ceil(maxCap() * 1.2); }
 function isOverCapacity() { return effCount() > maxCap(); }
 function effCount() { return GS.fishInventory.reduce((sum, f) => sum + (FS.get(f.speciesId)?.ancient ? (FS.get(f.speciesId).capacityCost || 6) : 1), 0); }
 function growSpeedMult() { let m = 1 + GS_INF.feederLevel * feederUpg.speedB; if (curEvent && curEvent.type==='gold-rush') m *= 2; if (isOverCapacity()) m = Math.max(0.1, m - 0.1); return m; }
-function mortRate() { return Math.max(0, 0.12 - GS_INF.tempControl * tempUpg.mortR); }
+function mortRate() { return 0.12 * Math.max(0, 1 - GS_INF.tempControl * tempUpg.mortR); }
 
 function fishGrowth(fish) {
   const sp = FS.get(fish.speciesId); if (!sp) return 1;
@@ -566,6 +615,19 @@ function fishGrowth(fish) {
   return Math.min(1, elapsed / fullTime);
 }
 function fishReady(fish) { return fishGrowth(fish) >= 1; }
+// 结算并保留生长进度：倍率变化（如淘鱼热结束）时把当前进度换算为新倍率下的等效起始时间，避免进度回退
+function settleGrowthProgress(oldGsm) {
+  const now = Date.now(), newGsm = growSpeedMult();
+  if (!oldGsm || oldGsm === newGsm) return;
+  GS.fishInventory.forEach(f => {
+    const sp = FS.get(f.speciesId); if (!sp || sp.ancient) return;
+    const sup = !!f.supergrown, gt = sup ? sp.growthTime * 2 : sp.growthTime;
+    const anchor = sup ? (f.superStartTime || f.startTime) : f.startTime;
+    const p = Math.min(1, ((now - anchor) / 1000) * oldGsm / gt);
+    const back = p * gt / newGsm * 1000;
+    if (sup) f.superStartTime = now - back; else f.startTime = now - back;
+  });
+}
 function spIcon(sid) { const s = FS.get(sid); return s ? s.icon : '🐟'; }
 function spName(sid) { const s = FS.get(sid); return s ? s.name : sid; }
 
@@ -795,26 +857,24 @@ function setupGameIntervals() {
   // 通用任务定期刷新
   addGameInterval(setInterval(() => {
     if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'fed')) {
-      GS.activeQuests.push(genFedQuest()); notif('📋 新任务：优质养殖！');
+      GS.activeQuests.push(genFedQuest()); notifQuest('📋 新任务：优质养殖！');
     }
     if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'hormone')) {
-      GS.activeQuests.push(genHormoneQuest()); notif('📋 新任务：快速养殖！');
+      GS.activeQuests.push(genHormoneQuest()); notifQuest('📋 新任务：快速养殖！');
     }
     if (GS.totalRoeSold >= 1 && Math.random() < 0.5 && !GS.activeQuests.some(q => q.type === 'roe_collect')) {
-      GS.activeQuests.push(genRoeCollectQuest()); notif('📋 新任务：鱼子酱！');
+      GS.activeQuests.push(genRoeCollectQuest()); notifQuest('📋 新任务：鱼子酱！');
     }
     if (GS.totalSupergrownSold >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'supergrown_sell')) {
-      GS.activeQuests.push(genSupergrownQuest()); notif('📋 新任务：茁壮之星！');
+      GS.activeQuests.push(genSupergrownQuest()); notifQuest('📋 新任务：茁壮之星！');
     }
     if (GS.totalBredCount >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'breed_count')) {
-      GS.activeQuests.push(genBreedCountQuest()); notif('📋 新任务：家族兴旺！');
+      GS.activeQuests.push(genBreedCountQuest()); notifQuest('📋 新任务：家族兴旺！');
     }
     if (GS.totalUniqueSpeciesOwned.size >= 2 && GS.totalUniqueSpeciesOwned.size < FISH_SPECIES.length && Math.random() < 0.6 && !GS.activeQuests.some(q => q.type === 'variety')) {
-      GS.activeQuests.push(genVarietyQuest()); notif('📋 新任务：收藏家挑战！');
+      GS.activeQuests.push(genVarietyQuest()); notifQuest('📋 新任务：收藏家挑战！');
     }
-    if (GS.totalEarned >= 1000 && !GS.activeQuests.some(q => q.type === 'total_earn')) {
-      const nq = genTotalEarnQuest(); if (nq) { GS.activeQuests.push(nq); notif('📋 新任务：大亨之路！'); }
-    }
+    ensureEarnQuest();
     renderAll();
   }, 60000));
   // 游戏主循环
@@ -822,7 +882,7 @@ function setupGameIntervals() {
 }
 
 // ========== 统一切换Tab ==========
-function switchTab(category, tab) {
+function switchTab(category, tab) { sfx('click');
   const tabsId = category === 'shop' ? 'shopTabs' : 'consumableTabs';
   const map = { shop: { fish: 'tabFish', goods: 'tabGoods' }, consumable: { regular: 'tabConsumableRegular', special: 'tabConsumableSpecial' } };
   document.querySelectorAll('#' + tabsId + ' .shop-tab').forEach(t => t.classList.remove('active'));
@@ -842,9 +902,18 @@ function formatGameTime(sec) {
 
 // ========== 渲染 ==========
 let lastMoney = 0;
+// 金额格式化：按 4 位分组（中文习惯，如 1,0000），带两位小数处理
+function fmtMoney(n) {
+  const num = Number(n) || 0, neg = num < 0, abs = Math.abs(num);
+  const ip = Math.floor(abs), fp = abs - ip, s = String(ip);
+  let out = '';
+  for (let i = 0; i < s.length; i++) { if (i > 0 && (s.length - i) % 4 === 0) out += ','; out += s[i]; }
+  return (neg ? '-' : '') + out + (fp > 0.0005 ? String(Math.round(fp * 100) / 100).slice(1) : '');
+}
+
 function updateTopBar() {
   const el = moneyDisplayEl;
-  el.textContent = GS.money.toLocaleString();
+  el.textContent = fmtMoney(GS.money);
   if (GS.money > lastMoney) {
     el.animate([
       { transform: 'scale(1)', color: '#ffc850', offset: 0 },
@@ -894,9 +963,9 @@ function renderShop() {
 function renderGoods() {
   $('goodsList').innerHTML = PRODUCTS.map(p => {
     if (GS.productsOwned.has(p.id)) return `<div class="product-item" style="opacity:0.4"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name" style="color:#5a6a80">${p.name} ✅</div><div class="product-desc">已拥有</div></div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">✅</span></div>`;
-    if (p.requires && !GS.productsOwned.has(p.requires)) return `<div class="product-item" style="opacity:0.4"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name" style="color:#5a6a80">${p.name}</div><div class="product-desc">需前置商品 · $${p.cost.toLocaleString()}</div></div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
+    if (p.requires && !GS.productsOwned.has(p.requires)) return `<div class="product-item" style="opacity:0.4"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name" style="color:#5a6a80">${p.name}</div><div class="product-desc">需前置商品 · $${fmtMoney(p.cost)}</div></div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
     const canBuy = GS.money >= p.cost, dis = !canBuy;
-    return `<div class="product-item"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div></div><button class="btn btn-primary btn-xs" onclick="buyProduct('${p.id}')" ${dis?'disabled style="color:#6a8aa0"':''}>${canBuy?'💲'+p.cost.toLocaleString():'💲'+p.cost.toLocaleString()}</button></div>`;
+    return `<div class="product-item"><div class="product-icon">${p.icon}</div><div class="product-info"><div class="product-name">${p.name}</div><div class="product-desc">${p.desc}</div></div><button class="btn btn-primary btn-xs" onclick="buyProduct('${p.id}')" ${dis?'disabled style="color:#6a8aa0"':''}>${canBuy?'💲'+fmtMoney(p.cost):'💲'+fmtMoney(p.cost)}</button></div>`;
   }).join('');
 }
 
@@ -927,7 +996,7 @@ function renderUpgrades() {
     const lv = upg.getLv(GS), maxed = lv >= upg.max;
     const cost = upg.getCost(upg.id === 'tankLevel' ? lv + 1 : lv);
     const can = GS.money >= cost;
-    let lbl = maxed ? '已满级' : can ? `升级 $${cost.toLocaleString()}` : '资金不足';
+    let lbl = maxed ? '已满级' : can ? `升级 $${fmtMoney(cost)}` : '资金不足';
     let segs = '<div style="display:flex;gap:2px;margin-top:3px">';
     for (let i = 0; i < upg.max; i++) segs += `<div style="flex:1;height:4px;border-radius:2px;background:${i<lv?'linear-gradient(90deg,#4da8da,#7ec8f8)':'rgba(255,255,255,.08)'}"></div>`;
     segs += '</div>';
@@ -946,10 +1015,32 @@ function renderThemes() {
   }).join('');
 }
 
+function earnQuestLabel(q, prog) {
+  if (q._finished) return '累计赚取 $'+fmtMoney(q.targetCount)+' · 👑 已全部达成';
+  return '累计赚取 $'+fmtMoney(q.targetCount)+'（还差 $'+fmtMoney(Math.max(0, q.targetCount - prog))+'）';
+}
+// 常驻任务实时刷新：只更新大亨之路那一条，避免整列表重绘打断点击
+function syncEarnQuestUI() {
+  const item = document.querySelector('.quest-item[data-earn="1"]');
+  if (!item) return;
+  const q = GS.activeQuests.find(x => x.type === 'total_earn');
+  if (!q) return;
+  const prog = Math.min(GS.totalEarned || 0, q.targetCount), done = !q._finished && prog >= q.targetCount;
+  item.classList.toggle('special-completed', done || !!q._finished);
+  item.classList.toggle('earn-permanent', !done && !q._finished);
+  const fill = item.querySelector('.progress-fill'); if (fill) fill.style.width = Math.round((prog / q.targetCount) * 100) + '%';
+  const d = item.querySelector('.desc'); if (d) d.textContent = earnQuestLabel(q, prog) + ' · ' + (q._finished ? '已完成' : fmtMoney(prog) + '/' + fmtMoney(q.targetCount));
+  const r = item.querySelector('.reward'); if (r) r.textContent = q._finished ? '👑 全部里程碑已达成' : '🎁 $' + fmtMoney(q.reward);
+  const btn = item.querySelector('button');
+  if (done && !btn) item.insertAdjacentHTML('beforeend', `<button class="btn btn-success btn-xs" style="flex-shrink:0;align-self:flex-end" onclick="claimQuest(${q.id})">领取</button>`);
+  if (!done && btn) btn.remove();
+}
+
 function renderQuests() {
   const c = $('questList');
   if (!GS.activeQuests.length) { c.innerHTML = '<div class="empty-text">购买新品种鱼解锁任务</div>'; questHeaderEl.innerHTML = '📋 任务'; return; }
   const sorted = [...GS.activeQuests].sort((a, b) => {
+    if ((a.type === 'total_earn') !== (b.type === 'total_earn')) return a.type === 'total_earn' ? -1 : 1;
     const aDone = Math.min(a.currentCount, a.targetCount) >= a.targetCount ? 0 : 1;
     const bDone = Math.min(b.currentCount, b.targetCount) >= b.targetCount ? 0 : 1;
     if (aDone !== bDone) return aDone - bDone;
@@ -957,10 +1048,10 @@ function renderQuests() {
     const bPct = Math.min(b.currentCount, b.targetCount) / b.targetCount;
     return bPct - aPct;
   });
-  const doneCount = sorted.filter(q => Math.min(q.currentCount, q.targetCount) >= q.targetCount).length;
+  const doneCount = sorted.filter(q => !q._finished && Math.min(q.currentCount, q.targetCount) >= q.targetCount).length;
   questHeaderEl.innerHTML = doneCount ? `📋 任务 <button class="btn btn-warning btn-xs" style="margin-left:auto" onclick="claimAllQuests()">🎁 一键领取 (${doneCount})</button>` : '📋 任务';
   c.innerHTML = sorted.map(q => {
-    const prog = Math.min(q.currentCount, q.targetCount), pct = Math.round((prog / q.targetCount) * 100), done = prog >= q.targetCount;
+    const prog = Math.min(q.currentCount, q.targetCount), pct = Math.round((prog / q.targetCount) * 100), done = !q._finished && prog >= q.targetCount;
     let desc;
     if (q.type==='sell') desc='卖出'+q.targetCount+'条'+spName(q.targetSpecies);
     else if (q.type==='fed') desc='卖出'+q.targetCount+'条⭐饲料鱼';
@@ -975,24 +1066,33 @@ function renderQuests() {
     else if (q.type==='eel_shock') desc='电鳗电死'+q.targetCount+'条鱼';
     else if (q.type==='lantern_hunt') desc='灯笼鱼捕食'+q.targetCount+'条鱼';
     else if (q.type==='ancient_sell') desc='售出'+q.targetCount+'条远古存在';
-    else if (q.type==='total_earn') desc='累计赚取 $'+q.targetCount.toLocaleString();
+    else if (q.type==='total_earn') desc=earnQuestLabel(q, prog);
     else desc='任务';
-    const isSpecial = done && (q.type === 'shark_hunt' || q.type === 'eel_shock' || q.type === 'lantern_hunt' || q.type === 'ancient_sell' || q.type === 'total_earn');
-    return `<div class="quest-item ${done?(isSpecial?'special-completed':'completed'):''}"><div class="info"><div class="title">${q.title}</div><div class="desc">${desc} · ${q.type==='event_survive'?'已完成':(prog+'/'+q.targetCount)}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="reward">🎁 $${q.reward.toLocaleString()}</div></div>${done?`<button class="btn btn-success btn-xs" style="flex-shrink:0;align-self:flex-end" onclick="claimQuest(${q.id})">领取</button>`:''}</div>`;
+    const isSpecial = (done || q._finished) && (q.type === 'shark_hunt' || q.type === 'eel_shock' || q.type === 'lantern_hunt' || q.type === 'ancient_sell' || q.type === 'total_earn');
+    const itemCls = q.type === 'total_earn' ? ((done || q._finished) ? 'special-completed' : 'earn-permanent') : (done ? (isSpecial ? 'special-completed' : 'completed') : '');
+    return `<div class="quest-item ${itemCls}"${q.type==='total_earn'?' data-earn="1"':''}><div class="info"><div class="title">${q.title}</div><div class="desc">${desc} · ${(q.type==='event_survive'||q._finished)?'已完成':(fmtMoney(prog)+'/'+fmtMoney(q.targetCount))}</div><div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="reward">${q._finished?'👑 全部里程碑已达成':'🎁 $'+fmtMoney(q.reward)}</div></div>${done?`<button class="btn btn-success btn-xs" style="flex-shrink:0;align-self:flex-end" onclick="claimQuest(${q.id})">领取</button>`:''}</div>`;
   }).join('');
 }
 
 function claimAllQuests() {
-  const done = GS.activeQuests.filter(q => Math.min(q.currentCount, q.targetCount) >= q.targetCount);
+  updateQuestProgress();
+  const done = GS.activeQuests.filter(q => !q._finished && Math.min(q.currentCount, q.targetCount) >= q.targetCount);
   if (!done.length) { notif('没有可领取的任务'); return; }
   let total = 0;
   done.forEach(q => {
     total += q.reward;
     GS.money += q.reward;
     GS.completedQuests.push(q.id);
+    if (q.type === 'total_earn') {
+      GS.claimedEarnMilestones.add(q.targetCount);
+      if (q.targetCount >= 1000000 && !GS.ownedThemes.has('gold')) { GS.ownedThemes.add('gold'); GS.currentTheme = 'gold'; applyTheme('gold'); notif('👑 解锁鱼塘外观：黄金池塘！'); }
+    }
   });
-  GS.activeQuests = GS.activeQuests.filter(q => Math.min(q.currentCount, q.targetCount) < q.targetCount);
-  notif('🎉 一键领取'+done.length+'个任务，+$'+total.toLocaleString()+'！');
+  GS.activeQuests = GS.activeQuests.filter(q => q.type === 'total_earn' || Math.min(q.currentCount, q.targetCount) < q.targetCount);
+  ensureEarnQuest();
+  notif('🎉 一键领取'+done.length+'个任务，+$'+fmtMoney(total)+'！');
+  sfx(done.length >= 3 ? 'coinBatch' : 'coin');
+  if (total >= 50000) sfx('moneyBig');   // 大额入账：追加一声更华丽的提示
   renderAll();
 }
 
@@ -1016,7 +1116,7 @@ function renderSpecialConsumables() {
     if (locked) return `<div class="shop-item" style="opacity:0.4"><div class="fish-icon">❓</div><div class="info"><div class="name" style="color:#5a6a80">???</div><div class="details">${locked}</div></div><div class="price">——</div><span class="btn btn-xs" style="opacity:0.5;color:#5a6a80;cursor:default">🔒</span></div>`;
     const canBuy = GS.money >= cs.cost, ongoing = curEvent !== null;
     let label = ongoing ? '正在进行事件' : !canBuy ? '资金不足' : '购买';
-    return `<div class="shop-item"><div class="fish-icon">${cs.icon}</div><div class="info"><div class="name">${cs.name}</div><div class="details">${cs.desc}</div></div><div class="price">$${cs.cost.toLocaleString()}</div><button class="btn btn-primary btn-xs" onclick="buySpecialConsumable('${cs.id}')" ${(!canBuy||ongoing)?'disabled':''}>${label}</button></div>`;
+    return `<div class="shop-item"><div class="fish-icon">${cs.icon}</div><div class="info"><div class="name">${cs.name}</div><div class="details">${cs.desc}</div></div><div class="price">$${fmtMoney(cs.cost)}</div><button class="btn btn-primary btn-xs" onclick="buySpecialConsumable('${cs.id}')" ${(!canBuy||ongoing)?'disabled':''}>${label}</button></div>`;
   }).join('');
 }
 
@@ -1062,6 +1162,7 @@ function buyFish(sid) {
   const prev = GS.totalUniqueSpeciesOwned.size; GS.totalUniqueSpeciesOwned.add(sp.id);
   GS.hasEverOwnedFish = true;
   notif('🐟 购买'+sp.name+'鱼苗！');
+  sfx(sp.ancient ? 'ancientBuy' : 'buyFish');
   if (GS.totalUniqueSpeciesOwned.size > prev) tryGenQuests(sp.id);
   renderAll();
 }
@@ -1081,6 +1182,7 @@ function buyFishBatch(sid, count) {
   const pr = (curEvent && curEvent.type === 'rainbow') ? 0.35 : 0.05;
   if (sp.poison && Math.random() < pr) { const victims = GS.fishInventory.filter(f => f.speciesId !== sid); if (victims.length) { const v = victims[Math.floor(Math.random() * victims.length)]; _removeFishFromPond(v); notif('☠️ 蓝环章鱼释放毒素，毒死了一条'+spName(v.speciesId)+'！'); } }
   notif('🐟 批量购买'+count+'条'+sp.name+'鱼苗！');
+  sfx(sp.ancient ? 'ancientBuy' : 'buyFish');
   if (GS.totalUniqueSpeciesOwned.size > prev) tryGenQuests(sp.id);
   renderAll();
 }
@@ -1120,7 +1222,7 @@ function sellFish(uid) {
   const idx = GS.fishInventory.findIndex(f => f.uid === uid); if (idx === -1) return;
   const fish = GS.fishInventory[idx]; if (!fishReady(fish)) { notif('⏳ 还未成熟！'); return; }
   const sp = FS.get(fish.speciesId); if (!sp) return;
-  if (!sp.ancient && Math.random() < mortRate()) { _removeFishFromPond(fish); notif('💀 '+sp.name+'不幸死亡...升级温控设备吧'); renderAll(); updateQuestProgress(); return; }
+  if (!sp.ancient && Math.random() < mortRate()) { _removeFishFromPond(fish); notif('💀 '+sp.name+'不幸死亡...升级温控设备吧'); sfx('error'); renderAll(); updateQuestProgress(); return; }
   if (!sp.ancient) GS.totalLuckySells++;
   const actualPrice = getFishActualSellPrice(fish);
   GS.money += actualPrice; GS.totalEarned += actualPrice; if (!sp.ancient && fish.supergrown) GS.totalSupergrownSold++;
@@ -1150,6 +1252,7 @@ function sellFish(uid) {
   notif('💰 卖出'+sp.name+'，+$'+actualPrice+'！');
   if (curEvent && curEvent.type === 'gold-rush') shake();
   updateQuestProgress();
+  sfx(sp.id === 'ancient' ? 'ancientSell' : 'sellFish');
   requestAnimationFrame(() => { renderAll(); });
 }
 
@@ -1216,8 +1319,8 @@ function sellAllReady() {
   GS.totalFedSold += fc; GS.totalHormoneSold += hc; GS.money += te; GS.totalEarned += te;
   if (toSell.some(f => f.speciesId === 'ancient') && (GS.totalFishSold['ancient'] || 0) >= 10 && !GS.ownedThemes.has('abyss')) { GS.ownedThemes.add('abyss'); GS.currentTheme = 'abyss'; applyTheme('abyss'); notif('🕳️ 解锁鱼塘外观：深渊裂缝！'); }
   const sold = toSell.length - deaths;
-  if (sold) { notif('💰 一键卖出'+sold+'条鱼，共获得 $'+te.toLocaleString()+'！'+(deaths?' ('+deaths+'条死亡)':'')); if (te >= 100000) confetti(); if (curEvent && curEvent.type === 'gold-rush') shake(); if (toSell.some(f => FS.get(f.speciesId)?.id === 'ancient')) ancientSellEffect(); }
-  else notif('💀 '+deaths+'条鱼全部死亡！升级温控设备吧');
+  if (sold) { notif('💰 一键卖出'+sold+'条鱼，共获得 $'+fmtMoney(te)+'！'+(deaths?' ('+deaths+'条死亡)':'')); sfx(toSell.some(f => f.speciesId === 'ancient') ? 'ancientSell' : 'coin'); if (te >= 100000) confetti(); if (curEvent && curEvent.type === 'gold-rush') shake(); if (toSell.some(f => FS.get(f.speciesId)?.id === 'ancient')) ancientSellEffect(); }
+  else { notif('💀 '+deaths+'条鱼全部死亡！升级温控设备吧'); sfx('error'); }
   updateQuestProgress();
   requestAnimationFrame(() => { renderAll(); });
 }
@@ -1229,7 +1332,7 @@ function buyProduct(pid) {
   if (p.requires && !GS.productsOwned.has(p.requires)) { notif('需要先购买前置商品！'); return; }
   GS.money -= p.cost; GS.productsOwned.add(pid);
   if (pid === 'oxygen1' || pid === 'oxygen2') initPondDecorations();
-  notif('🛒 购买了'+p.name+'！'); renderAll();
+  notif('🛒 购买了'+p.name+'！'); sfx('upgrade'); renderAll();
 }
 
 function buyConsumable(cid) {
@@ -1245,8 +1348,9 @@ function buyConsumable(cid) {
     if (!unfed.length) { notif('没有可使用的未成熟鱼！'); return; }
     GS.money -= cs.cost; const t = unfed[Math.floor(Math.random() * unfed.length)];
     if (cid === 'feed') { t.fed = true; notif('🍚 已喂食一条'+spName(t.speciesId)+'！'); }
-    else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000; notif('💉 已注射激素给一条'+spName(t.speciesId)+'！'); }
+    else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000 / growSpeedMult(); notif('💉 已注射激素给一条'+spName(t.speciesId)+'！'); }
   }
+  sfx(cid === 'feed' ? 'feed' : cid === 'hormone' ? 'hormone' : 'booster');
   renderAll();
 }
 
@@ -1258,23 +1362,23 @@ function buyConsumableBatch(cid) {
     const mx = Math.floor(GS.money / cs.cost); if (mx < 1) { notif('💰 资金不够批量购买！'); return; }
     const batch = Math.min(5, eligible.length, mx); GS.money -= cs.cost * batch;
     for (let i = 0; i < batch; i++) { const t = eligible[i]; t.supergrown = true; t.superStartTime = Date.now(); }
-    notif('💊 批量对'+batch+'条成熟鱼使用茁壮补剂！'); renderAll(); return;
+    notif('💊 批量对'+batch+'条成熟鱼使用茁壮补剂！'); sfx('booster'); sfx('moneyDownBatch'); renderAll(); return;
   }
   const unfed = GS.fishInventory.filter(f => !f.fed && !f.hormoned && !f.supergrown && !fishReady(f) && !FS.get(f.speciesId)?.ancient);
   if (!unfed.length) { notif('没有可使用的未成熟鱼！'); return; }
   const mx = Math.floor(GS.money / cs.cost); if (mx < 1) { notif('💰 资金不够批量购买！'); return; }
   const batch = Math.min(5, unfed.length, mx); GS.money -= cs.cost * batch;
-  for (let i = 0; i < batch; i++) { const t = unfed[i]; if (cid === 'feed') t.fed = true; else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000; } }
-  notif(cid==='feed'?'🍚 批量喂食'+batch+'条鱼！':'💉 批量注射'+batch+'条鱼！'); renderAll();
+  for (let i = 0; i < batch; i++) { const t = unfed[i]; if (cid === 'feed') t.fed = true; else { t.hormoned = true; t.startTime -= FS.get(t.speciesId).growthTime * 0.6 * 1000 / growSpeedMult(); } }
+  notif(cid==='feed'?'🍚 批量喂食'+batch+'条鱼！':'💉 批量注射'+batch+'条鱼！'); sfx(cid === 'feed' ? 'feed' : cid === 'hormone' ? 'hormone' : 'booster'); sfx('moneyDownBatch'); renderAll();
 }
 
 function buySpecialConsumable(cid) {
   const cs = SPECIAL_CONSUMABLES.find(x => x.id === cid); if (!cs) return;
   if (curEvent) { notif('⌛ 鱼儿们的磨难尚未结束...'); return; }
   if (GS.money < cs.cost) { notif('💰 资金不足！'); return; }
-  GS.money -= cs.cost;
-  if (cid === 'red_tide') { notif('🔴 人工赤潮即将降临！'); triggerRedTide(); }
-  else if (cid === 'rainbow_glow') { notif('🌈 人工虹光将照耀鱼塘！'); triggerRainbowGlow(); }
+  GS.money -= cs.cost; sfx('moneyDown');
+  if (cid === 'red_tide') { notif('🔴 人工赤潮即将降临！'); sfx('warn'); triggerRedTide(); }
+  else if (cid === 'rainbow_glow') { notif('🌈 人工虹光将照耀鱼塘！'); sfx('rainbow'); triggerRainbowGlow(); }
   renderAll();
 }
 
@@ -1284,7 +1388,7 @@ function buyUpgrade(uid) {
   const cost = upg.getCost(uid === 'tankLevel' ? lv + 1 : lv);
   if (GS.money < cost) { notif('💰 资金不足！'); return; }
   GS.money -= cost; GS.totalUpgrades++; GS_INF[uid === 'tankLevel' ? 'tankLevel' : uid === 'filterLevel' ? 'filterLevel' : uid === 'feederLevel' ? 'feederLevel' : 'tempControl']++;
-  notif('🔧 '+upg.name+' → Lv.'+upg.getLv(GS)); renderAll();
+  notif('🔧 '+upg.name+' → Lv.'+upg.getLv(GS)); sfx('upgrade'); renderAll();
 }
 
 function buyTheme(tid) {
@@ -1292,13 +1396,13 @@ function buyTheme(tid) {
   if (th.quest) { notif('👑 累计收入 $1,000,000 解锁黄金池塘！'); return; }
   if (GS.money < th.cost) { notif('💰 资金不足！'); return; }
   GS.money -= th.cost; GS.ownedThemes.add(tid); GS.currentTheme = tid; applyTheme(tid);
-  notif('🎨 解锁鱼塘外观：'+th.name+'！'); renderAll();
+  notif('🎨 解锁鱼塘外观：'+th.name+'！'); sfx('upgrade'); renderAll();
 }
 function setTheme(tid) { const th = THEMES.find(t=>t.id===tid); if (th && th.hidden) { notif('🔒 该外观暂不可用'); return; } if (!GS.ownedThemes.has(tid)) { notif('请先购买该外观'); return; } GS.currentTheme = tid; applyTheme(tid); notif('🎨 切换为：'+THEMES.find(t=>t.id===tid).name); renderAll(); }
 let themeSwapToken = 0, themeAnimating = false, pendingTheme = null;
 function applyTheme(tid, instant) {
   const overlay = $('pondBgOverlay'), base = $('pondBg');
-  if (instant) { themeAnimating = false; pendingTheme = null; THEMES.forEach(t => { pondEl.classList.remove('theme-' + t.id); base.classList.remove('theme-' + t.id); overlay.classList.remove('theme-' + t.id); }); pondEl.classList.add('theme-' + tid); base.classList.add('theme-' + tid); overlay.style.opacity = '0'; return; }
+  if (instant) { themeAnimating = false; pendingTheme = null; THEMES.forEach(t => { pondEl.classList.remove('theme-' + t.id); base.classList.remove('theme-' + t.id); overlay.classList.remove('theme-' + t.id); }); pondEl.classList.add('theme-' + tid); base.classList.add('theme-' + tid); overlay.style.opacity = '0'; musicSync(); return; }
   if (themeAnimating) { pendingTheme = tid; return; }
   if (pondEl.classList.contains('theme-' + tid) && base.classList.contains('theme-' + tid)) return;
   themeAnimating = true;
@@ -1309,39 +1413,53 @@ function applyTheme(tid, instant) {
   overlay.style.transitionDuration = '0.4s';
   overlay.style.opacity = '1';
   let ran = false;
-  const finish = () => { if (ran) return; ran = true; if (token !== themeSwapToken) return; THEMES.forEach(t => { base.classList.remove('theme-' + t.id); }); base.classList.add('theme-' + tid); overlay.style.transitionDuration = '0.2s'; overlay.style.opacity = '0'; setTimeout(() => { if (token !== themeSwapToken) return; overlay.classList.remove('theme-' + tid); themeAnimating = false; if (pendingTheme) { const next = pendingTheme; pendingTheme = null; applyTheme(next); } }, 250); };
+  const finish = () => { if (ran) return; ran = true; if (token !== themeSwapToken) return; THEMES.forEach(t => { base.classList.remove('theme-' + t.id); }); base.classList.add('theme-' + tid); musicSync(); overlay.style.transitionDuration = '0.2s'; overlay.style.opacity = '0'; setTimeout(() => { if (token !== themeSwapToken) return; overlay.classList.remove('theme-' + tid); themeAnimating = false; if (pendingTheme) { const next = pendingTheme; pendingTheme = null; applyTheme(next); } }, 250); };
   overlay.addEventListener('transitionend', function h(e) { if (e.propertyName === 'opacity') { overlay.removeEventListener('transitionend', h); finish(); } });
   setTimeout(finish, 450);
 }
 
 // ========== 任务 ==========
-function genSellQuest(sid) { const tc = Math.floor(Math.random()*5)+3, sp = FS.get(sid), diff = FS_I.get(sid)+1; return {id:GS.questIdCounter++,type:'sell',targetSpecies:sid,targetCount:tc,currentCount:0,reward:tc*sp.sellPrice+diff*30,title:'📦 订单需求',generatedAt:Date.now(),_baseSold:GS.totalFishSold[sid]||0}; }
+function genSellQuest(sid) { const tc = Math.floor(Math.random()*5)+3, sp = FS.get(sid), diff = FS_I.get(sid)+1, mult = diff<=4?1.0:diff<=8?1.15:1.3; return {id:GS.questIdCounter++,type:'sell',targetSpecies:sid,targetCount:tc,currentCount:0,reward:Math.floor((tc*sp.sellPrice+diff*30)*mult),title:'📦 订单需求',generatedAt:Date.now(),_baseSold:GS.totalFishSold[sid]||0}; }
 function genFedQuest() { const tc = Math.floor(Math.random()*3)+2; return {id:GS.questIdCounter++,type:'fed',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*45+30,title:'⭐ 优质食材',generatedAt:Date.now(),_baseFedSold:GS.totalFedSold||0}; }
 function genHormoneQuest() { const tc = Math.floor(Math.random()*3)+2; return {id:GS.questIdCounter++,type:'hormone',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*25+20,title:'💉 快速出栏',generatedAt:Date.now(),_baseHormoneSold:GS.totalHormoneSold||0}; }
 function genVarietyQuest() { const cur = GS.totalUniqueSpeciesOwned.size, tc = Math.min(cur+Math.floor(Math.random()*2)+1,FISH_SPECIES.length); return {id:GS.questIdCounter++,type:'variety',targetSpecies:null,targetCount:tc,currentCount:cur,reward:tc*100,title:'🌈 收藏家挑战',generatedAt:Date.now()}; }
 function genEventSurviveQuest(reward) { return {id:GS.questIdCounter++,type:'event_survive',targetSpecies:null,targetCount:0,currentCount:0,reward:reward||300,title:'🛡️ 劫后余生',generatedAt:Date.now()}; }
-function genEventGoldQuest() { const baseFed = GS.totalFedSold||0; return {id:GS.questIdCounter++,type:'event_gold',targetSpecies:null,targetCount:Math.floor(Math.random()*4)+3,currentCount:0,reward:(Math.floor(Math.random()*4)+3)*60+50,title:'💰 淘鱼热潮',generatedAt:Date.now(),_baseFedSold:baseFed}; }
+function genEventGoldQuest() { const baseFed = GS.totalFedSold||0, tc = Math.floor(Math.random()*4)+3; return {id:GS.questIdCounter++,type:'event_gold',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*60+50,title:'💰 淘鱼热潮',generatedAt:Date.now(),_baseFedSold:baseFed}; }
 function genRoeCollectQuest() { const tc=Math.floor(Math.random()*3)+3; return {id:GS.questIdCounter++,type:'roe_collect',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*80,title:'🥚 鱼子酱！',generatedAt:Date.now(),_baseRoeSold:GS.totalRoeSold||0}; }
 function genSupergrownQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'supergrown_sell',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*200,title:'💎 茁壮之星',generatedAt:Date.now(),_baseSupergrownSold:GS.totalSupergrownSold||0}; }
 function genBreedCountQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'breed_count',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*120,title:'🐣 家族兴旺',generatedAt:Date.now(),_baseBredCount:GS.totalBredCount||0}; }
 function genSharkHuntQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'shark_hunt',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*300,title:'🦈 顶级捕食者',generatedAt:Date.now(),_baseSharkHunts:GS.totalSharkHunts||0}; }
-function genTotalEarnQuest() { const milestones=[1000,2500,5000,10000,25000,50000,100000,250000,500000,1000000]; let granted=0; for (const m of milestones) { if (m <= GS.totalEarned && !GS.claimedEarnMilestones.has(m)) { GS.money += Math.floor(m/2); GS.claimedEarnMilestones.add(m); granted += Math.floor(m/2); } } if (granted) notif('💰 补发大亨之路奖励！+$'+granted.toLocaleString()); if (GS.totalEarned >= 1000000 && !GS.ownedThemes.has('gold')) { GS.ownedThemes.add('gold'); GS.currentTheme = 'gold'; applyTheme('gold'); notif('👑 解锁鱼塘外观：黄金池塘！'); } let cur=GS.totalEarned||0,next=milestones.find(m=>m>cur)||1000000; if (GS.claimedEarnMilestones.has(next)) return null; return {id:GS.questIdCounter++,type:'total_earn',targetSpecies:null,targetCount:next,currentCount:cur,reward:Math.floor(next/2),title:'💰 大亨之路',generatedAt:Date.now()}; }
+// 大亨之路：常驻任务（永久驻留任务面板，实时反映累计收入进度；领取后自动接续下一里程碑，全部达成后显示已达成）
+const EARN_MILESTONES = [1000,2500,5000,10000,25000,50000,100000,250000,500000,1000000,2500000,5000000,10000000];
+function nextEarnMilestone() { return EARN_MILESTONES.find(m => !GS.claimedEarnMilestones.has(m)) || null; }
+function ensureEarnQuest() {
+  let q = GS.activeQuests.find(x => x.type === 'total_earn');
+  const next = nextEarnMilestone(), cur = GS.totalEarned || 0;
+  if (!next) {
+    if (!q) { q = {id:GS.questIdCounter++,type:'total_earn',targetSpecies:null,targetCount:EARN_MILESTONES[EARN_MILESTONES.length-1],currentCount:cur,reward:0,title:'💰 大亨之路',generatedAt:Date.now()}; GS.activeQuests.push(q); }
+    q._finished = true; q.targetCount = EARN_MILESTONES[EARN_MILESTONES.length-1]; q.currentCount = cur; q.reward = 0;
+    return q;
+  }
+  if (!q) { q = {id:GS.questIdCounter++,type:'total_earn',targetSpecies:null,targetCount:next,currentCount:cur,reward:Math.floor(next*0.2),title:'💰 大亨之路',generatedAt:Date.now()}; GS.activeQuests.push(q); }
+  else { q._finished = false; q.targetCount = next; q.reward = Math.floor(next*0.2); q.currentCount = cur; }
+  return q;
+}
 function genEelShockQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'eel_shock',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*250,title:'⚡ 连锁闪电',generatedAt:Date.now(),_baseEelShocks:GS.totalEelShocks||0}; }
 function genLanternHuntQuest() { const tc=Math.floor(Math.random()*2)+2; return {id:GS.questIdCounter++,type:'lantern_hunt',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*400,title:'🪔 深海猎手',generatedAt:Date.now(),_baseLanternHunts:GS.totalLanternHunts||0}; }
 function genAncientSellQuest() { const tc=Math.floor(Math.random()*2)+1; return {id:GS.questIdCounter++,type:'ancient_sell',targetSpecies:null,targetCount:tc,currentCount:0,reward:tc*2000,title:'👁️ 直面深渊',generatedAt:Date.now(),_baseAncientSold:GS.totalFishSold['ancient']||0}; }
 function tryGenQuests(newSid) {
-  if (!GS.activeQuests.some(q => q.type === 'sell' && q.targetSpecies === newSid)) { GS.activeQuests.push(genSellQuest(newSid)); notif('📋 新任务：卖出'+spName(newSid)+'！'); }
-  if (!GS.activeQuests.some(q => q.type === 'variety') && GS.totalUniqueSpeciesOwned.size >= 2 && GS.totalUniqueSpeciesOwned.size < FISH_SPECIES.length && Math.random() < 0.6) { GS.activeQuests.push(genVarietyQuest()); notif('📋 新任务：收藏家挑战！'); }
-  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'fed')) { GS.activeQuests.push(genFedQuest()); notif('📋 新任务：优质养殖！'); }
-  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'hormone')) { GS.activeQuests.push(genHormoneQuest()); notif('📋 新任务：快速养殖！'); }
-  if (GS.totalRoeSold >= 1 && Math.random() < 0.5 && !GS.activeQuests.some(q => q.type === 'roe_collect')) { GS.activeQuests.push(genRoeCollectQuest()); notif('📋 新任务：鱼子酱！'); }
-  if (GS.totalSupergrownSold >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'supergrown_sell')) { GS.activeQuests.push(genSupergrownQuest()); notif('📋 新任务：茁壮之星！'); }
-  if (GS.totalBredCount >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'breed_count')) { GS.activeQuests.push(genBreedCountQuest()); notif('📋 新任务：家族兴旺！'); }
-  if (GS.totalSharkHunts >= 1 && !GS.activeQuests.some(q => q.type === 'shark_hunt')) { GS.activeQuests.push(genSharkHuntQuest()); notif('📋 新任务：顶级捕食者！'); }
-  if (GS.totalEarned >= 1000 && !GS.activeQuests.some(q => q.type === 'total_earn')) { const nq = genTotalEarnQuest(); if (nq) { GS.activeQuests.push(nq); notif('📋 新任务：大亨之路！'); } }
-  if (GS.totalEelShocks >= 1 && !GS.activeQuests.some(q => q.type === 'eel_shock')) { GS.activeQuests.push(genEelShockQuest()); notif('📋 新任务：⚡连锁闪电！'); }
-  if (GS.totalLanternHunts >= 1 && !GS.activeQuests.some(q => q.type === 'lantern_hunt')) { GS.activeQuests.push(genLanternHuntQuest()); notif('📋 新任务：🪔深海猎手！'); }
-  if ((GS.totalFishSold['ancient']||0) >= 1 && !GS.activeQuests.some(q => q.type === 'ancient_sell')) { GS.activeQuests.push(genAncientSellQuest()); notif('📋 新任务：👁️直面深渊！'); }
+  if (!GS.activeQuests.some(q => q.type === 'sell' && q.targetSpecies === newSid)) { GS.activeQuests.push(genSellQuest(newSid)); notifQuest('📋 新任务：卖出'+spName(newSid)+'！'); }
+  if (!GS.activeQuests.some(q => q.type === 'variety') && GS.totalUniqueSpeciesOwned.size >= 2 && GS.totalUniqueSpeciesOwned.size < FISH_SPECIES.length && Math.random() < 0.6) { GS.activeQuests.push(genVarietyQuest()); notifQuest('📋 新任务：收藏家挑战！'); }
+  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'fed')) { GS.activeQuests.push(genFedQuest()); notifQuest('📋 新任务：优质养殖！'); }
+  if (Math.random() < 0.35 && !GS.activeQuests.some(q => q.type === 'hormone')) { GS.activeQuests.push(genHormoneQuest()); notifQuest('📋 新任务：快速养殖！'); }
+  if (GS.totalRoeSold >= 1 && Math.random() < 0.5 && !GS.activeQuests.some(q => q.type === 'roe_collect')) { GS.activeQuests.push(genRoeCollectQuest()); notifQuest('📋 新任务：鱼子酱！'); }
+  if (GS.totalSupergrownSold >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'supergrown_sell')) { GS.activeQuests.push(genSupergrownQuest()); notifQuest('📋 新任务：茁壮之星！'); }
+  if (GS.totalBredCount >= 1 && Math.random() < 0.45 && !GS.activeQuests.some(q => q.type === 'breed_count')) { GS.activeQuests.push(genBreedCountQuest()); notifQuest('📋 新任务：家族兴旺！'); }
+  if (GS.totalSharkHunts >= 1 && !GS.activeQuests.some(q => q.type === 'shark_hunt')) { GS.activeQuests.push(genSharkHuntQuest()); notifQuest('📋 新任务：顶级捕食者！'); }
+  ensureEarnQuest();
+  if (GS.totalEelShocks >= 1 && !GS.activeQuests.some(q => q.type === 'eel_shock')) { GS.activeQuests.push(genEelShockQuest()); notifQuest('📋 新任务：⚡连锁闪电！'); }
+  if (GS.totalLanternHunts >= 1 && !GS.activeQuests.some(q => q.type === 'lantern_hunt')) { GS.activeQuests.push(genLanternHuntQuest()); notifQuest('📋 新任务：🪔深海猎手！'); }
+  if ((GS.totalFishSold['ancient']||0) >= 1 && !GS.activeQuests.some(q => q.type === 'ancient_sell')) { GS.activeQuests.push(genAncientSellQuest()); notifQuest('📋 新任务：👁️直面深渊！'); }
 }
 
 function updateQuestProgress() {
@@ -1351,11 +1469,12 @@ function updateQuestProgress() {
 function claimQuest(qid) {
   const idx = GS.activeQuests.findIndex(q => q.id === qid); if (idx === -1) return;
   const q = GS.activeQuests[idx];
+  if (q._finished) { notif('👑 大亨之路已全部达成！'); return; }
   let prog; if (q.type==='sell') prog = Math.max(0,(GS.totalFishSold[q.targetSpecies]||0)-(q._baseSold||0)); else if (q.type==='variety') prog = GS.totalUniqueSpeciesOwned.size; else if (q.type==='fed') prog = Math.max(0,(GS.totalFedSold||0)-(q._baseFedSold||0)); else if (q.type==='hormone') prog = Math.max(0,(GS.totalHormoneSold||0)-(q._baseHormoneSold||0)); else if (q.type==='roe_collect') prog = Math.max(0,(GS.totalRoeSold||0)-(q._baseRoeSold||0)); else if (q.type==='supergrown_sell') prog = Math.max(0,(GS.totalSupergrownSold||0)-(q._baseSupergrownSold||0)); else if (q.type==='breed_count') prog = Math.max(0,(GS.totalBredCount||0)-(q._baseBredCount||0)); else if (q.type==='shark_hunt') prog = Math.max(0,(GS.totalSharkHunts||0)-(q._baseSharkHunts||0)); else if (q.type==='eel_shock') prog = Math.max(0,(GS.totalEelShocks||0)-(q._baseEelShocks||0)); else if (q.type==='lantern_hunt') prog = Math.max(0,(GS.totalLanternHunts||0)-(q._baseLanternHunts||0)); else if (q.type==='ancient_sell') prog = Math.max(0,(GS.totalFishSold['ancient']||0)-(q._baseAncientSold||0)); else if (q.type==='total_earn') prog = GS.totalEarned||0; else if (q.type==='event_gold') prog = Math.max(0,(GS.totalFedSold||0)-(q._baseFedSold||0)); else if (q.type==='event_survive') prog = q.targetCount; else prog = 0;
   if (prog < q.targetCount) { notif('❌ 未完成！'); return; }
   const qBtn = document.querySelector(`.quest-item button[onclick*="claimQuest(${qid})"]`);
   const qItem = qBtn ? qBtn.closest('.quest-item') : null;
-  if (qItem) {
+  if (qItem && q.type !== 'total_earn') {
     const qRect = qItem.getBoundingClientRect();
     qItem.style.visibility = 'hidden';
     qItem.style.height = qRect.height + 'px';
@@ -1373,10 +1492,12 @@ function claimQuest(qid) {
     requestAnimationFrame(() => { qAnim.classList.add('selling-swipe'); });
     setTimeout(() => { if (qItem.isConnected) qItem.remove(); if (qAnim.isConnected) qAnim.remove(); }, 500);
   }
-  GS.money += q.reward; GS.completedQuests.push(q.id); notif('🎉 任务完成！+$'+q.reward.toLocaleString()+'！');
+  GS.money += q.reward; GS.completedQuests.push(q.id); notif('🎉 任务完成！+$'+fmtMoney(q.reward)+'！'); sfx('questDone'); sfx('coin');
+  if (q.reward >= 50000) sfx('moneyBig');   // 大额入账：追加一声更华丽的提示
   if (q.type==='variety' && GS.totalUniqueSpeciesOwned.size >= q.targetCount && GS.totalUniqueSpeciesOwned.size < FISH_SPECIES.length) { if (Math.random()<0.5 && !GS.activeQuests.some(aq=>aq.type==='variety'&&aq.id!==q.id)) GS.activeQuests.push(genVarietyQuest()); }
-  if (q.type==='total_earn' && GS.totalEarned >= q.targetCount) { if (!GS.activeQuests.some(aq=>aq.type==='total_earn'&&aq.id!==q.id)) { const nq = genTotalEarnQuest(); if (nq) GS.activeQuests.push(nq); } if (q.targetCount >= 1000000 && !GS.ownedThemes.has('gold')) { GS.ownedThemes.add('gold'); GS.currentTheme = 'gold'; applyTheme('gold'); notif('👑 解锁鱼塘外观：黄金池塘！'); } }
-  GS.activeQuests.splice(idx, 1); renderAll();
+  if (q.type==='total_earn') { GS.claimedEarnMilestones.add(q.targetCount); if (q.targetCount >= 1000000 && !GS.ownedThemes.has('gold')) { GS.ownedThemes.add('gold'); GS.currentTheme = 'gold'; applyTheme('gold'); notif('👑 解锁鱼塘外观：黄金池塘！'); } ensureEarnQuest(); }
+  else GS.activeQuests.splice(idx, 1);
+  renderAll();
 }
 
 // ========== 事件系统 ==========
@@ -1394,15 +1515,17 @@ function setupEventCountdown(evt, interval) {
 
 function triggerRedTide() { if (curEvent) return; recordStreak('redTide');
   curEvent = { type:'red-tide', countdown:5, endTime:0 };
+  sfx('warn'); musicSync();
   pondEl.classList.add('event-red-tide');
   let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner red'; pondEl.appendChild(banner); }
-  banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">5</div>';
-  notif('🔴 赤潮预警！5秒后将杀死所有鱼！快卖出！');
+  banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后随机杀死一半鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">5</div>';
+  notif('🔴 赤潮预警！5秒后将随机杀死一半鱼！快卖出！');
   curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeRedTide(); } }, 1000);
 }
 
 function executeRedTide() {
   GS.redTideCount++;
+  sfx('redTide');
   const ancientFish = GS.fishInventory.filter(f => FS.get(f.speciesId)?.ancient);
   const normalFish = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient);
   // 随机杀死50%的非远古鱼
@@ -1418,6 +1541,7 @@ function executeRedTide() {
 
 function triggerSuperRedTide() { if (curEvent) return; recordStreak('redTide');
   curEvent = { type:'super-red-tide', countdown:5, endTime:0 };
+  sfx('warn'); musicSync();
   pondEl.classList.add('event-super-red-tide');
   let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#ff8888'; pondEl.appendChild(banner); }
   banner.innerHTML = '<div class="event-title">💀 超级赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">5</div>';
@@ -1427,6 +1551,7 @@ function triggerSuperRedTide() { if (curEvent) return; recordStreak('redTide');
 
 function executeSuperRedTide() {
   GS.superRedTideCount = (GS.superRedTideCount || 0) + 1;
+  sfx('superRedTide');
   if (GS.superRedTideCount >= 5 && !GS.ownedThemes.has('redtide')) { GS.ownedThemes.add('redtide'); GS.currentTheme = 'redtide'; applyTheme('redtide'); notif('🔴 解锁鱼塘外观：红色赤潮！'); }
   const ancientFish = GS.fishInventory.filter(f => FS.get(f.speciesId)?.ancient);
   const cnt = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient).length;
@@ -1440,8 +1565,9 @@ function executeSuperRedTide() {
 
 function triggerGoldRush() { if (curEvent) return; recordStreak('goldRush');
   const dur = 25; curEvent = { type:'gold-rush', countdown:0, endTime:Date.now()+dur*1000, _totalDuration:dur*1000 };
+  sfx('goldRush'); musicSync();
   pondEl.classList.add('event-gold-rush');
-  GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp?.ancient) { f.eventFed = true; if (!f.fed) f.fed = true; } }); renderAll();
+  GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp?.ancient) { if (!f.fed) f.fed = true; } }); renderAll();
   for (let i = 0; i < 24; i++) { const b = document.createElement('div'); b.className = 'bubble bubble-event'; b.style.cssText = `width:${4+Math.random()*12}px;height:${4+Math.random()*12}px;left:${5+Math.random()*90}%;bottom:${-(2+Math.random()*8)}%;animation-duration:${3+Math.random()*5}s;animation-delay:${Math.random()*3}s;`; b.addEventListener('animationend', () => { if (b.isConnected) b.remove(); }); pondEl.appendChild(b); }
   let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner gold'; pondEl.appendChild(banner); }
   banner.innerHTML = '<div class="event-title">💰 淘鱼热！</div><div class="event-desc">（生长速度+100%，所有鱼变为⭐）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
@@ -1452,6 +1578,7 @@ function triggerGoldRush() { if (curEvent) return; recordStreak('goldRush');
 
 function triggerPlague() { if (curEvent) return; recordStreak('plague');
   const dur = 10; curEvent = { type:'plague', countdown:0, endTime:Date.now()+dur*1000 };
+  sfx('plague'); musicSync();
   pondEl.classList.add('event-plague'); GS.fishInventory.forEach(f => { const sp = FS.get(f.speciesId); if (!sp?.ancient && Math.random() < 0.45) f.plagued = true; });
   let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#66ff66'; pondEl.appendChild(banner); }
   banner.innerHTML = '<div class="event-title">🦠 瘟疫爆发！</div><div class="event-desc">（45%鱼患病，每6秒20%死亡或传染，售价降至10%）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
@@ -1461,6 +1588,7 @@ function triggerPlague() { if (curEvent) return; recordStreak('plague');
 
 function triggerRainbowGlow() { if (curEvent) return; recordStreak('rainbow');
   const dur = 20; curEvent = { type:'rainbow', countdown:0, endTime:Date.now()+dur*1000 };
+  sfx('rainbow'); musicSync();
   pondEl.classList.add('event-rainbow');
   let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner'; banner.style.color = '#fff'; pondEl.appendChild(banner); }
   banner.innerHTML = '<div class="event-title">🌈 斑斓虹光！</div><div class="event-desc">（生长立即+50% 售价+20% 机制概率+30%）</div><div class="event-countdown" id="eventCountdown">'+dur+'</div>';
@@ -1470,10 +1598,12 @@ function triggerRainbowGlow() { if (curEvent) return; recordStreak('rainbow');
 }
 
 function endEvent() { if (!curEvent) return; if (curEvent._cdInterval) clearInterval(curEvent._cdInterval);
-  if (curEvent.type==='gold-rush') { const now = Date.now(); GS.fishInventory.forEach(f => { if (f.eventFed) { f.startTime -= (now - f.startTime); if (f.supergrown&&f.superStartTime) f.superStartTime -= (now - f.superStartTime); delete f.eventFed; } }); }
+  const wasGoldRush = curEvent.type === 'gold-rush', oldGsm = growSpeedMult();
   pondEl.classList.remove('event-red-tide','event-gold-rush','event-rainbow','event-plague','event-super-red-tide'); const bn = pondEl.querySelector('.event-banner'); if (bn) bn.remove();
   pondEl.querySelectorAll('.bubble-event').forEach(b => b.remove());
-  curEvent = null; GS.missedEvents = 0; GS.rainbowChance = 0; lastSchedulerEvent = null; nextEventTime = 0; updateSchedulerHit(); renderAll(); scheduleNextEvent();
+  curEvent = null; GS.missedEvents = 0; GS.rainbowChance = 0; lastSchedulerEvent = null; nextEventTime = 0; updateSchedulerHit(); musicSync();
+  if (wasGoldRush) settleGrowthProgress(oldGsm);
+  renderAll(); scheduleNextEvent();
 }
 
 // 从存档恢复事件
@@ -1486,8 +1616,8 @@ function restoreEvent(state) {
     curEvent = { type:'red-tide', countdown, endTime:0 };
     pondEl.classList.add('event-red-tide');
     let banner = pondEl.querySelector('.event-banner'); if (!banner) { banner = document.createElement('div'); banner.className = 'event-banner red'; pondEl.appendChild(banner); }
-    banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后杀死所有鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">'+countdown+'</div>';
-    notif('🔴 赤潮预警！'+countdown+'秒后将杀死所有鱼！快卖出！');
+    banner.innerHTML = '<div class="event-title">🔴 赤潮来袭！</div><div class="event-desc">（5秒后随机杀死一半鱼，快卖出！）</div><div class="event-countdown" id="eventCountdown">'+countdown+'</div>';
+    notif('🔴 赤潮预警！'+countdown+'秒后将随机杀死一半鱼！快卖出！');
     curEvent._cdInterval = setInterval(() => { curEvent.countdown--; const cdEl = $('eventCountdown'); if (cdEl) cdEl.textContent = curEvent.countdown; if (curEvent.countdown <= 0) { clearInterval(curEvent._cdInterval); executeRedTide(); } }, 1000);
   } else if (type === 'super-red-tide') {
     let countdown = state.countdown || 5;
@@ -1530,6 +1660,7 @@ function restoreEvent(state) {
     notif('🌈 斑斓虹光持续！剩余'+remaining+'秒');
     curEvent._cdInterval = setupEventCountdown(curEvent, 500);
   }
+  musicSync();
   renderAll();
 }
 
@@ -1603,7 +1734,7 @@ function sharkHuntLoop() { const sharks = GS.fishInventory.filter(f => f.species
     const target = prey[Math.floor(Math.random()*prey.length)]; const psp = FS.get(target.speciesId);
     _removeFishFromPond(target); GS.totalSharkHunts++; if (!shark.sharkBonus) shark.sharkBonus = 0;
     const pv = psp?psp.sellPrice:0; shark.sharkBonus += pv;
-    notif('🦈 鲨鱼捕食了一条'+(psp?psp.name:'鱼')+'！自身售价 +$'+pv); renderAll();
+    notif('🦈 鲨鱼捕食了一条'+(psp?psp.name:'鱼')+'！自身售价 +$'+pv); sfx('sharkHunt'); renderAll();
   });
 }
 
@@ -1616,7 +1747,7 @@ function electricEelShock() {
     const targets = GS.fishInventory.filter(f => !FS.get(f.speciesId)?.ancient);
     if (!targets.length) return;
     const v = targets[Math.floor(Math.random()*targets.length)];
-    _removeFishFromPond(v); GS.totalEelShocks++; notif('⚡ 电鳗释放电流，电死了一条'+spName(v.speciesId)+'！'); renderAll();
+    _removeFishFromPond(v); GS.totalEelShocks++; notif('⚡ 电鳗释放电流，电死了一条'+spName(v.speciesId)+'！'); sfx('eelShock'); renderAll();
   });
 }
 
@@ -1629,7 +1760,7 @@ function lanternHuntLoop() {
     const prey = GS.fishInventory.filter(f => f.speciesId!=='lanternfish' && !FS.get(f.speciesId)?.ancient);
     if (!prey.length) return;
     const t = prey[Math.floor(Math.random()*prey.length)];
-    _removeFishFromPond(t); GS.totalLanternHunts++; notif('🪔 灯笼鱼捕食了一条'+spName(t.speciesId)+'！'); renderAll();
+    _removeFishFromPond(t); GS.totalLanternHunts++; notif('🪔 灯笼鱼捕食了一条'+spName(t.speciesId)+'！'); sfx('lanternHunt'); renderAll();
   });
 }
 
@@ -1640,15 +1771,15 @@ function doBreedingCheck() { if (effCount() >= hardCap()) return;
     const rp = (curEvent&&curEvent.type==='rainbow')?0.30:0; const count = Math.random()<(0.3+rp)?(Math.random()<(0.4+rp)?2:1):0;
     for (let i=0;i<count;i++) { if (effCount() >= hardCap()) { notif('💀 鱼塘极度爆满，新生鱼苗窒息死亡...'); break; }
       const nf = {uid:uidC++,speciesId:sid,startTime:Date.now()}; if (curEvent && curEvent.type === 'gold-rush' && !sp.ancient) nf.fed = true; GS.fishInventory.push(nf); }
-    if (count) { GS.totalBredCount += count; notif('🐣 '+sp.name+'种群繁衍出'+count+'条鱼苗！'); }
+    if (count) { GS.totalBredCount += count; notif('🐣 '+sp.name+'种群繁衍出'+count+'条鱼苗！'); sfx('breed'); }
   }
 }
 let roeParticles=[], roeIdC=1;
 function spawnRoeParticle(speciesId) { const bounds = getPondBounds(); const sp = FS.get(speciesId);
   const el = document.createElement('div'); const x = bounds.padX+Math.random()*bounds.w; const rc = sp?sp.color:'#ffcc44';
   el.style.cssText='position:absolute;width:14px;height:14px;left:'+x+'px;top:'+(-(5+Math.random()*15))+'px;background:radial-gradient(circle,'+rc+'cc,'+rc+'88);border:2px solid '+rc+';box-shadow:0 0 10px '+rc+'aa,0 0 20px '+rc+'66;cursor:pointer;pointer-events:auto;z-index:21;border-radius:50%;animation:roeGlow 1.5s ease-in-out infinite;';
-  el.title='🥚 鱼籽 - 点击出售'; el.onclick=(e)=>{e.stopPropagation();roeParticles=roeParticles.filter(rp=>rp.el!==el);el.remove();const v=sp?Math.floor(sp.sellPrice*0.15):5;GS.money+=v;GS.totalRoeSold++;GS.totalEarned+=v;notif('🥚 卖出鱼籽，+$'+v+'！');renderAll();};
-  pondEl.appendChild(el); notif('🥚 '+sp.name+'种群产出了一颗鱼籽！');
+  el.title='🥚 鱼籽 - 点击出售'; el.onclick=(e)=>{e.stopPropagation();roeParticles=roeParticles.filter(rp=>rp.el!==el);el.remove();const v=sp?Math.floor(sp.sellPrice*0.15):5;GS.money+=v;GS.totalRoeSold++;GS.totalEarned+=v;notif('🥚 卖出鱼籽，+$'+v+'！');sfx('roe');renderAll();};
+  pondEl.appendChild(el); notif('🥚 '+sp.name+'种群产出了一颗鱼籽！'); sfx('roe');
   const rp={id:roeIdC++,el,x,y:bounds.padY,targetY:bounds.padY+bounds.h*0.5+Math.random()*bounds.h*0.4,value:sp?Math.floor(sp.sellPrice*0.15):5,speciesId}; roeParticles.push(rp);
   const drop=()=>{if(!el.isConnected)return;const cy=parseFloat(el.style.top)||rp.y;if(cy<rp.targetY){el.style.top=(cy+0.15+Math.random()*0.5)+'px';el.style.opacity=Math.max(0.5,1-(cy-rp.y)/(rp.targetY-rp.y)*0.5);requestAnimationFrame(drop);}}; requestAnimationFrame(drop);
   setTimeout(()=>{if(el.isConnected){el.remove();roeParticles=roeParticles.filter(rp=>rp.el!==el);}},30000);
@@ -1686,8 +1817,1062 @@ function shake() { const w = document.querySelector('.game-wrapper'); if (w) { w
 
 // ========== 通知 ==========
 function notif(msg) { const el = document.createElement('div'); el.className = 'notification'; el.textContent = msg; notifAreaEl.appendChild(el); setTimeout(() => { el.classList.add('fade-out'); setTimeout(() => el.remove(), 400); }, 5000); }
+// 任务提示专用：附带"新任务"提示音（同一批任务只响一声）
+function notifQuest(msg) {
+  var batched = _questNotifAt && (Date.now() - _questNotifAt < 250);
+  notif(msg);
+  if (!batched) sfx('questNew');
+  _questNotifAt = Date.now();
+}
+
+// ========== 程序化音频引擎（纯 WebAudio 合成，无外部素材） ==========
+/* 设计基调：
+   ① 认知直觉映射——水=水流声/气泡咕噜，鱼入水=扑通，钱=叮当，成长=上行音阶，灾难=下行/低频
+   ② 轻松愉悦为主——五声音阶、无失真；pad 垫底 + 铃铛/马林巴琶音 + 柔和贝斯
+   ③ 每个事件与鱼塘外观各有专属曲目，双轨交叉淡化无缝切换
+   ④ 四层独立音量：背景音乐 / 音效 / 环境音                                */
+var AUDIO = (function () {
+  'use strict';
+  var AC = null, master, musicBus, sfxBus, ambBus;
+  // 环境音各层目标电平（缓入与场景过渡都以此为准）
+  // ===== 环境音（全新实现）=====
+  // 三层底噪，每层内部分量电平恒定，只由 ambCtl 一个增益统一控制。
+  // dry/lfo 为"层内固定电平"：实际输出 = (dry+lfo) × ambCtl × master
+  // 调这组数字即可整体增减环境音音量，不会触碰任何自动化逻辑
+  var AMB_LAYERS = [
+    { dry: 0.0210, lfo: 0.0065, rate: 0.055 },   // 水流：低通白噪 + 缓慢呼吸
+    { dry: 0.0032, lfo: 0.0013, rate: 0.090 },   // 细泡：高通白噪 + 轻微起伏
+    { dry: 0.0050, lfo: 0.0018, rate: 0.035 }    // 深海：58Hz 低频涌动
+  ];
+  var ambCtl = null, ambLayers = [], ambHf = null, ambBubbleBus = null;
+  var ambBuilt = false, ambBubbleTimer = null, ambTarget = 0, ambApplied = -1;
+  var playing = false;            // 音频是否处于"可发声"状态（后台时置 false）
+  var userMuted = false;          // 玩家主动点了"全部静音"
+  var startedOnce = false;        // 是否已经历过首次交互起播
+  function wantMuted() { return userMuted || MUTE.amb; }
+  var noiseBuf = null, audioReady = false, ambientBuilt = false;
+  var musicTimer = null, ambBubbleTimer = null, curScene = null, pendingTimer = null;
+  var switchedOff = false;   // 用户用「全部静音」主动关机 → 不再自动播放
+  var menuMode = true;       // 主菜单模式：播放主菜单主题曲
+  var lastSfxAt = {};
+  var LS_KEY = 'fishFarmAudio';
+
+  var VOL = { music: 0.50, sfx: 0.80, amb: 0.55 };
+  var MUTE = { music: false, sfx: false, amb: false };
+
+  // ==================== 曲目数据 ====================
+  // 和弦： [低音, 中声部…, 高声部…]，用于 pad(1..n-1) 与 bass(0)
+  var TRACKS = {
+    // ---- 主菜单《静水前奏》：空灵、疏朗、带期待感，与鱼塘曲目刻意区分 ----
+    // 速度 60BPM、和声走 I-vi-IV-V 的加六度色彩音、6s 超长 pad、每 2 拍仅 1 个旋律音
+    menu: {
+      name: '静水前奏', delay: 0.50, mode: 'major', pad: 6.0, bass: 2.9, bright: 0.75, ambCut: 520,
+      chords: [[130.81, 261.63, 329.63, 392.00], [110.00, 220.00, 329.63, 440.00],
+               [ 87.31, 261.63, 349.23, 523.25], [ 98.00, 246.94, 293.66, 440.00]],
+      mel: [0, 1, 2, 3, 4, 3, 2, 1], melOct: 2, melTimes: [0, 4], glass: true,
+      dbl: [3], dblTimes: [2, 6], fillTimes: [4], sub: [0], water: [3]
+    },
+    // ---- 默认清澈水域：轻松愉悦的水底主题 ----
+    default: {
+      name: '清澈水域', delay: 0.395, mode: 'major', pad: 3.6, bass: 1.9, bright: 1.0, ambCut: 480,
+      chords: [[130.81, 329.63, 392.00, 523.25], [110.00, 261.63, 329.63, 440.00],
+               [ 87.31, 261.63, 349.23, 440.00], [ 98.00, 246.94, 293.66, 392.00]],
+      mel: [0, 1, 2, 3, 2, 1, 3, 1], melOct: 3, melTimes: [0, 1, 2, 3, 4, 5, 6, 7],
+      dbl: [3], dblTimes: [1, 3, 5], fillTimes: [4]
+    },
+    // ---- 珊瑚礁：温暖马林巴，带水滴 ----
+    coral: {
+      name: '珊瑚礁', delay: 0.395, mode: 'major', pad: 3.4, bass: 1.8, bright: 1.05, ambCut: 620,
+      chords: [[146.83, 293.66, 369.99, 440.00], [130.81, 261.63, 329.63, 392.00],
+               [ 98.00, 246.94, 293.66, 392.00], [110.00, 220.00, 277.18, 329.63]],
+      mel: [0, 2, 3, 2, 4, 3, 2, 4], melOct: 2, melTimes: [0, 1, 2, 3, 4, 5, 6, 7], marimba: true,
+      dbl: [2], dblTimes: [2, 6], fillTimes: [4], water: [5]
+    },
+    // ---- 水晶湖：晶莹高音铃，闪烁感 ----
+    crystal: {
+      name: '水晶湖', delay: 0.32, mode: 'major', pad: 4.2, bass: 1.6, bright: 1.2, ambCut: 900,
+      chords: [[164.81, 329.63, 415.30, 493.88], [146.83, 293.66, 369.99, 440.00],
+               [130.81, 261.63, 329.63, 392.00], [123.47, 246.94, 311.13, 369.99]],
+      mel: [0, 1, 2, 3, 4, 3, 5, 2], melOct: 3, melTimes: [0, 1, 2, 3, 4, 5, 6, 7], glass: true,
+      dbl: [4], dblTimes: [1, 3, 5, 7], fillTimes: [2, 6], shimmer: [0]
+    },
+    // ---- 深海秘境：低吟合声，空旷幽深 ----
+    deepsea: {
+      name: '深海秘境', delay: 0.50, mode: 'minor', pad: 5.0, bass: 2.4, bright: 0.85, ambCut: 220,
+      chords: [[110.00, 220.00, 261.63, 329.63], [ 98.00, 196.00, 233.08, 293.66],
+               [ 87.31, 174.61, 220.00, 261.63], [ 82.41, 164.81, 207.65, 246.94]],
+      mel: [0, 2, 1, 3, 2, 0, 3, 1], melOct: 3, melTimes: [0, 2, 4, 6], choir: true,
+      dbl: [1], dblTimes: [3, 7], fillTimes: [4], sub: [0, 3, 5]
+    },
+    // ---- 黄金池塘：华贵钟琴，庄重缓慢 ----
+    gold: {
+      name: '黄金池塘', delay: 0.45, mode: 'major', pad: 4.0, bass: 2.1, bright: 1.15, ambCut: 520,
+      chords: [[130.81, 329.63, 392.00, 523.25], [110.00, 277.18, 329.63, 440.00],
+               [116.54, 293.66, 349.23, 466.16], [ 98.00, 246.94, 293.66, 392.00]],
+      mel: [0, 1, 2, 3, 2, 3, 1, 2], melOct: 3, melTimes: [0, 2, 3, 5, 6], glock: true,
+      dbl: [4], dblTimes: [1, 5], fillTimes: [4], harp: [3]
+    },
+    // ---- 红色赤潮（外观）：压抑紧张 ----
+    redtide: {
+      name: '红色赤潮', delay: 0.34, mode: 'minor', pad: 3.6, bass: 2.2, bright: 0.9, ambCut: 300,
+      chords: [[110.00, 261.63, 311.13, 392.00], [103.83, 246.94, 311.13, 369.99],
+               [ 98.00, 233.08, 293.66, 349.23], [ 92.50, 220.00, 277.18, 329.63]],
+      mel: [0, 1, 2, 1, 3, 2, 0, 1], melOct: 3, melTimes: [0, 1, 2, 3, 4, 5, 6, 7], horn: true,
+      dbl: [2], dblTimes: [2, 6], fillTimes: [4], sub: [0]
+    },
+    // ---- 深渊裂缝：微恐，极慢、不谐和 ----
+    abyss: {
+      name: '深渊裂缝', delay: 0.55, mode: 'abyss', pad: 5.5, bass: 2.6, bright: 0.7, ambCut: 150,
+      chords: [[43.65, 164.81, 233.08, 329.63], [41.20, 155.56, 207.65, 311.13],
+               [38.89, 146.83, 220.00, 293.66], [36.71, 138.59, 185.00, 277.18]],
+      mel: [0, 2, 1, 3, 1, 0, 2, 1], melOct: 3, melTimes: [0, 3, 6], choir: true,
+      dbl: [1], dblTimes: [2, 5], fillTimes: [4], sub: [0, 3], metal: [7]
+    },
+    // ---- 赤潮事件：警觉的号角 ----
+    evRedTide: {
+      name: '赤潮', delay: 0.34, mode: 'minor', pad: 3.4, bass: 2.4, bright: 0.95, ambCut: 300,
+      chords: [[110.00, 261.63, 311.13, 392.00], [103.83, 246.94, 311.13, 369.99],
+               [ 98.00, 233.08, 293.66, 349.23], [104.00, 233.08, 277.18, 349.23]],
+      mel: [0, 1, 2, 1, 3, 2, 1, 0], melOct: 3, melTimes: [0, 2, 3, 5, 6], horn: true,
+      dbl: [2], dblTimes: [1, 5], fillTimes: [4], sub: [0]
+    },
+    // ---- 超级赤潮事件：末日深渊感 ----
+    evSuper: {
+      name: '超级赤潮', delay: 0.42, mode: 'minor', pad: 4.6, bass: 2.8, bright: 0.6, ambCut: 140,
+      chords: [[36.71, 146.83, 174.61, 220.00], [34.65, 138.59, 164.81, 207.65],
+               [32.70, 130.81, 155.56, 196.00], [30.87, 123.47, 146.83, 185.00]],
+      mel: [0, 1, 2, 1, 3, 2, 1, 2], melOct: 3, melTimes: [0, 2, 4, 6], horn: true,
+      dbl: [1], dblTimes: [3, 7], fillTimes: [5], sub: [0, 4], metal: [6]
+    },
+    // ---- 淘鱼热事件：轻快喜悦 ----
+    evGoldRush: {
+      name: '淘鱼热', delay: 0.30, mode: 'major', pad: 2.8, bass: 1.4, bright: 1.4, ambCut: 700,
+      chords: [[130.81, 329.63, 392.00, 523.25], [146.83, 369.99, 440.00, 587.33],
+               [174.61, 440.00, 523.25, 698.46], [196.00, 392.00, 493.88, 587.33]],
+      mel: [0, 1, 2, 3, 4, 5, 6, 7], melOct: 3, melTimes: [0, 1, 2, 3, 4, 5, 6, 7], glass: true,
+      dbl: [4], dblTimes: [1, 2, 3, 5, 6, 7], fillTimes: [0, 4], shimmer: [0]
+    },
+    // ---- 瘟疫事件：不安中带一丝笨拙的滑稽 ----
+    evPlague: {
+      name: '瘟疫', delay: 0.36, mode: 'minor', pad: 2.6, bass: 1.7, bright: 0.8, ambCut: 380,
+      chords: [[116.54, 233.08, 277.18, 349.23], [110.00, 220.00, 261.63, 329.63],
+               [103.83, 207.65, 246.94, 311.13], [ 98.00, 196.00, 233.08, 293.66]],
+      mel: [0, 1, 0, 2, 1, 3, 2, 1], melOct: 3, melTimes: [0, 1, 2, 3, 4, 5, 6, 7], pluck: true,
+      dbl: [3], dblTimes: [2, 6], fillTimes: [4], sub: [0, 4]
+    }
+  };
+
+  // 每个鱼塘外观 / 事件对应的曲目
+  var THEME_SCENE = { default: 'default', coral: 'coral', crystal: 'crystal', deepsea2: 'deepsea',
+    gold: 'gold', redtide: 'redtide', abyss: 'abyss' };
+  var EVENT_SCENE = { 'red-tide': 'evRedTide', 'super-red-tide': 'evSuper', 'gold-rush': 'evGoldRush',
+    plague: 'evPlague', rainbow: 'evGoldRush' };
+
+  // ==================== 基础工具 ====================
+  function clamp01(v) { v = parseFloat(v); return isNaN(v) ? 0 : Math.max(0, Math.min(1, v)); }
+  function savePrefs() { try { localStorage.setItem(LS_KEY, JSON.stringify({ v: VOL, m: MUTE })); } catch (e) {} }
+  function loadPrefs() {
+    try {
+      var raw = localStorage.getItem(LS_KEY); if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d && d.v) { VOL.music = clamp01(d.v.music); VOL.sfx = clamp01(d.v.sfx); VOL.amb = clamp01(d.v.amb); }
+      if (d && d.m) { MUTE.music = !!d.m.music; MUTE.sfx = !!d.m.sfx; MUTE.amb = !!d.m.amb; }
+    } catch (e) {}
+  }
+  // 毫秒节流：防止同帧多音效叠加爆音
+  function gate(name, ms) { var n = Date.now(); if (lastSfxAt[name] && n - lastSfxAt[name] < ms) return false; lastSfxAt[name] = n; return true; }
+
+  // 音频是否可发声：已起播 且 未处于后台挂起 且 上下文在跑
+  function soundOn() { return audioReady && playing && !!AC && AC.state === 'running'; }
+
+  // ==================== 音效合成原语（相对延迟 delay 秒） ====================
+  function env(g, t, peak, atk, dec) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(Math.max(0.0002, peak), t + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + atk + dec);
+  }
+  function mkGain(bus, t, peak, atk, dec) { var g = AC.createGain(); env(g, t, peak, atk, dec); g.connect(bus); return g; }
+  function tone(type, freq, delay, dur, peak, bus, detune, endFreq) {
+    if (!soundOn()) return;
+    var t = AC.currentTime + (delay || 0);
+    var o = AC.createOscillator(), g = mkGain(bus || sfxBus, t, peak || 0.06, Math.min(0.02, dur * 0.2), dur);
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(26, endFreq), t + dur);
+    if (detune) o.detune.setValueAtTime(detune, t);
+    o.connect(g); o.start(t); o.stop(t + dur + 0.08);
+  }
+  function bell(freq, delay, dur, peak, bus) {
+    if (!AC || !audioReady) return;
+    tone('sine', freq, delay, dur, peak, bus);
+    tone('sine', freq * 2, delay, dur * 0.55, peak * 0.28, bus);
+    tone('sine', freq * 3, delay, dur * 0.3, peak * 0.10, bus);
+  }
+  function arpUp(roots, delay, gap, dur, peak, type, bus) {
+    for (var i = 0; i < roots.length; i++) bell(roots[i], (delay || 0) + i * gap, dur, peak * (1 - i * 0.08), bus);
+    if (type) for (var j = 0; j < roots.length; j++) tone(type, roots[j] / 2, (delay || 0) + j * gap, dur * 1.2, peak * 0.25, bus);
+  }
+  function sweep(f0, f1, delay, dur, peak, type, bus) {
+    if (!soundOn()) return;
+    var t = AC.currentTime + (delay || 0);
+    var o = AC.createOscillator(), g = mkGain(bus || sfxBus, t, peak || 0.05, Math.min(0.02, dur * 0.25), dur);
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(Math.max(26, f0), t);
+    o.frequency.exponentialRampToValueAtTime(Math.max(26, f1), t + dur);
+    o.connect(g); o.start(t); o.stop(t + dur + 0.08);
+  }
+  function noiseBufEnsure() {
+    if (noiseBuf || !AC) return;
+    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate * 0.5), AC.sampleRate);
+    var d = noiseBuf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  function noiseBurst(delay, dur, peak, f0, f1, q, bus, type) {
+    if (!soundOn()) return;
+    noiseBufEnsure();
+    var t = AC.currentTime + (delay || 0);
+    var src = AC.createBufferSource(); src.buffer = noiseBuf;
+    var bp = AC.createBiquadFilter(); bp.type = type || 'bandpass'; bp.Q.value = q || 1.2;
+    bp.frequency.setValueAtTime(Math.max(60, f0), t);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(60, f1), t + dur);
+    var g = mkGain(bus || sfxBus, t, peak || 0.05, Math.min(0.02, dur * 0.3), dur);
+    src.connect(bp); bp.connect(g); src.start(t); src.stop(t + dur + 0.05);
+  }
+  function thump(delay, dur, peak, f0, f1, bus) {
+    tone('sine', Math.max(26, f0 || 150), delay || 0, dur || 0.22, peak || 0.14, bus, 0, Math.max(26, f1 || (f0 || 150) * 0.45));
+  }
+  function bubble(delay, peak, f0, f1, bus) {
+    var d = delay || 0;
+    sweep(f0 || 480, f1 || 1500, d, 0.13, peak || 0.05, 'sine', bus);
+    sweep((f0 || 480) * 0.62, (f1 || 1500) * 0.7, d + 0.035, 0.09, (peak || 0.05) * 0.5, 'sine', bus);
+  }
+
+  // ==================== 音乐声部（绝对时间 at 秒） ====================
+  function mSched(node, t) { node.start(t); }
+  function mBell(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    var parts = [[1, 1], [2, 0.30], [3, 0.12], [4.2, 0.05]];
+    for (var i = 0; i < parts.length; i++) {
+      var o = AC.createOscillator(), g = mkGain(bus, at, peak * parts[i][1], 0.012, dur * (1 - i * 0.16));
+      o.type = 'sine'; o.frequency.setValueAtTime(freq * parts[i][0], at);
+      o.connect(g); mSched(o, at); o.stop(at + dur + 0.1);
+    }
+  }
+  function mMetal(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    if (!AC || !audioReady) return;
+    var ratios = [1, 1.4142, 1.7321, 2.2361, 2.6458];
+    for (var i = 0; i < ratios.length; i++) {
+      var o = AC.createOscillator(), g = mkGain(bus, at, peak / (i + 1.6), 0.01, dur * (1 - i * 0.13));
+      o.type = 'sine'; o.frequency.setValueAtTime(freq * ratios[i], at);
+      o.connect(g); mSched(o, at); o.stop(at + dur + 0.1);
+    }
+  }
+  function mGlide(freq, endFreq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    if (!AC || !audioReady) return;
+    var o = AC.createOscillator(), g = mkGain(bus, at, peak, dur * 0.35, dur);
+    o.type = 'sine'; o.frequency.setValueAtTime(freq, at);
+    o.frequency.exponentialRampToValueAtTime(Math.max(26, endFreq), at + dur);
+    o.connect(g); mSched(o, at); o.stop(at + dur + 0.1);
+  }
+  function mDrum(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    var o = AC.createOscillator(), g = mkGain(bus, at, peak, 0.004, dur);
+    o.type = 'sine'; o.frequency.setValueAtTime(freq, at);
+    o.frequency.exponentialRampToValueAtTime(Math.max(26, freq * 0.45), at + dur * 0.85);
+    o.connect(g); mSched(o, at); o.stop(at + dur + 0.06);
+  }
+  function mPad(freqs, at, dur, peak, detunes, bus) {
+    if (!soundOn()) return;
+    for (var i = 0; i < freqs.length; i++) {
+      var o = AC.createOscillator(), g = mkGain(bus, at, peak * (1 - i * 0.12), dur * 0.42, dur * 0.62);
+      o.type = 'sine'; o.frequency.setValueAtTime(Math.max(26, freqs[i]), at);
+      if (detunes) o.detune.setValueAtTime(detunes[i % detunes.length], at);
+      o.connect(g); mSched(o, at); o.stop(at + dur + 0.15);
+    }
+  }
+  function mChoir(freqs, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    for (var i = 0; i < freqs.length; i++) {
+      var o = AC.createOscillator(), o2 = AC.createOscillator();
+      var g = mkGain(bus, at, peak * (1 - i * 0.15), dur * 0.45, dur * 0.55);
+      o.type = 'triangle'; o2.type = 'sine';
+      o.frequency.setValueAtTime(Math.max(26, freqs[i]), at);
+      o2.frequency.setValueAtTime(Math.max(26, freqs[i] * 2.005), at); // 轻微失谐制造人声感
+      o.detune.setValueAtTime(-7 + i * 5, at);
+      o.connect(g); o2.connect(g); mSched(o, at); mSched(o2, at);
+      o.stop(at + dur + 0.15); o2.stop(at + dur + 0.15);
+    }
+  }
+  function mPluck(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    if (!AC || !audioReady) return;
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'triangle'; o.frequency.setValueAtTime(freq, at);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.linearRampToValueAtTime(peak, at + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(bus); mSched(o, at); o.stop(at + dur + 0.06);
+  }
+  function mHorn(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    if (!AC || !audioReady) return;
+    var o = AC.createOscillator(), o2 = AC.createOscillator();
+    var g = mkGain(bus, at, peak, 0.09, dur * 0.85);
+    o.type = 'sawtooth'; o2.type = 'triangle';
+    o.frequency.setValueAtTime(freq, at); o2.frequency.setValueAtTime(freq, at);
+    o2.detune.setValueAtTime(9, at);
+    var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500; lp.Q.value = 0.9;
+    o.connect(lp); o2.connect(lp);
+    lp.connect(g); mSched(o, at); mSched(o2, at);
+    o.stop(at + dur + 0.12); o2.stop(at + dur + 0.12);
+  }
+  function mMarimba(freq, at, dur, peak, bus) {
+    if (!soundOn()) return;
+    if (!AC || !audioReady) return;
+    var o = AC.createOscillator(), o2 = AC.createOscillator(), g = mkGain(bus, at, peak, 0.006, dur);
+    o.type = 'sine'; o2.type = 'triangle';
+    o.frequency.setValueAtTime(freq, at);
+    o2.frequency.setValueAtTime(freq * 3.9, at); // 木琴的特征泛音
+    var g2 = mkGain(bus, at, peak * 0.16, 0.004, dur * 0.35);
+    o.connect(g); o2.connect(g2); mSched(o, at); mSched(o2, at);
+    o.stop(at + dur + 0.06); o2.stop(at + dur * 0.35 + 0.06);
+  }
+  function mNoteWave(track, freq, at, dur, peak, bus) {
+    freq = Math.max(26, freq); // 防止高声部倍数叠乘后仍落入次声区
+    if (track.glass) { mBell(freq, at, dur * 2.0, peak, bus); return; }
+    if (track.glock) { mBell(freq, at, dur * 1.5, peak * 0.95, bus); return; }
+    if (track.marimba) { mMarimba(freq, at, dur * 1.1, peak, bus); return; }
+    if (track.pluck) { mPluck(freq, at, dur * 1.3, peak * 1.15, bus); return; }
+    if (track.horn) { mHorn(freq, at, dur * 2.6, peak * 0.8, bus); return; }
+    if (track.choir) { mChoir([freq, freq * 1.5], at, dur * 2.2, peak * 0.8, bus); return; }
+    if (track.metal) { mMetal(freq, at, dur * 1.8, peak * 1.5, bus); return; }
+    mBell(freq, at, dur * 1.6, peak, bus);
+  }
+
+  // ==================== 音乐调度（双轨交叉淡化） ====================
+  var deck = { A: null, B: null };
+  function newDeck(bus, trackName) { return { bus: bus, step: 0, next: 0, track: prepared(trackName || 'default') }; }
+  function scheduleDeck(d, ahead) {
+    if (!soundOn() || !d) return;
+    // 若声部轨落后过多（页签切回等），直接重锚，避免补发一串音符
+    if (d.next < AC.currentTime - 0.6) d.next = AC.currentTime + 0.10;
+    var guard = 0;
+    while (d.next < AC.currentTime + ahead && guard++ < 32) {
+      var tr = d.track || prepared('default');
+      var ch = tr.chords[Math.floor(d.step / 8) % tr.chords.length];
+      var i = d.step % 8, at = d.next;
+      if (at < AC.currentTime) at = AC.currentTime; // 落后时对齐当下，避免雪崩
+      var padNotes = [];
+      for (var p = 1; p < ch.length; p++) padNotes.push(ch[p]);
+      if (i === 0) {
+        if (tr.choir) mChoir(padNotes, at, tr.pad, 0.032, d.bus);
+        else mPad(padNotes, at, tr.pad, 0.030, [-6, 4, -3, 7], d.bus);
+        tone('triangle', Math.max(26, ch[0]), at - AC.currentTime, tr.bass, 0.070, d.bus);
+      }
+      if (tr.melTimes.indexOf(i) >= 0) {
+        var f = ch[tr.mel[i] % ch.length] * (tr.melOct || 3);
+        mNoteWave(tr, f, at, 0.62, 0.030 * (tr.bright || 1), d.bus);
+      }
+      if (tr.dblTimes.indexOf(i) >= 0) {
+        var f2 = ch[tr.dbl[(i + 1) % tr.dbl.length] % ch.length] * ((tr.melOct || 3) + 1);
+        mNoteWave(tr, f2, at, 0.42, 0.014 * (tr.bright || 1), d.bus);
+      }
+      if (tr.subTimes.indexOf(i) >= 0) tone('sine', Math.max(26, ch[0] * 0.5), at - AC.currentTime, 1.6, 0.050, d.bus);
+      if (tr.drumTimes.indexOf(i) >= 0) mDrum(105, at, 0.20, 0.055, d.bus);
+      if (tr.metalTimes.indexOf(i) >= 0) mMetal(ch[1] * 2.01, at, 0.45, 0.010, d.bus);
+      if (tr.waterTimes.indexOf(i) >= 0) bubble(at - AC.currentTime, 0.030, 560, 1500, d.bus);
+      if (tr.shimmerTimes.indexOf(i) >= 0) noiseBurst(at - AC.currentTime, 0.20, 0.012, 4200, 2600, 1.0, d.bus, 'bandpass');
+      if (tr.fillTimes.indexOf(i) >= 0) noiseBurst(at - AC.currentTime, 0.16, 0.013, 3600, 2200, 0.9, d.bus, 'bandpass');
+      d.next += tr.delay; d.step++;
+    }
+  }
+  // 把曲目参数补齐默认值，便于调度时直接取用
+  function withDefaults(t) {
+    return {
+      name: t.name, delay: t.delay, mode: t.mode, pad: t.pad, bass: t.bass,
+      bright: t.bright || 1, ambCut: t.ambCut || 480, chords: t.chords,
+      mel: t.mel, melOct: t.melOct, marimba: !!t.marimba, glass: !!t.glass, glock: !!t.glock,
+      pluck: !!t.pluck, horn: !!t.horn, choir: !!t.choir, metal: !!t.metal,
+      melTimes: t.melTimes || [0, 1, 2, 3, 4, 5, 6, 7],
+      dbl: t.dbl || [3], dblTimes: t.dblTimes || [1, 3, 5],
+      subTimes: t.sub || [], metalTimes: t.metal || [], waterTimes: t.water || [],
+      shimmerTimes: t.shimmer || [], fillTimes: t.fillTimes || [4],
+      drumTimes: t.drum || []
+    };
+  }
+  var TRACKS_R = {};
+  function prepared(name) { if (!TRACKS_R[name]) TRACKS_R[name] = withDefaults(TRACKS[name] || TRACKS.default); return TRACKS_R[name]; }
+
+  // 环境音目标电平（0~1）：滑条 × 静音开关
+  function ambTargetLevel() {
+    if (wantMuted()) return 0;
+    return Math.max(0, Math.min(1, VOL.amb));
+  }
+  // 由音量/静音/场景变化触发：更新目标并以短斜坡收敛
+  function ambApplyVol() {
+    ambTarget = ambTargetLevel();
+    ambApply(0.35);
+  }
+
+  var pendingTrack = null;
+  // 建立一条声部轨；fromZero=true 时从 0 起，用于首次缓入
+  function makeDeckFor(scene, fromZero) {
+    if (!audioReady) return null;
+    if (!TRACKS[scene]) scene = 'default';
+    var bus = AC.createGain();
+    var start = fromZero ? 0.0001 : 0.0001;
+    bus.gain.setValueAtTime(start, AC.currentTime);
+    bus.connect(musicBus);
+    var nd = newDeck(bus, scene);
+    nd.next = AC.currentTime + 0.10;
+    return nd;
+  }
+  // 首次缓入：当前声部轨从 0 升到目标音量
+  function startMusicFade(dur) {
+    if (!audioReady) return;
+    var d = deck.A || deck.B;
+    if (!d) return;
+    var target = MUTE.music ? 0.0001 : Math.max(0.0001, VOL.music);
+    d.bus.gain.cancelScheduledValues(AC.currentTime);
+    d.bus.gain.setValueAtTime(0.0001, AC.currentTime);
+    d.bus.gain.linearRampToValueAtTime(target, AC.currentTime + (dur || 3.6));
+  }
+  // 首次交互时立即建立声部轨（这样缓入一旦发起就有对象可升）
+  function setupSceneDeck() {
+    if (!audioReady) return;
+    if (deck.A) { try { deck.A.bus.disconnect(); } catch (e) {} deck.A = null; }
+    if (deck.B) { try { deck.B.bus.disconnect(); } catch (e) {} deck.B = null; }
+    var want = 'default';
+    try { want = resolveSceneName(); } catch (e) { }
+    var nd = makeDeckFor(want, true);
+    if (nd) { deck.A = nd; curScene = want; }
+  }
+  // 解析当前应播放的曲目（与外部 musicSync 的判定保持一致）
+  function resolveSceneName() {
+    try {
+      if (typeof inMainMenu === 'function' && inMainMenu()) return 'menu';
+      var ev = (typeof curEvent !== 'undefined') ? curEvent : null;
+      if (ev && ev.type) {
+        var em = { 'red-tide': 'evRedTide', 'super-red-tide': 'evSuper', 'gold-rush': 'evGoldRush', plague: 'evPlague', rainbow: 'evGoldRush' };
+        if (em[ev.type]) return em[ev.type];
+      }
+      var th = (typeof GS !== 'undefined' && GS) ? GS.currentTheme : 'default';
+      var tm = { default: 'default', coral: 'coral', crystal: 'crystal', deepsea2: 'deepsea', gold: 'gold', redtide: 'redtide', abyss: 'abyss' };
+      return tm[th] || 'default';
+    } catch (e) { return 'default'; }
+  }
+  function changeScene(scene) {
+    if (!audioReady) return;
+    if (scene === curScene && (deck.A || deck.B)) return;
+    if (!TRACKS[scene]) scene = 'default';
+    var tr = prepared(scene);
+    var old = deck.A || deck.B;
+    // 新声部轨：0 → 目标音量
+    var nd = makeDeckFor(scene, false);
+    if (!nd) return;
+    var bus = nd.bus;
+    var target = MUTE.music ? 0 : VOL.music;
+    // 首次起播（含从静默恢复）用 3.6s 长缓入；曲目之间用 2.0s 交叉淡化
+    var fadeIn = old ? 2.0 : 3.6;
+    bus.gain.linearRampToValueAtTime(target, AC.currentTime + fadeIn);
+    if (old) {
+      var ob = old.bus;
+      ob.gain.cancelScheduledValues(AC.currentTime);
+      ob.gain.setValueAtTime(Math.max(0.0001, ob.gain.value), AC.currentTime);
+      ob.gain.linearRampToValueAtTime(0.0001, AC.currentTime + (old ? 1.7 : 0));
+    }
+    pendingTrack = tr;
+    if (pendingTimer) clearTimeout(pendingTimer);
+    pendingTimer = setTimeout(function () {
+      if (old) { try { old.bus.disconnect(); } catch (e) {} }
+      pendingTrack = null; pendingTimer = null;
+    }, 2600);
+    if (deck.A === old) { deck.A = nd; deck.B = old; } else { deck.B = nd; deck.A = old; }
+    curScene = scene;
+    syncAmbient();
+    return tr.name;
+  }
+  // 记录调度器上次是否处于"运行可排程"状态，避免挂起期间堆积音符
+  var schedArmed = false;
+  function scheduleClick() {
+    if (!audioReady) return;
+    // 后台/挂起期间绝不排程：此时 currentTime 冻结，音符会全部落在同一时刻，
+    // 回到前台时一起爆发（用户报告的"音效堆积后一同播放"）
+    if (!soundOn()) { schedArmed = false; return; }
+    if (!schedArmed) {
+      schedArmed = true;
+      [deck.A, deck.B].forEach(function (d) { if (d) d.next = AC.currentTime + 0.12; });
+    }
+    var ahead = 0.55;
+    if (deck.A) scheduleDeck(deck.A, ahead);
+    if (deck.B) scheduleDeck(deck.B, ahead);
+  }
+  function startMusic() {
+    if (musicTimer || !audioReady) return;
+    musicTimer = setInterval(scheduleClick, 25);
+    // 正常情况下 curScene 已由 musicSync 解析；仅在无值时兜底为默认外观
+    if (!curScene) changeScene('default');
+  }
+  function stopMusic() { if (musicTimer) { clearInterval(musicTimer); musicTimer = null; } }
+
+  // ==================== 环境音（水流底噪 + 随机气泡） ====================
+  function buildAmbience() {
+    if (!audioReady || ambBuilt) return;
+    ambBuilt = true;
+    var t = AC.currentTime;
+    // 唯一控制增益：从 0 起，永不被别处覆盖
+    ambCtl = AC.createGain();
+    ambCtl.gain.value = 0.0001;
+    ambCtl.connect(ambBus);
+    // 气泡专用包络（与底噪同一控制点，保证滑条/静音对气泡同样有效）
+    ambBubbleBus = AC.createGain();
+    ambBubbleBus.gain.value = 1;
+    ambBubbleBus.connect(ambCtl);
+
+    var noise = AC.createBufferSource(); noise.buffer = noiseBuf; noise.loop = true;
+    ambHf = AC.createBiquadFilter(); ambHf.type = 'lowpass'; ambHf.frequency.value = 480; ambHf.Q.value = 0.7;
+    noise.connect(ambHf);
+    var hiss = AC.createBufferSource(); hiss.buffer = noiseBuf; hiss.loop = true;
+    var hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2600;
+    hiss.connect(hp);
+    var sub = AC.createOscillator(); sub.type = 'sine'; sub.frequency.value = 58;
+
+    var srcs = [ambHf, hp, sub];
+    for (var i = 0; i < AMB_LAYERS.length; i++) {
+      var cfg = AMB_LAYERS[i];
+      // 干路：固定电平，永不自动化
+      var gd = AC.createGain(); gd.gain.value = cfg.dry;
+      srcs[i].connect(gd); gd.connect(ambCtl);
+      // 呼吸路：固定摆幅，由固定频率的 LFO 调制（LFO 也只连到这一路）
+      var gl = AC.createGain(); gl.gain.value = 0.0001;
+      srcs[i].connect(gl); gl.connect(ambCtl);
+      var lfo = AC.createOscillator(); lfo.frequency.value = cfg.rate;
+      var lg = AC.createGain(); lg.gain.value = cfg.lfo;
+      lfo.connect(lg); lg.connect(gl.gain);
+      ambLayers.push({ dry: gd, breath: gl, lfo: lfo });
+    }
+    noise.start(t); hiss.start(t); sub.start(t);
+    for (var k = 0; k < ambLayers.length; k++) ambLayers[k].lfo.start(t);
+    // 呼吸路摆幅固定，建立后立即到位（它整体被 ambCtl 缩放，不影响开关）
+    for (var m = 0; m < ambLayers.length; m++) ambLayers[m].breath.gain.setValueAtTime(AMB_LAYERS[m].lfo, t);
+    ambApplied = -1;   // 强制下一次 ambApply 生效
+    ambApply(0);       // 静音启动期间 ambTarget 为 0，故实际是"冻结在 0"
+  }
+  // 环境音唯一入口：把 ambTarget 以给定时长斜坡到位
+  function ambApply(dur) {
+    if (!audioReady || !ambCtl) return;
+    if (ambApplied >= 0 && Math.abs(ambApplied - ambTarget) < 1e-6) return;  // 幂等
+    var d = dur === undefined ? 0.35 : dur;
+    var t = AC.currentTime;
+    ambCtl.gain.cancelScheduledValues(t);
+    ambCtl.gain.setValueAtTime(Math.max(0.0001, ambCtl.gain.value), t);
+    ambCtl.gain.linearRampToValueAtTime(Math.max(0.0001, ambTarget), t + d);
+    ambApplied = ambTarget;
+  }
+  // 场景过渡：只改滤波器截止（不碰任何电平）
+  function syncAmbient() {
+    if (!audioReady || !ambHf) return;
+    var tr = pendingTrack || prepared(curScene || 'default');
+    ambHf.frequency.setTargetAtTime(tr.ambCut, AC.currentTime, 1.4);
+  }
+  // 环境音专用气泡：固定走 ambBubbleBus，故与通用 bubble(带 bus 参数) 分开命名，
+  // 避免同名函数相互覆盖（同作用域下后声明者会覆盖前者）
+  function ambBubble(delay, peak, f0, f1) {
+    if (!AC || !audioReady) return;
+    var t = AC.currentTime + (delay || 0);
+    // 每个气泡自带短包络并经 ambBubbleBus → ambCtl，所以开关环境音时不会"啪"地断掉
+    for (var n = 0; n < 2; n++) {
+      var f = n === 0 ? (f0 || 480) : (f0 || 480) * 0.62;
+      var e = n === 0 ? (f1 || 1500) : (f1 || 1500) * 0.7;
+      var pk = n === 0 ? (peak || 0.05) : (peak || 0.05) * 0.5;
+      var d = n === 0 ? 0.13 : 0.09;
+      var o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(Math.max(26, f), t + (n ? 0.035 : 0));
+      o.frequency.exponentialRampToValueAtTime(Math.max(26, e), t + (n ? 0.035 : 0) + d);
+      var st = t + (n ? 0.035 : 0);
+      g.gain.setValueAtTime(0.0001, st);
+      g.gain.linearRampToValueAtTime(pk, st + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, st + d);
+      o.connect(g); g.connect(ambBubbleBus);
+      o.start(st); o.stop(st + d + 0.06);
+    }
+  }
+  function scheduleBubbles() {
+    if (ambBubbleTimer) { clearTimeout(ambBubbleTimer); ambBubbleTimer = null; }
+    if (!audioReady) return;
+    ambBubbleTimer = setTimeout(function () {
+      if (!soundOn()) { scheduleBubbles(); return; }
+      if (ambTarget <= 0.001) { scheduleBubbles(); return; }   // 环境音关闭时不发声
+      var n = 1 + (Math.random() < 0.35 ? 1 : 0);
+      for (var i = 0; i < n; i++) ambBubble(i * 0.14, 0.010 + Math.random() * 0.012, 420 + Math.random() * 320, 1200 + Math.random() * 900);
+      scheduleBubbles();
+    }, 1600 + Math.random() * 3400);
+  }
+
+  // ==================== 音效库（28 种） ====================
+  var SFX = {
+    click: function () { if (!gate('click', 45)) return; noiseBurst(0, 0.045, 0.030, 2400, 1300, 1.6); },
+    // 点击鱼塘里的鱼：两粒气泡上浮 + 一声轻亮"啾"，欢快亲近
+    fishPoke: function () {
+      if (!gate('fishPoke', 90)) return;
+      bubble(0, 0.055, 520, 1500, sfxBus);
+      bubble(0.075, 0.038, 680, 1900, sfxBus);
+      bell(1760.00, 0.02, 0.26, 0.030);
+      sweep(900, 1500, 0.10, 0.14, 0.024, 'sine');
+    },
+    // 主菜单按钮悬停：一声极轻的气泡"嗒"，柔和不抢戏
+    menuHover: function () {
+      if (!gate('menuHover', 70)) return;
+      bubble(0, 0.026, 760, 1700, sfxBus);
+      bell(1567.98, 0.02, 0.20, 0.020);
+    },
+    // 主菜单按钮按下/松开：温润的水下木鱼＋微铃，契合轻松基调
+    menuPress: function () {
+      if (!gate('menuPress', 120)) return;
+      thump(0, 0.15, 0.068, 340, 170);
+      bell(1046.50, 0.015, 0.26, 0.028);
+      bubble(0.03, 0.022, 640, 1400, sfxBus);
+    },
+    // 买鱼：扑通入水 + 气泡上浮 + 轻微扣款声
+    buyFish: function () {
+      if (!gate('buyFish', 70)) return;
+      sweep(760, 200, 0, 0.16, 0.085, 'sine');
+      noiseBurst(0.01, 0.20, 0.055, 1500, 400, 0.9);
+      bubble(0.07, 0.045, 480, 1250, sfxBus); bubble(0.16, 0.030, 620, 1600, sfxBus);
+      moneyDownHere();
+    },
+    // 买鱼（远古）：微恐——低频下沉 + 气声 + 不谐和玻璃音
+    ancientBuy: function () {
+      if (!gate('ancientBuy', 700)) return;
+      sweep(72, 27, 0, 2.2, 0.130, 'sine');                       // 下潜的低频
+      sweep(150, 58, 0.10, 1.7, 0.048, 'triangle');
+      noiseBurst(0.03, 1.5, 0.030, 900, 170, 0.7);                // 气声
+      tone('sine', 466.16, 0.30, 1.5, 0.020);                     // 远景玻璃音（对峙感）
+      tone('sine', 493.88, 0.44, 1.7, 0.017);                     // 与上方构成小二度摩擦
+      tone('sine', 233.08, 0.62, 1.4, 0.014);
+      bell(1046.50, 1.25, 1.4, 0.013);
+      moneyDownHere();
+    },
+    // 卖鱼：金币叮当
+    sellFish: function () { if (!gate('sellFish', 60)) return; bell(1318.51, 0, 0.30, 0.070); bell(1975.53, 0.065, 0.42, 0.058); },
+    // 一键卖出：连续金币流
+    coin: function () {
+      if (!gate('coin', 90)) return;
+      for (var i = 0; i < 4; i++) bell(1318.51 * Math.pow(1.1225, i), i * 0.055, 0.30, 0.055);
+      bell(2637.02, 0.24, 0.45, 0.040);
+    },
+    // 批量领取奖励：密集金币涌动 + 尾音
+    coinBatch: function () {
+      if (!gate('coinBatch', 120)) return;
+      for (var i = 0; i < 7; i++) bell(1046.50 * Math.pow(1.1225, i % 5), i * 0.048, 0.34, 0.052 - i * 0.003);
+      bell(1567.98, 0.36, 0.55, 0.048); bell(2093.00, 0.46, 0.70, 0.040);
+      mDrum(120, AC.currentTime, 0.18, 0.050, sfxBus);
+    },
+    // 资金入账：清脆短铃
+    money: function () { if (!gate('money', 120)) return; bell(1567.98, 0, 0.22, 0.050); bell(2093.00, 0.05, 0.26, 0.035); },
+    // 资金入账（大额）：三音上行 + 余韵
+    moneyBig: function () {
+      if (!gate('moneyBig', 200)) return;
+      bell(1318.51, 0, 0.34, 0.058); bell(1760.00, 0.07, 0.40, 0.052); bell(2349.32, 0.14, 0.60, 0.046);
+      bell(2637.02, 0.26, 0.80, 0.034);
+    },
+    // 资金消耗：短促下行双音（不刺耳）
+    moneyDown: function () { if (!gate('moneyDown', 90)) return; moneyDownHere(); },
+    // 批量购买消耗：连续点钞感
+    moneyDownBatch: function () {
+      if (!gate('moneyDownBatch', 120)) return;
+      for (var i = 0; i < 5; i++) { bell(1046.50 * Math.pow(0.9439, i), i * 0.042, 0.14, 0.030); noiseBurst(i * 0.042, 0.05, 0.018, 3200, 1600, 1.4); }
+      tone('sine', 523.25, 0.20, 0.22, 0.030);
+    },
+    feed: function () { if (!gate('feed', 120)) return; thump(0, 0.16, 0.11, 190, 90); bell(1046.50, 0.035, 0.30, 0.038); moneyDownHere(); },
+    hormone: function () { if (!gate('hormone', 120)) return; sweep(420, 1180, 0, 0.20, 0.060, 'triangle'); bell(1568.00, 0.20, 0.32, 0.035); moneyDownHere(); },
+    booster: function () { if (!gate('booster', 120)) return; arpUp([659.25, 783.99, 987.77], 0, 0.075, 0.55, 0.045, 'sine', sfxBus); moneyDownHere(); },
+    grow: function () { if (!gate('grow', 200)) return; arpUp([523.25, 659.25, 783.99], 0, 0.085, 0.50, 0.050, 'sine', sfxBus); },
+    // 升级 / 解锁：大三和弦琶音 + 扣款
+    upgrade: function () {
+      if (!gate('upgrade', 150)) return;
+      arpUp([523.25, 659.25, 783.99, 1046.50], 0, 0.070, 0.60, 0.062, 'sine', sfxBus);
+      thump(0, 0.20, 0.075, 132, 66);
+      moneyDownHere();
+    },
+    questNew: function () { if (!gate('questNew', 400)) return; bell(880.00, 0, 0.30, 0.042); bell(1174.66, 0.10, 0.42, 0.036); },
+    questDone: function () {
+      if (!gate('questDone', 300)) return;
+      var n = [659.25, 783.99, 1046.50];
+      for (var i = 0; i < n.length; i++) { tone('square', n[i], i * 0.085, 0.28, 0.030); bell(n[i] * 2, i * 0.085, 0.40, 0.028); }
+      bell(1318.51, 0.28, 0.60, 0.045);
+    },
+    warn: function () { if (!gate('warn', 900)) return; thump(0, 0.34, 0.145, 155, 78); thump(0.44, 0.34, 0.115, 145, 72); noiseBurst(0, 0.30, 0.030, 320, 140, 1.0); },
+    redTide: function () {
+      if (!gate('redTide', 900)) return;
+      noiseBurst(0, 0.75, 0.115, 1900, 150, 0.75);
+      sweep(400, 80, 0, 0.80, 0.095, 'sine');
+      thump(0.05, 0.60, 0.150, 110, 48);
+    },
+    superRedTide: function () {
+      if (!gate('superRedTide', 1200)) return;
+      noiseBurst(0, 1.10, 0.150, 2400, 90, 0.6);
+      sweep(320, 55, 0, 1.15, 0.130, 'sawtooth');
+      thump(0, 0.90, 0.190, 96, 40); thump(0.30, 0.70, 0.120, 82, 38);
+    },
+    goldRush: function () {
+      if (!gate('goldRush', 800)) return;
+      arpUp([523.25, 659.25, 783.99, 1046.50, 1318.51], 0, 0.065, 0.60, 0.062, 'square', sfxBus);
+      noiseBurst(0, 0.30, 0.045, 5200, 3000, 1.4);
+      bell(1567.98, 0.40, 0.70, 0.050);
+    },
+    plague: function () {
+      if (!gate('plague', 800)) return;
+      thump(0, 0.30, 0.140, 118, 74); thump(0.24, 0.26, 0.100, 104, 66);
+      sweep(300, 190, 0, 0.60, 0.055, 'triangle');
+    },
+    rainbow: function () {
+      if (!gate('rainbow', 800)) return;
+      var n = [523.25, 587.33, 659.25, 783.99, 880.00];
+      for (var i = 0; i < n.length; i++) { bell(n[i] * 2, i * 0.055, 0.60, 0.042); sweep(n[i], n[i] * 1.5, i * 0.055, 0.30, 0.022, 'sine'); }
+      bell(2093.00, 0.28, 0.80, 0.040);
+    },
+    breed: function () {
+      if (!gate('breed', 400)) return;
+      for (var i = 0; i < 4; i++) bubble(i * 0.085, 0.048 - i * 0.005, 520 + i * 90, 1500 + i * 220, sfxBus);
+      bell(1046.50, 0.30, 0.40, 0.038);
+    },
+    roe: function () { if (!gate('roe', 200)) return; bell(1975.53, 0, 0.35, 0.048); bell(2637.02, 0.07, 0.45, 0.030); },
+    error: function () { if (!gate('error', 180)) return; tone('sine', 311.13, 0, 0.16, 0.055); tone('sine', 233.08, 0.09, 0.26, 0.048); noiseBurst(0, 0.10, 0.016, 900, 500, 1.2); },
+    // 鲨鱼捕食：水下水花 + 低吼
+    sharkHunt: function () {
+      if (!gate('sharkHunt', 300)) return;
+      noiseBurst(0, 0.34, 0.075, 1100, 240, 0.8);
+      sweep(200, 82, 0, 0.34, 0.075, 'sawtooth');
+      thump(0.02, 0.24, 0.090, 130, 60);
+    },
+    // 电鳗放电：噼啪电流
+    eelShock: function () {
+      if (!gate('eelShock', 300)) return;
+      for (var i = 0; i < 3; i++) noiseBurst(i * 0.035, 0.07, 0.055 - i * 0.012, 4200, 1500, 2.2);
+      tone('square', 2400, 0, 0.05, 0.020);
+      bell(3136.00, 0.05, 0.22, 0.026);
+      thump(0.01, 0.18, 0.070, 170, 80);
+    },
+    // 灯笼鱼捕食：幽幽一吸
+    lanternHunt: function () {
+      if (!gate('lanternHunt', 300)) return;
+      sweep(300, 1000, 0, 0.34, 0.050, 'sine');
+      sweep(150, 480, 0.02, 0.30, 0.032, 'triangle');
+      bell(880.00, 0.20, 0.40, 0.024);
+      noiseBurst(0, 0.26, 0.026, 700, 1800, 1.0);
+    },
+    // 远古存在售出：微恐的深渊回响
+    ancientSell: function () {
+      if (!gate('ancientSell', 900)) return;
+      sweep(55, 22, 0, 2.6, 0.135, 'sine');
+      sweep(232, 233, 0.35, 2.6, 0.024, 'sine');
+      sweep(233, 232, 0.35, 2.6, 0.022, 'sine');
+      tone('sine', 116.54, 0.7, 2.2, 0.026); tone('sine', 123.47, 0.95, 2.0, 0.022);
+      noiseBurst(0.5, 2.0, 0.026, 700, 140, 0.8);
+      bell(1567.98, 1.4, 1.8, 0.030); bell(1174.66, 2.0, 2.4, 0.022);
+      mDrum(70, AC.currentTime + 0.15, 0.9, 0.120, sfxBus);
+    }
+  };
+  function moneyDownHere() {
+    tone('sine', 880.00, 0.02, 0.07, 0.028);
+    tone('sine', 1318.51, 0.06, 0.09, 0.020);
+    tone('sine', 659.25, 0.10, 0.12, 0.018);
+  }
+  function sfx(name) {
+    if (!AC || !audioReady || MUTE.sfx || VOL.sfx <= 0.0005) return;
+    var f = SFX[name]; if (!f) return;
+    try { f(); } catch (e) {}
+  }
+
+  // ==================== 启动 / 解锁 / 挂起 ====================
+  function init() {
+    if (AC) return AC;
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return null;
+      AC = new Ctx();
+      master = AC.createGain(); master.gain.value = 0.9; master.connect(AC.destination);
+      musicBus = AC.createGain(); musicBus.connect(master);
+      sfxBus = AC.createGain(); sfxBus.connect(master);
+      ambBus = AC.createGain(); ambBus.connect(master);
+      audioReady = true;
+      loadPrefs(); applyVol();
+      return AC;
+    } catch (e) { AC = null; audioReady = false; return null; }
+  }
+  function unlock() {
+    if (!audioReady) { if (!init()) return; }
+    noiseBufEnsure();
+    if (AC.state === 'suspended') { try { AC.resume(); } catch (e) {} }
+    buildAmbience();
+    startMusic();
+    scheduleBubbles();
+  }
+  // 页面加载即尝试起播：若浏览器允许自动播放则直接缓入；
+  // 被策略拦截时返回 false，由首次交互兜底（不会再需要"主动点击才开始"）
+  function startOnGesture() {
+    if (!audioReady) { if (!init()) return false; }
+    var first = !startedOnce;
+    startedOnce = true;
+    noiseBufEnsure();
+    try { AC.resume(); } catch (e) { }
+    playing = true;              // 开闸：此后音符/气泡才允许生成
+    buildAmbience();
+    // 只在首次建图时建立声部轨；重复调用不得重建，否则会把在播的音乐轨拆掉
+    if (first || !(deck.A || deck.B)) setupSceneDeck();
+    startMusic();
+    scheduleBubbles();
+    if (first) {
+      // 幂等的正式缓入：音乐轨 3.6s，环境音单点 3.6s
+      startMusicFade(3.6);
+      ambTarget = ambTargetLevel(); ambApplied = -1; ambApply(3.6);
+    }
+    return true;
+  }
+
+
+  function suspend() {
+    // 顺序很重要：先关闸（此刻起调度器/音符生成全部停止），再淡出，最后挂起上下文
+    playing = false;
+    stopMusic();
+    if (ambBubbleTimer) { clearTimeout(ambBubbleTimer); ambBubbleTimer = null; }
+    if (audioReady && AC) {
+      var t = AC.currentTime;
+      try {
+        // 清掉所有待执行斜坡，避免残留的自动化在恢复后补做
+        if (musicBus) musicBus.gain.cancelScheduledValues(t);
+        [deck.A, deck.B].forEach(function (d) {
+          if (!d) return;
+          d.bus.gain.cancelScheduledValues(t);
+          d.bus.gain.setValueAtTime(Math.max(0.0001, d.bus.gain.value), t);
+          d.bus.gain.linearRampToValueAtTime(0.0001, t + 0.12);
+        });
+        if (ambCtl) {
+          ambCtl.gain.cancelScheduledValues(t);
+          ambCtl.gain.setValueAtTime(Math.max(0.0001, ambCtl.gain.value), t);
+          ambCtl.gain.linearRampToValueAtTime(0.0001, t + 0.12);
+        }
+      } catch (e) {}
+      if (AC.state === 'running') { try { AC.suspend(); } catch (e) {} }
+    }
+  }
+  function resume() {
+    if (!audioReady || document.hidden) return;
+    if (AC.state === 'suspended') { try { AC.resume(); } catch (e) {} }
+    playing = true;
+    // 重锚时间轴：把两条声部轨的对齐点拉到"现在"，
+    // 保证恢复后从当前时刻继续，而不是补发挂起期间累积的音符
+    var t = AC.currentTime;
+    [deck.A, deck.B].forEach(function (d) { if (d) d.next = t + 0.12; });
+    startMusic();
+    scheduleBubbles();
+    startMusicFade(1.2);                        // 音乐 1.2s 淡入
+    ambTarget = ambTargetLevel(); ambApplied = -1; ambApply(1.2);   // 环境音同步淡入
+    // 从后台回来时环境音同样缓入，避免突然满音量
+    if (ambCtl) { ambTarget = ambTargetLevel(); ambApplied = -1; ambApply(1.6); }
+  }
+
+  // ==================== 音量 ====================
+  // 音乐音量由「声部轨」承载（交叉淡化需要），其余两层直接作用于总线
+  function applyVol() {
+    if (!audioReady) return;
+    var t = AC.currentTime;
+    // 环境音：只更新目标电平，由 ambApplyVol 统一斜坡到位（单一控制点）
+    sfxBus.gain.setTargetAtTime(MUTE.sfx ? 0 : VOL.sfx, t, 0.02);
+    ambApplyVol();   // 环境音：音量 / 静音 / 场景；起播缓入由 startOnGesture 负责
+    if (pendingTimer) {
+      // 交叉淡化进行中：让在播轨完成自身渐变，仅记录目标音量
+      musicBus.gain.setValueAtTime(1, t);
+    } else {
+      musicBus.gain.setTargetAtTime(MUTE.music ? 0 : VOL.music, t, 0.05);
+    }
+  }
+  function setVolume(ch, v) {
+    if (VOL[ch] === undefined) return;
+    VOL[ch] = clamp01(v);
+    MUTE[ch] = VOL[ch] <= 0.0005;
+    applyVol(); savePrefs();
+  }
+  function toggleMute(ch) {
+    if (ch === 'all') {
+      var on = !(MUTE.music && MUTE.sfx && MUTE.amb);
+      MUTE.music = MUTE.sfx = MUTE.amb = on;
+      // 仅当"音乐"也被静音时才视为主动关机，之后不再自动起播
+      if (on && MUTE.music) { switchedOff = true; userMuted = true; } else { switchedOff = false; userMuted = false; }
+    } else if (MUTE[ch] !== undefined) {
+      MUTE[ch] = !MUTE[ch];
+      if (!MUTE.music && VOL.music > 0.0005) { switchedOff = false; userMuted = false; }
+      if (ch === 'amb' && MUTE.amb) { /* 仅静环境音，不影响总闸门 */ }
+    }
+    applyVol(); savePrefs();
+  }
+
+  loadPrefs();
+
+  return {
+    init: init, unlock: unlock, suspend: suspend, resume: resume,
+    sfx: sfx, setVolume: setVolume, toggleMute: toggleMute, applyVol: applyVol,
+    startOnGesture: startOnGesture,
+    get started() { return startedOnce; },
+    get userMuted() { return userMuted; },
+    setMenuMode: function (on) {
+      on = !!on;
+      if (menuMode === on) return;
+      menuMode = on;
+      // 不在游戏中（主菜单）时立即换曲；游戏中则等事件/外观解析
+      if (on) { try { musicSync(); } catch (e) {} }
+    },
+    get menuMode() { return menuMode; },
+    musicScene: function (scene) {
+      if (!audioReady) { curScene = scene; return; }
+      if (scene === curScene) return;
+      var nm = changeScene(scene);
+      return nm;
+    },
+    get scene() { return curScene; },
+    get ready() { return audioReady; },
+    get state() { return AC ? AC.state : 'none'; },
+    get volume() { return { music: VOL.music, sfx: VOL.sfx, amb: VOL.amb, mute: { music: MUTE.music, sfx: MUTE.sfx, amb: MUTE.amb } }; }
+  };
+})();
+function sfx(n) { try { AUDIO.sfx(n); } catch (e) {} }
+function audioStart() { try { AUDIO.startOnGesture(); } catch (e) {} }
+// 主菜单按钮的声音反馈：悬停 / 按下 / 松开。
+// 用事件委托挂在菜单容器上，容器本来就有 pointer-events:none，
+// 故不依赖其命中自身；子按钮的事件会冒泡上来。
+function installMenuAudio() {
+  if (!mainMenuEl || mainMenuEl.__audioBound) return;
+  mainMenuEl.__audioBound = true;
+  var findBtn = function (e) {
+    var t = e.target;
+    while (t && t !== mainMenuEl) {
+      if (t.classList && t.classList.contains('main-menu-btn')) return t;
+      t = t.parentNode;
+    }
+    return null;
+  };
+  // pointerenter 不冒泡，用 mouseover 的 relatedTarget 去重，避免同按钮内反复触发
+  mainMenuEl.addEventListener('mouseover', function (e) {
+    var btn = findBtn(e); if (!btn) return;
+    if (e.relatedTarget && btn.contains(e.relatedTarget)) return;
+    audioStart();
+    btn.classList.add('menu-in');
+    sfx('menuHover');
+  });
+  mainMenuEl.addEventListener('mouseout', function (e) {
+    var btn = findBtn(e); if (!btn) return;
+    if (e.relatedTarget && btn.contains(e.relatedTarget)) return;
+    btn.classList.remove('menu-in');
+  });
+  // 按下：立刻给音（比 click 更跟手）
+  mainMenuEl.addEventListener('pointerdown', function (e) {
+    var btn = findBtn(e); if (!btn) return;
+    audioStart();
+    btn.classList.add('menu-down');
+    sfx('menuPress');
+  });
+  var release = function (e) {
+    mainMenuEl.querySelectorAll('.main-menu-btn.menu-down').forEach(function (b) { b.classList.remove('menu-down'); });
+  };
+  mainMenuEl.addEventListener('pointerup', release);
+  mainMenuEl.addEventListener('pointercancel', release);
+  mainMenuEl.addEventListener('pointerleave', release);
+  // 键盘可达：回车/空格也应有反馈
+  mainMenuEl.addEventListener('keydown', function (e) {
+    var btn = findBtn(e); if (!btn) return;
+    if (e.key === 'Enter' || e.key === ' ') { audioStart(); btn.classList.add('menu-down'); sfx('menuPress'); }
+  });
+  mainMenuEl.addEventListener('keyup', function (e) {
+    var btn = findBtn(e); if (!btn) return;
+    btn.classList.remove('menu-down');
+  });
+}
+
+// 音乐自动缓入：先尝试直接起播；被浏览器自动播放策略拦截时，
+// 绑定多种交互事件（一次即解绑）作为兜底，无需玩家专门去点设置
+function installAudioBootstrap() {
+  if (window.__audioBootstrapped) return;
+  window.__audioBootstrapped = true;
+  // 首次交互即起播并缓入（浏览器要求用户手势；不再尝试静音自动播放）
+  var done = false;
+  function go() {
+    if (done) return;
+    done = true;
+    audioStart();
+    ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click'].forEach(function (ev) {
+      window.removeEventListener(ev, go, true);
+    });
+  }
+  ['pointerdown', 'mousedown', 'touchstart', 'keydown', 'click'].forEach(function (ev) {
+    window.addEventListener(ev, go, true);
+  });
+  // 页面可见性：切走挂起；切回继续（若尚未起播则就地起播）
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) AUDIO.suspend();
+    else if (!done) { done = true; audioStart(); }
+    else AUDIO.resume();
+  });
+}
+let _questNotifAt = 0; // 同一批任务生成时只播一次提示音
+
+// 当前是否处于主菜单（有存档自动进游戏时不是）
+function inMainMenu() {
+  try { return !!(mainMenuEl && mainMenuEl.style && mainMenuEl.style.display !== 'none'); }
+  catch (e) { return false; }
+}
+// 解析当前应播放的曲目：主菜单 > 事件 > 鱼塘外观
+function musicSync() {
+  try {
+    var ev = (typeof curEvent !== 'undefined') ? curEvent : null;
+    var th = (typeof GS !== 'undefined' && GS) ? GS.currentTheme : 'default';
+    if (inMainMenu()) { AUDIO.musicScene('menu'); return; }
+    if (ev && ev.type) {
+      var map = { 'red-tide': 'evRedTide', 'super-red-tide': 'evSuper', 'gold-rush': 'evGoldRush', plague: 'evPlague', rainbow: 'evGoldRush' };
+      if (map[ev.type]) { AUDIO.musicScene(map[ev.type]); return; }
+    }
+    var tmap = { default: 'default', coral: 'coral', crystal: 'crystal', deepsea2: 'deepsea', gold: 'gold', redtide: 'redtide', abyss: 'abyss' };
+    AUDIO.musicScene(tmap[th] || 'default');
+  } catch (e) {}
+}
 
 // ========== 设置与菜单 ==========
+// 音量滑条（实时百分比 + 独立静音）
+function onVolInput(ch, el) {
+  var v = (parseFloat(el.value) || 0) / 100;
+  AUDIO.setVolume(ch, v);
+  var out = $('vol' + ch + 'Val'); if (out) out.textContent = Math.round(v * 100) + '%';
+  var mb = $('vol' + ch + 'Mute'); if (mb) { mb.textContent = AUDIO.volume.mute[ch] ? '🔇' : '🔊'; mb.title = AUDIO.volume.mute[ch] ? '点击取消静音' : '点击静音'; }
+  if (ch !== 'sfx') audioStart();
+}
+function toggleVolMute(ch, ev) {
+  if (ev) ev.stopPropagation();
+  audioStart();
+  AUDIO.toggleMute(ch);
+  syncVolUI();
+  var names = { music: '背景音乐', sfx: '音效', amb: '环境音' };
+  if (typeof notif === 'function') notif((AUDIO.volume.mute[ch] ? '🔇 已静音：' : '🔊 已开启：') + names[ch]);
+}
+function toggleVolMuteAll(ev) {
+  if (ev) ev.stopPropagation();
+  audioStart();
+  AUDIO.toggleMute('all');
+  syncVolUI();
+  var anyMuted = AUDIO.volume.mute.music || AUDIO.volume.mute.sfx || AUDIO.volume.mute.amb;
+  if (typeof notif === 'function') notif(anyMuted ? '🔇 已全部静音' : '🔊 已恢复全部声音');
+}
+// 把当前音量/静音状态写回界面（滑条位置 + 数值 + 图标）
+function syncVolUI() {
+  var v = AUDIO.volume, chs = ['music', 'sfx', 'amb'];
+  for (var i = 0; i < chs.length; i++) {
+    var ch = chs[i], muted = v.mute[ch], pct = Math.round((muted ? 0 : v[ch]) * 100);
+    var el = $('vol' + ch); if (el) el.value = pct;
+    var out = $('vol' + ch + 'Val'); if (out) out.textContent = pct + '%';
+    var mb = $('vol' + ch + 'Mute'); if (mb) { mb.textContent = muted ? '🔇' : '🔊'; mb.title = muted ? '点击取消静音' : '点击静音'; }
+  }
+}
 // ========== 控制台 ==========
 let consoleClickCount = 0, consoleClickTimer = null;
 let consoleDragOffset = { x: 0, y: 0 }, consoleDragging = false;
@@ -1701,6 +2886,7 @@ function toggleSettings() {
   }
   consoleClickTimer = setTimeout(() => { consoleClickCount = 0; }, 800);
   settingsPopupEl.classList.toggle('active');
+  if (settingsPopupEl.classList.contains('active')) { audioStart(); syncVolUI(); }
 }
 
 function openConsole() { $('consolePanel').style.display = 'block'; $('consoleOverlay').style.display = 'block'; settingsPopupEl.classList.remove('active'); }
@@ -1803,7 +2989,7 @@ function consoleRefreshQuests() {
   if (GS.totalEelShocks >= 1 && !GS.activeQuests.some(q => q.type === 'eel_shock')) GS.activeQuests.push(genEelShockQuest());
   if (GS.totalLanternHunts >= 1 && !GS.activeQuests.some(q => q.type === 'lantern_hunt')) GS.activeQuests.push(genLanternHuntQuest());
   if ((GS.totalFishSold['ancient']||0) >= 1 && !GS.activeQuests.some(q => q.type === 'ancient_sell')) GS.activeQuests.push(genAncientSellQuest());
-  if (GS.totalEarned >= 1000 && !GS.activeQuests.some(q => q.type === 'total_earn')) { const nq = genTotalEarnQuest(); if (nq) GS.activeQuests.push(nq); }
+  ensureEarnQuest();
   renderAll(); notif('🛠️ 开发者：任务已刷新！');
 }
 function consoleEndEvent() {
@@ -1835,7 +3021,7 @@ function consoleTriggerMechanics() {
     if (!shark.sharkBonus) shark.sharkBonus = 0;
     const pv = psp ? psp.sellPrice : 0;
     shark.sharkBonus += pv;
-    triggered = true;
+    triggered = true; sfx('sharkHunt');
     notif('🦈 鲨鱼捕食了一条' + (psp ? psp.name : '鱼') + '！自身售价 +$' + pv);
   });
 
@@ -1847,7 +3033,7 @@ function consoleTriggerMechanics() {
     const v = targets[0];
     _removeFishFromPond(v);
     GS.totalEelShocks++;
-    triggered = true;
+    triggered = true; sfx('eelShock');
     notif('⚡ 电鳗释放电流，电死了一条' + spName(v.speciesId) + '！');
   });
 
@@ -1859,7 +3045,7 @@ function consoleTriggerMechanics() {
     const t = prey[0];
     _removeFishFromPond(t);
     GS.totalLanternHunts++;
-    triggered = true;
+    triggered = true; sfx('lanternHunt');
     notif('🪔 灯笼鱼捕食了一条' + spName(t.speciesId) + '！');
   });
 
@@ -1901,17 +3087,17 @@ function consoleTriggerMechanics() {
 }
 
 document.addEventListener('click', e => { if (settingsPopupEl.classList.contains('active') && !settingsPopupEl.contains(e.target) && e.target !== $('settingsBtn')) settingsPopupEl.classList.remove('active'); });
-function resetGame() { closeConsole(); consoleClickCount = 0; if (consoleClickTimer) { clearTimeout(consoleClickTimer); consoleClickTimer = null; } settingsPopupEl.classList.remove('active'); gameOverEl.classList.remove('active'); bankruptBannerEl.style.display = 'none'; localStorage.removeItem('fishFarmSave2'); returnToMenu(); notif('🔄 已返回主菜单'); }
+function resetGame() { sfx('warn'); closeConsole(); consoleClickCount = 0; if (consoleClickTimer) { clearTimeout(consoleClickTimer); consoleClickTimer = null; } settingsPopupEl.classList.remove('active'); gameOverEl.classList.remove('active'); bankruptBannerEl.style.display = 'none'; localStorage.removeItem('fishFarmSave2'); returnToMenu(); notif('🔄 已返回主菜单'); }
 function clearAllFish() { settingsPopupEl.classList.remove('active'); roeParticles.forEach(rp => { if (rp.el.isConnected) rp.el.remove(); }); roeParticles = [];
   Object.keys(pondFishEls).forEach(uid => { pondFishEls[uid].remove(); delete pondFishEls[uid]; });
   Object.keys(fishMoveTimers).forEach(uid => { clearInterval(fishMoveTimers[uid]); delete fishMoveTimers[uid]; });
-  fishMoveOffset = {}; pondFishEls = {}; GS.fishInventory = []; updateQuestProgress(); renderAll(); notif('🗑️ 鱼塘已清空');
+  fishMoveOffset = {}; pondFishEls = {}; GS.fishInventory = []; updateQuestProgress(); renderAll(); notif('🗑️ 鱼塘已清空'); sfx('moneyDownBatch');
 }
 function closePopup() { $('popup').classList.remove('active'); $('overlay').classList.remove('active'); }
 
 function checkBankruptcy() { if (GS.fishInventory.length || FISH_SPECIES.some(sp => GS.money >= sp.buyPrice)) return;
   GS.bankruptcyCount++; if (GS.bankruptcyCount >= 2) { gameOverEl.classList.add('active'); notif('💀 你再次破产了！游戏结束'); }
-  else { GS.money += 100; bankruptBannerEl.style.display = 'block'; notif('💸 您破产了！已发放 $100 补助金'); setTimeout(() => { bankruptBannerEl.style.display = 'none'; }, 5000); } renderAll();
+  else { GS.money += 100; bankruptBannerEl.style.display = 'block'; notif('💸 您破产了！已发放 $100 补助金'); sfx('money'); setTimeout(() => { bankruptBannerEl.style.display = 'none'; }, 5000); } renderAll();
 }
 
 // ========== 统一游戏循环（合并双定时器为单一线程） ==========
@@ -1943,16 +3129,25 @@ function updateInventoryGrowth() {
   inventoryHeaderEl.innerHTML = (hasNet && readyC >= 2) ? `🏠 我的鱼 <button class="btn btn-warning btn-xs" style="margin-left:auto" onclick="sellAllReady()">💰 一键卖出 (${readyC})</button>` : (hasNet ? '🏠 我的鱼' : inventoryHeaderEl.innerHTML);
 }
 
-function gameLoop() { GS.gameTime += 0.48; updateQuestProgress(); updateTopBar(); updateInventoryGrowth(); updatePondFish(); checkBankruptcy(); }
+function gameLoop() { GS.gameTime += 0.48; updateQuestProgress(); syncEarnQuestUI(); updateTopBar(); updateInventoryGrowth(); updatePondFish(); checkMatured(); checkBankruptcy(); }
+
+// 检测"刚刚成熟"的鱼并播放成熟音（同一秒多条只响一声）
+let prevReadyCount = 0;
+function checkMatured() {
+  let ready = 0;
+  for (let i = 0; i < GS.fishInventory.length; i++) if (fishReady(GS.fishInventory[i])) ready++;
+  if (ready > prevReadyCount) sfx('grow');
+  prevReadyCount = ready;
+}
 
 // ========== 存档 ==========
 function saveGame() { localStorage.setItem('fishFarmSave2', JSON.stringify({ money:GS.money, fishInventory:GS.fishInventory, completedQuests:GS.completedQuests, totalFishSold:GS.totalFishSold, totalFedSold:GS.totalFedSold, totalHormoneSold:GS.totalHormoneSold, totalUniqueSpeciesOwned:[...GS.totalUniqueSpeciesOwned], infrastructure:GS.infrastructure, activeQuests:GS.activeQuests, questIdCounter:GS.questIdCounter, uidC, currentTheme:GS.currentTheme, ownedThemes:[...GS.ownedThemes], bankruptcyCount:GS.bankruptcyCount, productsOwned:[...GS.productsOwned], rainbowChance:GS.rainbowChance, redTideCount:GS.redTideCount, superRedTideCount:GS.superRedTideCount, claimedEarnMilestones:[...GS.claimedEarnMilestones], totalRoeSold:GS.totalRoeSold, totalBredCount:GS.totalBredCount, totalSupergrownSold:GS.totalSupergrownSold, totalSharkHunts:GS.totalSharkHunts, totalEelShocks:GS.totalEelShocks, totalLanternHunts:GS.totalLanternHunts, totalEarned:GS.totalEarned, totalUpgrades:GS.totalUpgrades, totalLuckySells:GS.totalLuckySells, gameTime:GS.gameTime, missedEvents:GS.missedEvents, lastEventType:GS.lastEventType, sameEventStreak:GS.sameEventStreak, hasEverOwnedFish:GS.hasEverOwnedFish, eventState:curEvent?{type:curEvent.type,countdown:curEvent.countdown||0,endTime:curEvent.endTime||0,_totalDuration:curEvent._totalDuration||0}:null })); }
 window.addEventListener('beforeunload', saveGame);
 
-function loadGame() { const raw = localStorage.getItem('fishFarmSave2'); if (!raw) return false; try { const d = JSON.parse(raw); GS.money=d.money||100; GS.fishInventory=d.fishInventory||[]; GS.completedQuests=d.completedQuests||[]; GS.totalFishSold=d.totalFishSold||{}; GS.totalFedSold=d.totalFedSold||0; GS.totalHormoneSold=d.totalHormoneSold||0; GS.totalUniqueSpeciesOwned=new Set(d.totalUniqueSpeciesOwned||[]); GS.infrastructure=d.infrastructure||{tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0}; GS_INF=GS.infrastructure; GS.activeQuests=d.activeQuests||[]; GS.questIdCounter=d.questIdCounter||1; GS.lastTick=Date.now(); uidC=d.uidC||1; GS.currentTheme=d.currentTheme||'default'; GS.ownedThemes=new Set(d.ownedThemes||['default']); GS.productsOwned=new Set(d.productsOwned||[]); GS.bankruptcyCount=d.bankruptcyCount||0; GS.rainbowChance=d.rainbowChance||0; GS.totalRoeSold=d.totalRoeSold||0;GS.totalBredCount=d.totalBredCount||0;GS.totalSupergrownSold=d.totalSupergrownSold||0;GS.totalSharkHunts=d.totalSharkHunts||0;GS.totalEelShocks=d.totalEelShocks||0;GS.totalLanternHunts=d.totalLanternHunts||0;GS.totalEarned=d.totalEarned||0;GS.totalUpgrades=d.totalUpgrades||0;GS.totalLuckySells=d.totalLuckySells||0; GS.redTideCount=d.redTideCount||0; GS.superRedTideCount=d.superRedTideCount||0; GS.claimedEarnMilestones=new Set(d.claimedEarnMilestones||[]); GS.gameTime=d.gameTime||0; GS.missedEvents=d.missedEvents||0; GS.lastEventType=d.lastEventType||null; GS.sameEventStreak=d.sameEventStreak||0; GS.hasEverOwnedFish=d.hasEverOwnedFish||false; const savedTh=THEMES.find(t=>t.id===GS.currentTheme); if (!savedTh || savedTh.hidden) { GS.currentTheme = 'default'; } applyTheme(GS.currentTheme, true); return true; } catch(e) { return false; } }
+function loadGame() { const raw = localStorage.getItem('fishFarmSave2'); if (!raw) return false; try { const d = JSON.parse(raw); GS.money=d.money||100; GS.fishInventory=d.fishInventory||[]; GS.completedQuests=d.completedQuests||[]; GS.totalFishSold=d.totalFishSold||{}; GS.totalFedSold=d.totalFedSold||0; GS.totalHormoneSold=d.totalHormoneSold||0; GS.totalUniqueSpeciesOwned=new Set(d.totalUniqueSpeciesOwned||[]); GS.infrastructure=d.infrastructure||{tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0}; GS_INF=GS.infrastructure; GS.activeQuests=d.activeQuests||[]; GS.questIdCounter=d.questIdCounter||1; GS.lastTick=Date.now(); uidC=d.uidC||1; GS.currentTheme=d.currentTheme||'default'; GS.ownedThemes=new Set(d.ownedThemes||['default']); GS.productsOwned=new Set(d.productsOwned||[]); GS.bankruptcyCount=d.bankruptcyCount||0; GS.rainbowChance=d.rainbowChance||0; GS.totalRoeSold=d.totalRoeSold||0;GS.totalBredCount=d.totalBredCount||0;GS.totalSupergrownSold=d.totalSupergrownSold||0;GS.totalSharkHunts=d.totalSharkHunts||0;GS.totalEelShocks=d.totalEelShocks||0;GS.totalLanternHunts=d.totalLanternHunts||0;GS.totalEarned=d.totalEarned||0;GS.totalUpgrades=d.totalUpgrades||0;GS.totalLuckySells=d.totalLuckySells||0; GS.redTideCount=d.redTideCount||0; GS.superRedTideCount=d.superRedTideCount||0; GS.claimedEarnMilestones=new Set(d.claimedEarnMilestones||[]); GS.gameTime=d.gameTime||0; GS.missedEvents=d.missedEvents||0; GS.lastEventType=d.lastEventType||null; GS.sameEventStreak=d.sameEventStreak||0; GS.hasEverOwnedFish=d.hasEverOwnedFish||false; const savedTh=THEMES.find(t=>t.id===GS.currentTheme); if (!savedTh || savedTh.hidden) { GS.currentTheme = 'default'; } applyTheme(GS.currentTheme, true); ensureEarnQuest(); return true; } catch(e) { return false; } }
 
 // ========== 初始化 ==========
-function initGame() { GS.money=100;GS.fishInventory=[];GS.completedQuests=[];GS.totalFishSold={};GS.totalFedSold=0;GS.totalHormoneSold=0;GS.totalUniqueSpeciesOwned=new Set();GS.infrastructure={tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0};GS.activeQuests=[];GS.questIdCounter=1;GS.lastTick=Date.now();uidC=1;GS.currentTheme='default';GS.ownedThemes=new Set(['default']);GS.bankruptcyCount=0;GS.productsOwned=new Set();GS.redTideCount=0;GS.superRedTideCount=0;GS.claimedEarnMilestones=new Set();GS.rainbowChance=0;GS.totalEarned=0;GS.totalRoeSold=0;GS.totalBredCount=0;GS.totalSupergrownSold=0;GS.totalSharkHunts=0;GS.totalEelShocks=0;GS.totalLanternHunts=0;GS.totalUpgrades=0;GS.totalLuckySells=0;GS.missedEvents=0;GS.lastEventType=null;GS.sameEventStreak=0;GS.gameTime=0;GS.hasEverOwnedFish=false;pondFishEls={};GS_INF=GS.infrastructure; lastMoney=100; gameOverEl.classList.remove('active'); bankruptBannerEl.style.display='none'; applyTheme('default', true); renderAll(); notif('🎮 欢迎来到养鱼大亨！'); }
+function initGame() { GS.money=100;GS.fishInventory=[];GS.completedQuests=[];GS.totalFishSold={};GS.totalFedSold=0;GS.totalHormoneSold=0;GS.totalUniqueSpeciesOwned=new Set();GS.infrastructure={tankLevel:1,filterLevel:0,feederLevel:0,tempControl:0};GS.activeQuests=[];GS.questIdCounter=1;GS.lastTick=Date.now();uidC=1;GS.currentTheme='default';GS.ownedThemes=new Set(['default']);GS.bankruptcyCount=0;GS.productsOwned=new Set();GS.redTideCount=0;GS.superRedTideCount=0;GS.claimedEarnMilestones=new Set();GS.rainbowChance=0;GS.totalEarned=0;GS.totalRoeSold=0;GS.totalBredCount=0;GS.totalSupergrownSold=0;GS.totalSharkHunts=0;GS.totalEelShocks=0;GS.totalLanternHunts=0;GS.totalUpgrades=0;GS.totalLuckySells=0;GS.missedEvents=0;GS.lastEventType=null;GS.sameEventStreak=0;GS.gameTime=0;GS.hasEverOwnedFish=false;pondFishEls={};GS_INF=GS.infrastructure; lastMoney=100; prevReadyCount=0; gameOverEl.classList.remove('active'); bankruptBannerEl.style.display='none'; ensureEarnQuest(); applyTheme('default', true); renderAll(); notif('🎮 欢迎来到养鱼大亨！'); }
 function cleanPondDom() {
   clearGameIntervals();
   if (eventCheckTimer) { clearTimeout(eventCheckTimer); eventCheckTimer = null; }
@@ -1968,14 +3163,17 @@ function cleanPondDom() {
   if(causticsAnimId){cancelAnimationFrame(causticsAnimId);causticsAnimId=null;}
 }
 function startGame(mode) {
+  AUDIO.setMenuMode(false);
+  audioStart(); // 用户手势内确保已起播
   mainMenuEl.style.display='none'; cleanPondDom(); initGame();
   GS.money=(mode==='quick')?1000:100;
   setupGameIntervals();
   initPondDecorations();initCaustics();initLightRays();updatePondFish();setupPondRipple();setupFishInteractions();
+  musicSync();
   notif(mode==='quick'?'⚡ 快速游戏模式开始！初始资金 $1000':'🎮 游戏开始！初始资金 $100');
 }
 function exitGame() { window.close(); }
-function returnToMenu() { cleanPondDom(); mainMenuEl.style.display='flex'; }
+function returnToMenu() { cleanPondDom(); mainMenuEl.style.display='flex'; AUDIO.setMenuMode(true); musicSync(); }
 
 document.addEventListener('DOMContentLoaded', () => {
   // 缓存所有常用DOM引用
@@ -1985,8 +3183,12 @@ document.addEventListener('DOMContentLoaded', () => {
   gameOverEl = $('gameOverOverlay'); bankruptBannerEl = $('bankruptBanner'); settingsPopupEl = $('settingsPopup');
   mainMenuEl = $('mainMenu'); questHeaderEl = $('questHeader');
   pondFishEls = {}; pondEl.querySelectorAll('.pond-fish').forEach(e => e.remove());
+  syncVolUI();
+  installAudioBootstrap();
+  installMenuAudio();
   if (loadGame()) {
     mainMenuEl.style.display = 'none';
+    AUDIO.setMenuMode(false);
     initPondDecorations(); initCaustics(); initLightRays(); updatePondFish();
     setupPondRipple(); setupFishInteractions(); applyTheme(GS.currentTheme, true);
     renderAll(); notif('💾 存档已加载！欢迎回来~');
@@ -2056,7 +3258,9 @@ function setupFishInteractions() {
   });
   pondEl.addEventListener('click', function(e) { const fishEl = e.target.closest('.pond-fish'); if (!fishEl) return;
     e.stopPropagation(); const uid = +Object.keys(pondFishEls).find(k => pondFishEls[k] === fishEl); if (!uid) return;
-    const fish = GS.fishInventory.find(f => f.uid === uid); if (!fish) return; showFishSpeech(fishEl, fish);
+    const fish = GS.fishInventory.find(f => f.uid === uid); if (!fish) return;
+    sfx('fishPoke'); // 戳一下：气泡 + 轻啾
+    showFishSpeech(fishEl, fish);
   });
 }
 
